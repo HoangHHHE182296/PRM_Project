@@ -1,0 +1,5 @@
+class CredentialKey {
+  static const String accessToken = 'ACCESS_TOKEN';
+  static const String refreshToken = 'REFRESH_TOKEN';
+  static const String userInfo = 'USER_INFO';
+}
