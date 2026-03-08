@@ -8,19 +8,29 @@ class AuthService {
 
   AuthService(this._authApi);
 
-  Future<LoginResponse?> login(String email, String password, {bool isRemember = false}) async {
+  Future<LoginResponse?> login(
+    String email,
+    String password, {
+    bool isRemember = false,
+  }) async {
     try {
-      final command = LoginCommand((b) => b
-        ..email = email
-        ..password = password);
-      
+      final command = LoginCommand(
+        (b) => b
+          ..email = email
+          ..password = password,
+      );
+
       final response = await _authApi.apiAuthLoginPost(loginCommand: command);
-      
+
       if (response.statusCode == 200 && response.data != null) {
         final loginResponseWrapper = response.data;
-        if (loginResponseWrapper?.success == true && loginResponseWrapper?.data != null) {
-            _credentialService.setCredential(loginResponseWrapper!.data, isRemember: isRemember);
-            return loginResponseWrapper.data;
+        if (loginResponseWrapper?.success == true &&
+            loginResponseWrapper?.data != null) {
+          _credentialService.setCredential(
+            loginResponseWrapper!.data,
+            isRemember: isRemember,
+          );
+          return loginResponseWrapper.data;
         }
       }
       return null;
@@ -32,7 +42,9 @@ class AuthService {
 
   Future<UserResponse?> register(RegisterCommand command) async {
     try {
-      final response = await _authApi.apiAuthRegisterPost(registerCommand: command);
+      final response = await _authApi.apiAuthRegisterPost(
+        registerCommand: command,
+      );
       if (response.data?.success == true) {
         return response.data?.data;
       }

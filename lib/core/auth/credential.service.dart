@@ -13,7 +13,8 @@ class CredentialService {
   late SharedPreferences _prefs;
   final Map<String, String> _sessionStorage = {};
 
-  final StreamController<LoggedUserModel?> _userInfoController = StreamController<LoggedUserModel?>.broadcast();
+  final StreamController<LoggedUserModel?> _userInfoController =
+      StreamController<LoggedUserModel?>.broadcast();
   Stream<LoggedUserModel?> get userLoggedInfo$ => _userInfoController.stream;
 
   Future<void> init() async {
@@ -79,7 +80,10 @@ class CredentialService {
 
       final isRemember = _prefs.getString(CredentialKey.userInfo) != null;
       _setItem(
-          CredentialKey.userInfo, base64.encode(utf8.encode(jsonEncode(updatedInfo.toJson()))), isRemember);
+        CredentialKey.userInfo,
+        base64.encode(utf8.encode(jsonEncode(updatedInfo.toJson()))),
+        isRemember,
+      );
 
       _userInfoController.add(updatedInfo);
     }
@@ -94,12 +98,19 @@ class CredentialService {
         email: decodedToken['email']?.toString() ?? '',
         name: decodedToken['name']?.toString() ?? '',
         imgUrl: decodedToken['imgUrl']?.toString() ?? '',
-        roles: decodedToken['roles'] != null ? List<String>.from(decodedToken['roles']) : [],
+        roles: _parseRoles(decodedToken['roles']),
       );
 
       _setItem(
-          CredentialKey.userInfo, base64.encode(utf8.encode(jsonEncode(loggedUser.toJson()))), isRemember);
-      setAccessToken(data.accessToken!, data.refreshToken!, isRemember: isRemember);
+        CredentialKey.userInfo,
+        base64.encode(utf8.encode(jsonEncode(loggedUser.toJson()))),
+        isRemember,
+      );
+      setAccessToken(
+        data.accessToken!,
+        data.refreshToken!,
+        isRemember: isRemember,
+      );
 
       _userInfoController.add(loggedUser);
     } else {
@@ -107,9 +118,21 @@ class CredentialService {
     }
   }
 
-  void setAccessToken(String token, String refreshToken, {bool isRemember = false}) {
-    _setItem(CredentialKey.accessToken, base64.encode(utf8.encode(token)), isRemember);
-    _setItem(CredentialKey.refreshToken, base64.encode(utf8.encode(refreshToken)), isRemember);
+  void setAccessToken(
+    String token,
+    String refreshToken, {
+    bool isRemember = false,
+  }) {
+    _setItem(
+      CredentialKey.accessToken,
+      base64.encode(utf8.encode(token)),
+      isRemember,
+    );
+    _setItem(
+      CredentialKey.refreshToken,
+      base64.encode(utf8.encode(refreshToken)),
+      isRemember,
+    );
   }
 
   void clearAccessToken() {
@@ -159,5 +182,12 @@ class CredentialService {
         throw Exception('Illegal base64url string!"');
     }
     return utf8.decode(base64Decode(output));
+  }
+
+  List<String> _parseRoles(dynamic rolesData) {
+    if (rolesData == null) return [];
+    if (rolesData is String) return [rolesData];
+    if (rolesData is Iterable) return List<String>.from(rolesData);
+    return [];
   }
 }

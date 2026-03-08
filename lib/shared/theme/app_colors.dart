@@ -12,6 +12,10 @@ class AppColors {
   static const Color textLight = Color(0xFF6B7280); // Chữ xám nhạt
   static const Color textHint = Color(0xFF9CA3AF);
 
+  static const Color success = Color(0xFF10B981); // emerald-500
+  static const Color warning = Color(0xFFF59E0B); // amber-500
+  static const Color info = Color(0xFF3B82F6); // blue-500
+
   static const Color background = Colors.white;
   static const Color border = Color(0xFFE5E7EB); // Viền xám nhạt
 }
