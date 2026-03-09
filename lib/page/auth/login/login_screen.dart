@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:prm_project/shared/widgets/buttons/app_button.widget.dart';
-import 'package:prm_project/shared/widgets/fields/enums/field_size.enum.dart';
+import 'package:public_openapi/public_openapi.dart';
 import '../../../core/auth/auth.service.dart';
 import '../../../services/api_service.dart';
 import '../../../shared/constants/validator.constant.dart';
@@ -54,16 +54,13 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (mounted) {
-        if (response != null) {
+        if (response is UserResponseApiSuccessResponse) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Đăng nhập thành công!')),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Đăng nhập thất bại: Sai thông tin đăng nhập'),
-              backgroundColor: AppColors.error,
-            ),
+            SnackBar(content: Text(response), backgroundColor: AppColors.error),
           );
         }
       }
@@ -71,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Đăng nhập thất bại: ${e.message}'),
+            content: Text('Đăng nhập không thành công!'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -218,12 +215,19 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             const SizedBox(width: 8),
-                            const Flexible(
-                              child: Text(
-                                'Ghi nhớ đăng nhập',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: AppColors.textDark,
+                            Flexible(
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _isRemember = !_isRemember;
+                                  });
+                                },
+                                child: const Text(
+                                  'Ghi nhớ đăng nhập',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: AppColors.textDark,
+                                  ),
                                 ),
                               ),
                             ),
@@ -348,11 +352,11 @@ class _LoginScreenState extends State<LoginScreen> {
     return Container(
       padding: const EdgeInsets.all(2),
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: Colors.transparent,
         shape: BoxShape.circle,
       ),
       child: Image.network(
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png',
+        'https://lh3.googleusercontent.com/COxitqgJr1sJnIDe8-jiKhxDx1FrYbtRHKJ9z_hELisAlapwE9LUPh6fcXIfb5vwpbMl4xl9H9TRFPc5NOO8Sb3VSgIBrfRYvW6cUA',
         height: 20,
         width: 20,
       ),

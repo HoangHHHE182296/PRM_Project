@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:public_openapi/public_openapi.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:openapi/openapi.dart';
 import '../constants/credential.constant.dart';
 import '../models/credential.model.dart';
 
