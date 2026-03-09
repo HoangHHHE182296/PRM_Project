@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:prm_project/shared/widgets/buttons/app_button.widget.dart';
 import 'package:public_openapi/public_openapi.dart';
-import '../../../core/auth/auth.service.dart';
-import '../../../services/api_service.dart';
-import '../../../shared/constants/validator.constant.dart';
-import '../../../shared/theme/app_colors.dart';
-import '../../../shared/widgets/fields/app_password_input.widget.dart';
-import '../../../shared/widgets/fields/app_text_input.widget.dart';
+import 'package:prm_project/core/auth/auth.service.dart';
+import 'package:prm_project/services/api_service.dart';
+import 'package:prm_project/shared/constants/validator.constant.dart';
+import 'package:prm_project/shared/theme/app_colors.dart';
+import 'package:prm_project/shared/widgets/fields/app_password_input.widget.dart';
+import 'package:prm_project/shared/widgets/fields/app_text_input.widget.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -68,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Đăng nhập không thành công!'),
+            content: Text('Đăng nhập không thành công. Vui lòng thử lại!'),
             backgroundColor: AppColors.error,
           ),
         );

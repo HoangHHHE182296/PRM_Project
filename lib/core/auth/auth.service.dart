@@ -37,11 +37,18 @@ class AuthService {
 
       throw Exception();
     } on DioException catch (e) {
-      final error = e.response?.data?['error'];
+      final response = e.response?.data;
 
-      if (error != null && error['code'] == 'UNAUTHORIZED') {
-        return "Thông tin đăng nhập chưa chính xác";
-      }
+      try {
+        final res = standardSerializers.deserializeWith(
+          ApiFailureResponse.serializer,
+          response,
+        );
+
+        if (res?.error?.code == 'UNAUTHORIZED') {
+          return "Thông tin đăng nhập chưa chính xác!";
+        }
+      } catch (_) {}
       rethrow;
     }
   }
