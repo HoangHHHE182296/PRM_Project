@@ -1,5 +1,6 @@
-import 'package:openapi/openapi.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:public_openapi/public_openapi.dart';
 import 'credential.service.dart';
 
 class AuthService {
@@ -8,7 +9,7 @@ class AuthService {
 
   AuthService(this._authApi);
 
-  Future<LoginResponse?> login(
+  Future<dynamic> login(
     String email,
     String password, {
     bool isRemember = false,
@@ -33,9 +34,21 @@ class AuthService {
           return loginResponseWrapper.data;
         }
       }
-      return null;
-    } on DioException catch (_) {
-      // Handle Dio exception properly based on your app's error handling
+
+      throw Exception();
+    } on DioException catch (e) {
+      final response = e.response?.data;
+
+      try {
+        final res = standardSerializers.deserializeWith(
+          ApiFailureResponse.serializer,
+          response,
+        );
+
+        if (res?.error?.code == 'UNAUTHORIZED') {
+          return "Thông tin đăng nhập chưa chính xác!";
+        }
+      } catch (_) {}
       rethrow;
     }
   }

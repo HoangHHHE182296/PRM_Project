@@ -36,8 +36,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   dio: ^5.7.0
   built_value: ^8.12.4
-  openapi:
-    path: ./api
+  public_openapi:
+    path: ./api/public
   shared_preferences: ^2.5.4
   google_fonts: ^8.0.2
 

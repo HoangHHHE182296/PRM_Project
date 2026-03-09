@@ -1,6 +1,8 @@
 import 'package:prm_project/environments/environment.dart';
-import 'package:openapi/openapi.dart';
+import 'package:public_openapi/public_openapi.dart';
 
 class ApiService {
-  static final Openapi client = Openapi(basePathOverride: Environment.apiUrl);
+  static final PublicOpenapi client = PublicOpenapi(
+    basePathOverride: Environment.apiUrl,
+  );
 }
