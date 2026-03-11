@@ -54,7 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (mounted) {
-        if (response is UserResponseApiSuccessResponse) {
+        if (response is LoginResponse) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Đăng nhập thành công!')),
           );
