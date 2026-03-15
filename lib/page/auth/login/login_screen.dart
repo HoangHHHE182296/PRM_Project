@@ -8,6 +8,7 @@ import 'package:prm_project/shared/constants/validator.constant.dart';
 import 'package:prm_project/shared/theme/app_colors.dart';
 import 'package:prm_project/shared/widgets/fields/app_password_input.widget.dart';
 import 'package:prm_project/shared/widgets/fields/app_text_input.widget.dart';
+import 'package:prm_project/page/auth/register/register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -322,7 +323,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const RegisterScreen(),
+                            ),
+                          );
+                        },
                         style: TextButton.styleFrom(
                           padding: EdgeInsets.zero,
                           minimumSize: Size.zero,
