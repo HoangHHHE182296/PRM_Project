@@ -3,6 +3,7 @@ import 'package:prm_project/shared/theme/app_colors.dart';
 import 'package:prm_project/shared/widgets/buttons/app_button.widget.dart';
 import 'package:prm_project/shared/widgets/fields/app_text_input.widget.dart';
 import 'package:prm_project/shared/widgets/fields/app_password_input.widget.dart';
+import 'package:prm_project/shared/widgets/fields/app_date_picker.widget.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -170,30 +171,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 16),
 
                 /// NGÀY SINH
-                GestureDetector(
-                  onTap: _pickDate,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                      horizontal: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.border),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          _birthDate == null
-                              ? "Chọn ngày sinh của bạn"
-                              : _formatDate(_birthDate!),
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                        const Icon(Icons.calendar_today_outlined),
-                      ],
-                    ),
-                  ),
+                AppDatePickerWidget(
+                  label: "Ngày sinh",
+                  hint: "Chọn ngày sinh của bạn",
+                  value: _birthDate,
+                  isRequired: true,
+                  onChanged: (date) {
+                    setState(() {
+                      _birthDate = date;
+                    });
+                  },
                 ),
 
                 const SizedBox(height: 16),
