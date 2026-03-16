@@ -176,13 +176,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   hint: "Chọn ngày sinh của bạn",
                   value: _birthDate,
                   isRequired: true,
+
+                  minDate: DateTime(2000),
+                  maxDate: DateTime.now(),
                   onChanged: (date) {
                     setState(() {
                       _birthDate = date;
                     });
                   },
                 ),
-
                 const SizedBox(height: 16),
 
                 /// GIỚI TÍNH

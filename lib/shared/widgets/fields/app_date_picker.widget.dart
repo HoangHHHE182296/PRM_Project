@@ -7,7 +7,8 @@ class AppDatePickerWidget extends StatelessWidget {
   final DateTime? value;
   final Function(DateTime) onChanged;
   final bool isRequired;
-
+  final DateTime? minDate;
+  final DateTime? maxDate;
   const AppDatePickerWidget({
     super.key,
     required this.label,
@@ -15,14 +16,16 @@ class AppDatePickerWidget extends StatelessWidget {
     required this.value,
     required this.onChanged,
     this.isRequired = false,
+    this.minDate,
+    this.maxDate,
   });
 
   Future<void> _selectDate(BuildContext context) async {
     final picked = await showDatePicker(
       context: context,
       initialDate: value ?? DateTime(2000),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
+      firstDate: minDate ?? DateTime(1900),
+      lastDate: maxDate ?? DateTime.now(),
     );
 
     if (picked != null) {
