@@ -4,6 +4,10 @@ import 'package:prm_project/shared/widgets/buttons/app_button.widget.dart';
 import 'package:prm_project/shared/widgets/fields/app_text_input.widget.dart';
 import 'package:prm_project/shared/widgets/fields/app_password_input.widget.dart';
 import 'package:prm_project/shared/widgets/fields/app_date_picker.widget.dart';
+import 'package:prm_project/core/auth/auth.service.dart';
+import 'package:prm_project/services/api_service.dart';
+import 'package:public_openapi/public_openapi.dart';
+import 'package:dio/dio.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -27,6 +31,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String _gender = "male";
   bool _isAgree = false;
   bool _isLoading = false;
+
+  late final AuthService _authService;
+  @override
+  void initState() {
+    super.initState();
+    _authService = AuthService(ApiService.client.getAuthApi());
+  }
 
   @override
   void dispose() {
@@ -68,17 +79,52 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _isLoading = true;
     });
 
-    await Future.delayed(const Duration(seconds: 1));
+    try {
+      final command = RegisterCommand(
+        (b) => b
+          ..firstName = _firstNameController.text
+          ..lastName = _lastNameController.text
+          ..email = _emailController.text
+          ..password = _passwordController.text
+          ..phone = _phoneController.text
+          ..gender = _gender
+          ..dateOfBirth = _birthDate == null
+              ? null
+              : Date(_birthDate!.year, _birthDate!.month, _birthDate!.day),
+      );
 
-    if (mounted) {
+      final user = await _authService.register(command);
+
+      if (user != null) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Đăng ký thành công")));
+
+        Navigator.pop(context, "Register success!!!");
+      }
+    } catch (e) {
+      String message = "Đăng ký thất bại";
+
+      if (e is DioException) {
+        final data = e.response?.data;
+
+        if (data != null) {
+          if (data is Map) {
+            message =
+                data["error"]?["description"] ?? data["message"] ?? message;
+          }
+        }
+      }
+
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text("Đăng ký thành công")));
+      ).showSnackBar(SnackBar(content: Text(message)));
     }
-
-    setState(() {
-      _isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   String _formatDate(DateTime date) {
@@ -176,7 +222,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   hint: "Chọn ngày sinh của bạn",
                   value: _birthDate,
                   isRequired: true,
-
+                  
                   minDate: DateTime(2000),
                   maxDate: DateTime.now(),
                   onChanged: (date) {

@@ -58,7 +58,8 @@ class AppDatePickerWidget extends StatelessWidget {
         GestureDetector(
           onTap: () => _selectDate(context),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+            height: 48, // giống TextField
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: AppColors.border),
@@ -68,9 +69,12 @@ class AppDatePickerWidget extends StatelessWidget {
               children: [
                 Text(
                   value == null ? hint : _formatDate(value!),
-                  style: const TextStyle(fontSize: 14),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: value == null ? Colors.grey : Colors.black,
+                  ),
                 ),
-                const Icon(Icons.calendar_today_outlined),
+                const Icon(Icons.calendar_today_outlined, size: 20),
               ],
             ),
           ),
