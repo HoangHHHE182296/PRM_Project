@@ -30,7 +30,8 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _authService = AuthService(ApiService.client.getAuthApi());
+    _authService = AuthService(ApiService.client.getAuthApi(),
+    ApiService.client.getAccountApi(), );
   }
 
   @override
