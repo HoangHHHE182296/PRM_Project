@@ -1,10 +1,11 @@
-import 'regex.constant.dart';
+import '../constants/regex_constant.dart';
 
-class ValidatorConstant {
+class ValidatorUtils {
   static bool isValidEmail(String email) {
     return RegexConstant.email.hasMatch(email);
   }
- // Validate Số điện thoại
+
+  // Validate Số điện thoại
   static bool isValidPhone(String phone) {
     return RegexConstant.phone.hasMatch(phone);
   }

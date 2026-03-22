@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:public_openapi/public_openapi.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../constants/credential.constant.dart';
-import '../models/credential.model.dart';
+import '../constants/credential_constant.dart';
+import '../models/credential.dart';
 
 class CredentialService {
   static final CredentialService _instance = CredentialService._internal();
@@ -33,7 +33,11 @@ class CredentialService {
   }
 
   String? _getItem(String key) {
-    return _prefs.getString(key) ?? _sessionStorage[key];
+    try {
+      return _prefs.getString(key) ?? _sessionStorage[key];
+    } catch (e) {
+      return _sessionStorage[key];
+    }
   }
 
   void _removeItem(String key) {
