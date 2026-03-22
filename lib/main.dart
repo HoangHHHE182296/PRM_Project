@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'core/auth/credential.service.dart';
 import 'page/auth/login/login_screen.dart';
+import 'page/products/product_list_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,13 +35,14 @@ class MyApp extends StatelessWidget {
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        textTheme: GoogleFonts.interTextTheme(
-          Theme.of(context).textTheme,
-        ),
+        textTheme: GoogleFonts.interTextTheme(Theme.of(context).textTheme),
       ),
-      home: CredentialService().isAuthenticated 
-          ? const MyHomePage(title: 'Flutter Demo Home Page') 
-          : const LoginScreen(),
+      home: StreamBuilder(
+        stream: CredentialService().userLoggedInfo$,
+        builder: (context, snapshot) {
+          return CredentialService().isAuthenticated ? const MyHomePage(title: 'Flutter Demo Home Page') : const LoginScreen();
+        },
+      ),
     );
   }
 }
@@ -94,6 +96,16 @@ class _MyHomePageState extends State<MyHomePage> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+        actions: [
+          // temporary logout button
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              CredentialService().clearAccessToken();
+            },
+            tooltip: 'Đăng xuất',
+          ),
+        ],
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
@@ -115,18 +127,20 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: .center,
           children: [
             const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            Text('$_counter', style: Theme.of(context).textTheme.headlineMedium),
+            const SizedBox(height: 32),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const ProductListScreen()));
+              },
+              icon: const Icon(Icons.shopping_bag_outlined),
+              label: const Text('Xem danh sách sản phẩm'),
+              style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12)),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: FloatingActionButton(onPressed: _incrementCounter, tooltip: 'Increment', child: const Icon(Icons.add)),
     );
   }
 }
