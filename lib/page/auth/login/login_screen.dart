@@ -9,6 +9,7 @@ import 'package:prm_project/shared/theme/app_colors.dart';
 import 'package:prm_project/shared/widgets/fields/app_password_input.widget.dart';
 import 'package:prm_project/shared/widgets/fields/app_text_input.widget.dart';
 import 'package:prm_project/page/auth/register/register_screen.dart';
+import 'package:prm_project/main.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -30,8 +31,10 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _authService = AuthService(ApiService.client.getAuthApi(),
-    ApiService.client.getAccountApi(), );
+    _authService = AuthService(
+      ApiService.client.getAuthApi(),
+      ApiService.client.getAccountApi(),
+    );
   }
 
   @override
@@ -60,6 +63,9 @@ class _LoginScreenState extends State<LoginScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Đăng nhập thành công!')),
           );
+          Navigator.of(
+            context,
+          ).pushNamedAndRemoveUntil(MyApp.homeRoute, (route) => false);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(response), backgroundColor: AppColors.error),

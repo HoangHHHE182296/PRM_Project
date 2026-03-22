@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'core/auth/credential.service.dart';
 import 'page/auth/login/login_screen.dart';
+import 'page/profile/profile_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,6 +12,8 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
+  static const String homeRoute = '/home';
 
   // This widget is the root of your application.
   @override
@@ -34,12 +37,13 @@ class MyApp extends StatelessWidget {
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        textTheme: GoogleFonts.interTextTheme(
-          Theme.of(context).textTheme,
-        ),
+        textTheme: GoogleFonts.interTextTheme(Theme.of(context).textTheme),
       ),
-      home: CredentialService().isAuthenticated 
-          ? const MyHomePage(title: 'Flutter Demo Home Page') 
+      routes: {
+        homeRoute: (_) => const MyHomePage(title: 'Flutter Demo Home Page'),
+      },
+      home: CredentialService().isAuthenticated
+          ? const MyHomePage(title: 'Flutter Demo Home Page')
           : const LoginScreen(),
     );
   }
@@ -65,6 +69,14 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+
+  void _logout() {
+    CredentialService().clearAccessToken();
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+      (route) => false,
+    );
+  }
 
   void _incrementCounter() {
     setState(() {
@@ -94,6 +106,22 @@ class _MyHomePageState extends State<MyHomePage> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+        actions: [
+          IconButton(
+            tooltip: 'Profile',
+            icon: const Icon(Icons.person_outline),
+            onPressed: () {
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => const ProfileScreen()));
+            },
+          ),
+          IconButton(
+            tooltip: 'Logout',
+            icon: const Icon(Icons.logout),
+            onPressed: _logout,
+          ),
+        ],
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
