@@ -15,13 +15,15 @@ class _$StringApiSuccessResponse extends StringApiSuccessResponse {
   final int? statusCode;
   @override
   final String? data;
+  @override
+  final JsonObject? metadata;
 
   factory _$StringApiSuccessResponse(
           [void Function(StringApiSuccessResponseBuilder)? updates]) =>
       (StringApiSuccessResponseBuilder()..update(updates))._build();
 
   _$StringApiSuccessResponse._(
-      {this.success, this.message, this.statusCode, this.data})
+      {this.success, this.message, this.statusCode, this.data, this.metadata})
       : super._();
   @override
   StringApiSuccessResponse rebuild(
@@ -39,7 +41,8 @@ class _$StringApiSuccessResponse extends StringApiSuccessResponse {
         success == other.success &&
         message == other.message &&
         statusCode == other.statusCode &&
-        data == other.data;
+        data == other.data &&
+        metadata == other.metadata;
   }
 
   @override
@@ -49,6 +52,7 @@ class _$StringApiSuccessResponse extends StringApiSuccessResponse {
     _$hash = $jc(_$hash, message.hashCode);
     _$hash = $jc(_$hash, statusCode.hashCode);
     _$hash = $jc(_$hash, data.hashCode);
+    _$hash = $jc(_$hash, metadata.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -59,7 +63,8 @@ class _$StringApiSuccessResponse extends StringApiSuccessResponse {
           ..add('success', success)
           ..add('message', message)
           ..add('statusCode', statusCode)
-          ..add('data', data))
+          ..add('data', data)
+          ..add('metadata', metadata))
         .toString();
   }
 }
@@ -85,6 +90,10 @@ class StringApiSuccessResponseBuilder
   String? get data => _$this._data;
   set data(String? data) => _$this._data = data;
 
+  JsonObject? _metadata;
+  JsonObject? get metadata => _$this._metadata;
+  set metadata(JsonObject? metadata) => _$this._metadata = metadata;
+
   StringApiSuccessResponseBuilder() {
     StringApiSuccessResponse._defaults(this);
   }
@@ -96,6 +105,7 @@ class StringApiSuccessResponseBuilder
       _message = $v.message;
       _statusCode = $v.statusCode;
       _data = $v.data;
+      _metadata = $v.metadata;
       _$v = null;
     }
     return this;
@@ -121,6 +131,7 @@ class StringApiSuccessResponseBuilder
           message: message,
           statusCode: statusCode,
           data: data,
+          metadata: metadata,
         );
     replace(_$result);
     return _$result;

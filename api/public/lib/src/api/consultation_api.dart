@@ -9,9 +9,10 @@ import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 
 import 'package:public_openapi/src/model/ai_recommendation_response_api_success_response.dart';
-import 'package:public_openapi/src/model/consultation_chat_request.dart';
+import 'package:public_openapi/src/model/api_failure_response.dart';
 import 'package:public_openapi/src/model/guid_api_success_response.dart';
-import 'package:public_openapi/src/model/start_consultation_request.dart';
+import 'package:public_openapi/src/model/send_consultation_message_command.dart';
+import 'package:public_openapi/src/model/start_consultation_command.dart';
 
 class ConsultationApi {
 
@@ -25,7 +26,7 @@ class ConsultationApi {
   /// 
   ///
   /// Parameters:
-  /// * [consultationChatRequest] 
+  /// * [sendConsultationMessageCommand] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -36,7 +37,7 @@ class ConsultationApi {
   /// Returns a [Future] containing a [Response] with a [AiRecommendationResponseApiSuccessResponse] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<AiRecommendationResponseApiSuccessResponse>> apiConsultationChatPost({ 
-    ConsultationChatRequest? consultationChatRequest,
+    SendConsultationMessageCommand? sendConsultationMessageCommand,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -51,7 +52,13 @@ class ConsultationApi {
         ...?headers,
       },
       extra: <String, dynamic>{
-        'secure': <Map<String, String>>[],
+        'secure': <Map<String, String>>[
+          {
+            'type': 'http',
+            'scheme': 'Bearer',
+            'name': 'Bearer',
+          },
+        ],
         ...?extra,
       },
       contentType: 'application/json',
@@ -61,8 +68,8 @@ class ConsultationApi {
     dynamic _bodyData;
 
     try {
-      const _type = FullType(ConsultationChatRequest);
-      _bodyData = consultationChatRequest == null ? null : _serializers.serialize(consultationChatRequest, specifiedType: _type);
+      const _type = FullType(SendConsultationMessageCommand);
+      _bodyData = sendConsultationMessageCommand == null ? null : _serializers.serialize(sendConsultationMessageCommand, specifiedType: _type);
 
     } catch(error, stackTrace) {
       throw DioException(
@@ -120,7 +127,7 @@ class ConsultationApi {
   /// 
   ///
   /// Parameters:
-  /// * [startConsultationRequest] 
+  /// * [startConsultationCommand] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -131,7 +138,7 @@ class ConsultationApi {
   /// Returns a [Future] containing a [Response] with a [GuidApiSuccessResponse] as data
   /// Throws [DioException] if API call or serialization fails
   Future<Response<GuidApiSuccessResponse>> apiConsultationStartPost({ 
-    StartConsultationRequest? startConsultationRequest,
+    StartConsultationCommand? startConsultationCommand,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -146,7 +153,13 @@ class ConsultationApi {
         ...?headers,
       },
       extra: <String, dynamic>{
-        'secure': <Map<String, String>>[],
+        'secure': <Map<String, String>>[
+          {
+            'type': 'http',
+            'scheme': 'Bearer',
+            'name': 'Bearer',
+          },
+        ],
         ...?extra,
       },
       contentType: 'application/json',
@@ -156,8 +169,8 @@ class ConsultationApi {
     dynamic _bodyData;
 
     try {
-      const _type = FullType(StartConsultationRequest);
-      _bodyData = startConsultationRequest == null ? null : _serializers.serialize(startConsultationRequest, specifiedType: _type);
+      const _type = FullType(StartConsultationCommand);
+      _bodyData = startConsultationCommand == null ? null : _serializers.serialize(startConsultationCommand, specifiedType: _type);
 
     } catch(error, stackTrace) {
       throw DioException(

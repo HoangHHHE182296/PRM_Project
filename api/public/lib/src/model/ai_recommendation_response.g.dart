@@ -10,13 +10,13 @@ class _$AiRecommendationResponse extends AiRecommendationResponse {
   @override
   final String? message;
   @override
-  final BuiltList<RecommendedBoxDto>? recommendedBoxes;
+  final BuiltList<RecommendedGiftSet>? recommendedGiftSets;
 
   factory _$AiRecommendationResponse(
           [void Function(AiRecommendationResponseBuilder)? updates]) =>
       (AiRecommendationResponseBuilder()..update(updates))._build();
 
-  _$AiRecommendationResponse._({this.message, this.recommendedBoxes})
+  _$AiRecommendationResponse._({this.message, this.recommendedGiftSets})
       : super._();
   @override
   AiRecommendationResponse rebuild(
@@ -32,14 +32,14 @@ class _$AiRecommendationResponse extends AiRecommendationResponse {
     if (identical(other, this)) return true;
     return other is AiRecommendationResponse &&
         message == other.message &&
-        recommendedBoxes == other.recommendedBoxes;
+        recommendedGiftSets == other.recommendedGiftSets;
   }
 
   @override
   int get hashCode {
     var _$hash = 0;
     _$hash = $jc(_$hash, message.hashCode);
-    _$hash = $jc(_$hash, recommendedBoxes.hashCode);
+    _$hash = $jc(_$hash, recommendedGiftSets.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -48,7 +48,7 @@ class _$AiRecommendationResponse extends AiRecommendationResponse {
   String toString() {
     return (newBuiltValueToStringHelper(r'AiRecommendationResponse')
           ..add('message', message)
-          ..add('recommendedBoxes', recommendedBoxes))
+          ..add('recommendedGiftSets', recommendedGiftSets))
         .toString();
   }
 }
@@ -62,11 +62,12 @@ class AiRecommendationResponseBuilder
   String? get message => _$this._message;
   set message(String? message) => _$this._message = message;
 
-  ListBuilder<RecommendedBoxDto>? _recommendedBoxes;
-  ListBuilder<RecommendedBoxDto> get recommendedBoxes =>
-      _$this._recommendedBoxes ??= ListBuilder<RecommendedBoxDto>();
-  set recommendedBoxes(ListBuilder<RecommendedBoxDto>? recommendedBoxes) =>
-      _$this._recommendedBoxes = recommendedBoxes;
+  ListBuilder<RecommendedGiftSet>? _recommendedGiftSets;
+  ListBuilder<RecommendedGiftSet> get recommendedGiftSets =>
+      _$this._recommendedGiftSets ??= ListBuilder<RecommendedGiftSet>();
+  set recommendedGiftSets(
+          ListBuilder<RecommendedGiftSet>? recommendedGiftSets) =>
+      _$this._recommendedGiftSets = recommendedGiftSets;
 
   AiRecommendationResponseBuilder() {
     AiRecommendationResponse._defaults(this);
@@ -76,7 +77,7 @@ class AiRecommendationResponseBuilder
     final $v = _$v;
     if ($v != null) {
       _message = $v.message;
-      _recommendedBoxes = $v.recommendedBoxes?.toBuilder();
+      _recommendedGiftSets = $v.recommendedGiftSets?.toBuilder();
       _$v = null;
     }
     return this;
@@ -101,13 +102,13 @@ class AiRecommendationResponseBuilder
       _$result = _$v ??
           _$AiRecommendationResponse._(
             message: message,
-            recommendedBoxes: _recommendedBoxes?.build(),
+            recommendedGiftSets: _recommendedGiftSets?.build(),
           );
     } catch (_) {
       late String _$failedField;
       try {
-        _$failedField = 'recommendedBoxes';
-        _recommendedBoxes?.build();
+        _$failedField = 'recommendedGiftSets';
+        _recommendedGiftSets?.build();
       } catch (e) {
         throw BuiltValueNestedFieldError(
             r'AiRecommendationResponse', _$failedField, e.toString());

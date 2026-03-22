@@ -3,8 +3,8 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:public_openapi/src/model/recommended_box_dto.dart';
 import 'package:built_collection/built_collection.dart';
+import 'package:public_openapi/src/model/recommended_gift_set.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -14,14 +14,14 @@ part 'ai_recommendation_response.g.dart';
 ///
 /// Properties:
 /// * [message] 
-/// * [recommendedBoxes] 
+/// * [recommendedGiftSets] 
 @BuiltValue()
 abstract class AiRecommendationResponse implements Built<AiRecommendationResponse, AiRecommendationResponseBuilder> {
   @BuiltValueField(wireName: r'message')
   String? get message;
 
-  @BuiltValueField(wireName: r'recommendedBoxes')
-  BuiltList<RecommendedBoxDto>? get recommendedBoxes;
+  @BuiltValueField(wireName: r'recommendedGiftSets')
+  BuiltList<RecommendedGiftSet>? get recommendedGiftSets;
 
   AiRecommendationResponse._();
 
@@ -53,11 +53,11 @@ class _$AiRecommendationResponseSerializer implements PrimitiveSerializer<AiReco
         specifiedType: const FullType.nullable(String),
       );
     }
-    if (object.recommendedBoxes != null) {
-      yield r'recommendedBoxes';
+    if (object.recommendedGiftSets != null) {
+      yield r'recommendedGiftSets';
       yield serializers.serialize(
-        object.recommendedBoxes,
-        specifiedType: const FullType.nullable(BuiltList, [FullType(RecommendedBoxDto)]),
+        object.recommendedGiftSets,
+        specifiedType: const FullType.nullable(BuiltList, [FullType(RecommendedGiftSet)]),
       );
     }
   }
@@ -91,13 +91,13 @@ class _$AiRecommendationResponseSerializer implements PrimitiveSerializer<AiReco
           if (valueDes == null) continue;
           result.message = valueDes;
           break;
-        case r'recommendedBoxes':
+        case r'recommendedGiftSets':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(BuiltList, [FullType(RecommendedBoxDto)]),
-          ) as BuiltList<RecommendedBoxDto>?;
+            specifiedType: const FullType.nullable(BuiltList, [FullType(RecommendedGiftSet)]),
+          ) as BuiltList<RecommendedGiftSet>?;
           if (valueDes == null) continue;
-          result.recommendedBoxes.replace(valueDes);
+          result.recommendedGiftSets.replace(valueDes);
           break;
         default:
           unhandled.add(key);

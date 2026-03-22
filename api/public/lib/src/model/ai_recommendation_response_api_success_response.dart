@@ -4,6 +4,7 @@
 
 // ignore_for_file: unused_element
 import 'package:public_openapi/src/model/ai_recommendation_response.dart';
+import 'package:built_value/json_object.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -16,6 +17,7 @@ part 'ai_recommendation_response_api_success_response.g.dart';
 /// * [message] 
 /// * [statusCode] 
 /// * [data] 
+/// * [metadata] 
 @BuiltValue()
 abstract class AiRecommendationResponseApiSuccessResponse implements Built<AiRecommendationResponseApiSuccessResponse, AiRecommendationResponseApiSuccessResponseBuilder> {
   @BuiltValueField(wireName: r'success')
@@ -29,6 +31,9 @@ abstract class AiRecommendationResponseApiSuccessResponse implements Built<AiRec
 
   @BuiltValueField(wireName: r'data')
   AiRecommendationResponse? get data;
+
+  @BuiltValueField(wireName: r'metadata')
+  JsonObject? get metadata;
 
   AiRecommendationResponseApiSuccessResponse._();
 
@@ -79,6 +84,13 @@ class _$AiRecommendationResponseApiSuccessResponseSerializer implements Primitiv
       yield serializers.serialize(
         object.data,
         specifiedType: const FullType(AiRecommendationResponse),
+      );
+    }
+    if (object.metadata != null) {
+      yield r'metadata';
+      yield serializers.serialize(
+        object.metadata,
+        specifiedType: const FullType.nullable(JsonObject),
       );
     }
   }
@@ -132,6 +144,14 @@ class _$AiRecommendationResponseApiSuccessResponseSerializer implements Primitiv
             specifiedType: const FullType(AiRecommendationResponse),
           ) as AiRecommendationResponse;
           result.data.replace(valueDes);
+          break;
+        case r'metadata':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(JsonObject),
+          ) as JsonObject?;
+          if (valueDes == null) continue;
+          result.metadata = valueDes;
           break;
         default:
           unhandled.add(key);

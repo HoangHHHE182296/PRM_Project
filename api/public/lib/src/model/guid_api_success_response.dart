@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:built_value/json_object.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -15,6 +16,7 @@ part 'guid_api_success_response.g.dart';
 /// * [message] 
 /// * [statusCode] 
 /// * [data] 
+/// * [metadata] 
 @BuiltValue()
 abstract class GuidApiSuccessResponse implements Built<GuidApiSuccessResponse, GuidApiSuccessResponseBuilder> {
   @BuiltValueField(wireName: r'success')
@@ -28,6 +30,9 @@ abstract class GuidApiSuccessResponse implements Built<GuidApiSuccessResponse, G
 
   @BuiltValueField(wireName: r'data')
   String? get data;
+
+  @BuiltValueField(wireName: r'metadata')
+  JsonObject? get metadata;
 
   GuidApiSuccessResponse._();
 
@@ -78,6 +83,13 @@ class _$GuidApiSuccessResponseSerializer implements PrimitiveSerializer<GuidApiS
       yield serializers.serialize(
         object.data,
         specifiedType: const FullType(String),
+      );
+    }
+    if (object.metadata != null) {
+      yield r'metadata';
+      yield serializers.serialize(
+        object.metadata,
+        specifiedType: const FullType.nullable(JsonObject),
       );
     }
   }
@@ -131,6 +143,14 @@ class _$GuidApiSuccessResponseSerializer implements PrimitiveSerializer<GuidApiS
             specifiedType: const FullType(String),
           ) as String;
           result.data = valueDes;
+          break;
+        case r'metadata':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(JsonObject),
+          ) as JsonObject?;
+          if (valueDes == null) continue;
+          result.metadata = valueDes;
           break;
         default:
           unhandled.add(key);
