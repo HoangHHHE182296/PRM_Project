@@ -1,14 +1,14 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:public_openapi/public_openapi.dart';
-import 'credential.service.dart';
+import 'credential_service.dart';
 import 'package:public_openapi/src/model/verify_account_command.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
   final AuthApi _authApi;
-  final CredentialService _credentialService = CredentialService();
+  final CredentialService _credentialService;
   final AccountApi _accountApi;
-  AuthService(this._authApi, this._accountApi);
+  AuthService(this._authApi, this._credentialService, this._accountApi);
 
   Future<dynamic> login(
     String email,
@@ -74,25 +74,25 @@ class AuthService {
     }
   }
 
-Future<bool> generateOtp(String email) async {
-  try {
-    final command = GenerateOtpCommand((b) => b..email = email);
+  Future<bool> generateOtp(String email) async {
+    try {
+      final command = GenerateOtpCommand((b) => b..email = email);
 
-    final response = await _accountApi.apiAccountGenerateOtpPost(
-      generateOtpCommand: command,
-    );
+      final response = await _accountApi.apiAccountGenerateOtpPost(
+        generateOtpCommand: command,
+      );
 
-    return response.data?.success ?? false;
-  } on DioException catch (e) {
-    print("DIO ERROR TYPE: ${e.type}");
+      return response.data?.success ?? false;
+    } on DioException catch (e) {
+      print("DIO ERROR TYPE: ${e.type}");
 
-    if (e.type == DioExceptionType.cancel) {
-      print("👉 Request bị CANCEL");
+      if (e.type == DioExceptionType.cancel) {
+        print("👉 Request bị CANCEL");
+      }
+
+      return false;
     }
-
-    return false;
   }
-}
   // prm_project/core/auth/auth.service.dart
 
   Future<bool> verifyAccount(String email, String otp) async {
@@ -106,15 +106,44 @@ Future<bool> generateOtp(String email) async {
 
       // Gọi đúng hàm apiAccountVerifyAccountPost
       final response = await _accountApi.apiAccountVerifyAccountPost(
-        
         verifyAccountCommand: command,
       );
 
       // Kiểm tra kết quả trả về từ BooleanApiSuccessResponse
       return response.data?.success ?? false;
     } catch (e) {
-      // Bạn có thể log lỗi ở đây để debug nếu cần
-      print("Verify Error: $e");
+      return false;
+    }
+  }
+
+  Future<bool> refreshToken() async {
+    try {
+      final credentials = _credentialService.credential;
+      if (credentials != null && credentials['refreshToken'] != null) {
+        final command = RefreshTokenCommand(
+          (b) => b..refreshToken = credentials['refreshToken'],
+        );
+
+        final response = await _authApi.apiAuthRefreshTokenPost(
+          refreshTokenCommand: command,
+        );
+
+        if (response.statusCode == 200 && response.data != null) {
+          final responseData = response.data;
+          if (responseData?.success == true && responseData?.data != null) {
+            final prefs = await SharedPreferences.getInstance();
+            final isRemember = prefs.getString('USER_INFO') != null;
+
+            _credentialService.setCredential(
+              responseData!.data,
+              isRemember: isRemember,
+            );
+            return true;
+          }
+        }
+      }
+      return false;
+    } catch (e) {
       return false;
     }
   }

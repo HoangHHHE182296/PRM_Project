@@ -40,6 +40,9 @@ dependencies:
     path: ./api/public
   shared_preferences: ^2.5.4
   google_fonts: ^8.0.2
+  get_it: ^8.0.2
+  flutter_bloc: ^9.1.1
+  go_router: ^17.1.0
 
 dev_dependencies:
   flutter_test:
