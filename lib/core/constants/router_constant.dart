@@ -23,4 +23,18 @@ class RouterConst {
     router: '/',
     protected: true,
   );
+
+  static const gifts = RouterItem(
+    title: 'Quà tặng',
+    path: 'gifts',
+    router: '/gifts',
+    protected: true,
+  );
+
+  static const profile = RouterItem(
+    title: 'Hồ sơ',
+    path: 'profile',
+    router: '/profile',
+    protected: true,
+  );
 }

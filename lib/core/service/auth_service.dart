@@ -2,6 +2,11 @@ import 'package:dio/dio.dart';
 import 'package:public_openapi/public_openapi.dart';
 import 'credential_service.dart';
 import 'package:public_openapi/src/model/verify_account_command.dart';
+import 'package:public_openapi/src/model/set_password_command.dart';
+import 'package:public_openapi/src/model/change_password_command.dart';
+import 'package:public_openapi/src/model/update_profile_command.dart';
+import 'package:public_openapi/src/model/profile_response_api_success_response.dart';
+import 'package:public_openapi/src/model/date.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
@@ -95,6 +100,29 @@ class AuthService {
   }
   // prm_project/core/auth/auth.service.dart
 
+  Future<ProfileResponseApiSuccessResponse?> getProfile() async {
+    try {
+      final response = await _accountApi.apiAccountProfileGet();
+      if (response.statusCode == 200) {
+        return response.data;
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<bool> updateProfile(UpdateProfileCommand command) async {
+    try {
+      final response = await _accountApi.apiAccountProfilePut(
+        updateProfileCommand: command,
+      );
+      return response.data?.success ?? false;
+    } catch (e) {
+      return false;
+    }
+  }
+
   Future<bool> verifyAccount(String email, String otp) async {
     try {
       // Sử dụng VerifyAccountCommand theo đúng file AccountApi cung cấp
@@ -110,6 +138,36 @@ class AuthService {
       );
 
       // Kiểm tra kết quả trả về từ BooleanApiSuccessResponse
+      return response.data?.success ?? false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> setPassword(String newPassword) async {
+    try {
+      final command = SetPasswordCommand(
+        (b) => b..newPassword = newPassword,
+      );
+      final response = await _accountApi.apiAccountPasswordSetPost(
+        setPasswordCommand: command,
+      );
+      return response.data?.success ?? false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> changePassword(String currentPassword, String newPassword) async {
+    try {
+      final command = ChangePasswordCommand(
+        (b) => b
+          ..currentPassword = currentPassword
+          ..newPassword = newPassword,
+      );
+      final response = await _accountApi.apiAccountPasswordChangePut(
+        changePasswordCommand: command,
+      );
       return response.data?.success ?? false;
     } catch (e) {
       return false;
