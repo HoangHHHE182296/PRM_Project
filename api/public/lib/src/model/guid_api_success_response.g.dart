@@ -15,13 +15,15 @@ class _$GuidApiSuccessResponse extends GuidApiSuccessResponse {
   final int? statusCode;
   @override
   final String? data;
+  @override
+  final JsonObject? metadata;
 
   factory _$GuidApiSuccessResponse(
           [void Function(GuidApiSuccessResponseBuilder)? updates]) =>
       (GuidApiSuccessResponseBuilder()..update(updates))._build();
 
   _$GuidApiSuccessResponse._(
-      {this.success, this.message, this.statusCode, this.data})
+      {this.success, this.message, this.statusCode, this.data, this.metadata})
       : super._();
   @override
   GuidApiSuccessResponse rebuild(
@@ -39,7 +41,8 @@ class _$GuidApiSuccessResponse extends GuidApiSuccessResponse {
         success == other.success &&
         message == other.message &&
         statusCode == other.statusCode &&
-        data == other.data;
+        data == other.data &&
+        metadata == other.metadata;
   }
 
   @override
@@ -49,6 +52,7 @@ class _$GuidApiSuccessResponse extends GuidApiSuccessResponse {
     _$hash = $jc(_$hash, message.hashCode);
     _$hash = $jc(_$hash, statusCode.hashCode);
     _$hash = $jc(_$hash, data.hashCode);
+    _$hash = $jc(_$hash, metadata.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -59,7 +63,8 @@ class _$GuidApiSuccessResponse extends GuidApiSuccessResponse {
           ..add('success', success)
           ..add('message', message)
           ..add('statusCode', statusCode)
-          ..add('data', data))
+          ..add('data', data)
+          ..add('metadata', metadata))
         .toString();
   }
 }
@@ -84,6 +89,10 @@ class GuidApiSuccessResponseBuilder
   String? get data => _$this._data;
   set data(String? data) => _$this._data = data;
 
+  JsonObject? _metadata;
+  JsonObject? get metadata => _$this._metadata;
+  set metadata(JsonObject? metadata) => _$this._metadata = metadata;
+
   GuidApiSuccessResponseBuilder() {
     GuidApiSuccessResponse._defaults(this);
   }
@@ -95,6 +104,7 @@ class GuidApiSuccessResponseBuilder
       _message = $v.message;
       _statusCode = $v.statusCode;
       _data = $v.data;
+      _metadata = $v.metadata;
       _$v = null;
     }
     return this;
@@ -120,6 +130,7 @@ class GuidApiSuccessResponseBuilder
           message: message,
           statusCode: statusCode,
           data: data,
+          metadata: metadata,
         );
     replace(_$result);
     return _$result;

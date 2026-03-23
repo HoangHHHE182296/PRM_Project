@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:built_value/json_object.dart';
 import 'package:public_openapi/src/model/profile_response.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
@@ -16,6 +17,7 @@ part 'profile_response_api_success_response.g.dart';
 /// * [message] 
 /// * [statusCode] 
 /// * [data] 
+/// * [metadata] 
 @BuiltValue()
 abstract class ProfileResponseApiSuccessResponse implements Built<ProfileResponseApiSuccessResponse, ProfileResponseApiSuccessResponseBuilder> {
   @BuiltValueField(wireName: r'success')
@@ -29,6 +31,9 @@ abstract class ProfileResponseApiSuccessResponse implements Built<ProfileRespons
 
   @BuiltValueField(wireName: r'data')
   ProfileResponse? get data;
+
+  @BuiltValueField(wireName: r'metadata')
+  JsonObject? get metadata;
 
   ProfileResponseApiSuccessResponse._();
 
@@ -79,6 +84,13 @@ class _$ProfileResponseApiSuccessResponseSerializer implements PrimitiveSerializ
       yield serializers.serialize(
         object.data,
         specifiedType: const FullType(ProfileResponse),
+      );
+    }
+    if (object.metadata != null) {
+      yield r'metadata';
+      yield serializers.serialize(
+        object.metadata,
+        specifiedType: const FullType.nullable(JsonObject),
       );
     }
   }
@@ -132,6 +144,14 @@ class _$ProfileResponseApiSuccessResponseSerializer implements PrimitiveSerializ
             specifiedType: const FullType(ProfileResponse),
           ) as ProfileResponse;
           result.data.replace(valueDes);
+          break;
+        case r'metadata':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(JsonObject),
+          ) as JsonObject?;
+          if (valueDes == null) continue;
+          result.metadata = valueDes;
           break;
         default:
           unhandled.add(key);

@@ -76,13 +76,17 @@ Class | Method | HTTP request | Description
 [*AuthApi*](doc/AuthApi.md) | [**apiAuthLoginPost**](doc/AuthApi.md#apiauthloginpost) | **POST** /api/auth/login | 
 [*AuthApi*](doc/AuthApi.md) | [**apiAuthRefreshTokenPost**](doc/AuthApi.md#apiauthrefreshtokenpost) | **POST** /api/auth/refresh-token | 
 [*AuthApi*](doc/AuthApi.md) | [**apiAuthRegisterPost**](doc/AuthApi.md#apiauthregisterpost) | **POST** /api/auth/register | 
+[*CategoryApi*](doc/CategoryApi.md) | [**apiCategoriesGetCategoriesGroupedGet**](doc/CategoryApi.md#apicategoriesgetcategoriesgroupedget) | **GET** /api/categories/get-categories-grouped | 
 [*ConsultationApi*](doc/ConsultationApi.md) | [**apiConsultationChatPost**](doc/ConsultationApi.md#apiconsultationchatpost) | **POST** /api/consultation/chat | 
 [*ConsultationApi*](doc/ConsultationApi.md) | [**apiConsultationStartPost**](doc/ConsultationApi.md#apiconsultationstartpost) | **POST** /api/consultation/start | 
+[*HealthCheckApi*](doc/HealthCheckApi.md) | [**apiHealthCheckGet**](doc/HealthCheckApi.md#apihealthcheckget) | **GET** /api/health-check | 
 [*OrderApi*](doc/OrderApi.md) | [**apiOrderPost**](doc/OrderApi.md#apiorderpost) | **POST** /api/Order | 
 [*PaymentApi*](doc/PaymentApi.md) | [**apiPaymentCreatePaymentUrlPost**](doc/PaymentApi.md#apipaymentcreatepaymenturlpost) | **POST** /api/Payment/create-payment-url | 
 [*PaymentApi*](doc/PaymentApi.md) | [**apiPaymentPayosWebhookPost**](doc/PaymentApi.md#apipaymentpayoswebhookpost) | **POST** /api/Payment/payos-webhook | 
-[*PublicCategoryApi*](doc/PublicCategoryApi.md) | [**apiPublicCategoriesGet**](doc/PublicCategoryApi.md#apipubliccategoriesget) | **GET** /api/public/categories | 
-[*PublicProductApi*](doc/PublicProductApi.md) | [**apiPublicProductsGet**](doc/PublicProductApi.md#apipublicproductsget) | **GET** /api/public/products | 
+[*ProductApi*](doc/ProductApi.md) | [**apiProductsGetAvailableTagsCategoryIdGet**](doc/ProductApi.md#apiproductsgetavailabletagscategoryidget) | **GET** /api/products/get-available-tags/{categoryId} | 
+[*ProductApi*](doc/ProductApi.md) | [**apiProductsGetAvailableThemesGet**](doc/ProductApi.md#apiproductsgetavailablethemesget) | **GET** /api/products/get-available-themes | 
+[*ProductApi*](doc/ProductApi.md) | [**apiProductsGetPublicProductDetailIdGet**](doc/ProductApi.md#apiproductsgetpublicproductdetailidget) | **GET** /api/products/get-public-product-detail/{id} | 
+[*ProductApi*](doc/ProductApi.md) | [**apiProductsGetPublicProductListGet**](doc/ProductApi.md#apiproductsgetpublicproductlistget) | **GET** /api/products/get-public-product-list | 
 
 
 ## Documentation For Models
@@ -92,30 +96,40 @@ Class | Method | HTTP request | Description
  - [ApiErrorDetail](doc/ApiErrorDetail.md)
  - [ApiFailureResponse](doc/ApiFailureResponse.md)
  - [BooleanApiSuccessResponse](doc/BooleanApiSuccessResponse.md)
+ - [CategoryGroupResponse](doc/CategoryGroupResponse.md)
+ - [CategoryGroupResponseListApiSuccessResponse](doc/CategoryGroupResponseListApiSuccessResponse.md)
  - [CategorySummaryResponse](doc/CategorySummaryResponse.md)
- - [CategorySummaryResponseIEnumerableApiSuccessResponse](doc/CategorySummaryResponseIEnumerableApiSuccessResponse.md)
  - [ChangePasswordCommand](doc/ChangePasswordCommand.md)
- - [ConsultationChatRequest](doc/ConsultationChatRequest.md)
  - [CreateOrderItemRequest](doc/CreateOrderItemRequest.md)
  - [CreateOrderRequest](doc/CreateOrderRequest.md)
  - [CreatePayOsLinkCommand](doc/CreatePayOsLinkCommand.md)
  - [GenerateOtpCommand](doc/GenerateOtpCommand.md)
+ - [GiftBox](doc/GiftBox.md)
+ - [GiftItem](doc/GiftItem.md)
+ - [GiftSetIncludesResponse](doc/GiftSetIncludesResponse.md)
+ - [GiftSetItemResponse](doc/GiftSetItemResponse.md)
  - [GoogleLoginCommand](doc/GoogleLoginCommand.md)
  - [GuidApiSuccessResponse](doc/GuidApiSuccessResponse.md)
  - [LoginCommand](doc/LoginCommand.md)
  - [LoginResponse](doc/LoginResponse.md)
  - [LoginResponseApiSuccessResponse](doc/LoginResponseApiSuccessResponse.md)
- - [ProductResponse](doc/ProductResponse.md)
- - [ProductResponsePaginatedList](doc/ProductResponsePaginatedList.md)
- - [ProductResponsePaginatedListApiSuccessResponse](doc/ProductResponsePaginatedListApiSuccessResponse.md)
+ - [ProductDetailResponse](doc/ProductDetailResponse.md)
+ - [ProductDetailResponseApiSuccessResponse](doc/ProductDetailResponseApiSuccessResponse.md)
+ - [ProductListResponse](doc/ProductListResponse.md)
+ - [ProductListResponseIEnumerableApiSuccessResponse](doc/ProductListResponseIEnumerableApiSuccessResponse.md)
+ - [ProductType](doc/ProductType.md)
  - [ProfileResponse](doc/ProfileResponse.md)
  - [ProfileResponseApiSuccessResponse](doc/ProfileResponseApiSuccessResponse.md)
- - [RecommendedBoxDto](doc/RecommendedBoxDto.md)
+ - [RecommendedGiftSet](doc/RecommendedGiftSet.md)
  - [RefreshTokenCommand](doc/RefreshTokenCommand.md)
  - [RegisterCommand](doc/RegisterCommand.md)
+ - [SendConsultationMessageCommand](doc/SendConsultationMessageCommand.md)
  - [SetPasswordCommand](doc/SetPasswordCommand.md)
- - [StartConsultationRequest](doc/StartConsultationRequest.md)
+ - [StartConsultationCommand](doc/StartConsultationCommand.md)
  - [StringApiSuccessResponse](doc/StringApiSuccessResponse.md)
+ - [StringIEnumerableApiSuccessResponse](doc/StringIEnumerableApiSuccessResponse.md)
+ - [ThemeCollectionDto](doc/ThemeCollectionDto.md)
+ - [ThemeCollectionDtoIEnumerableApiSuccessResponse](doc/ThemeCollectionDtoIEnumerableApiSuccessResponse.md)
  - [UpdateProfileCommand](doc/UpdateProfileCommand.md)
  - [UserResponse](doc/UserResponse.md)
  - [UserResponseApiSuccessResponse](doc/UserResponseApiSuccessResponse.md)

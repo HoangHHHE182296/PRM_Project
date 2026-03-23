@@ -9,7 +9,7 @@ import 'package:public_openapi/api.dart';
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **message** | **String** |  | [optional] 
-**recommendedBoxes** | [**BuiltList&lt;RecommendedBoxDto&gt;**](RecommendedBoxDto.md) |  | [optional] 
+**recommendedGiftSets** | [**BuiltList&lt;RecommendedGiftSet&gt;**](RecommendedGiftSet.md) |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

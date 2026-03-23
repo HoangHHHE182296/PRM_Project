@@ -16,13 +16,15 @@ class _$LoginResponseApiSuccessResponse
   final int? statusCode;
   @override
   final LoginResponse? data;
+  @override
+  final JsonObject? metadata;
 
   factory _$LoginResponseApiSuccessResponse(
           [void Function(LoginResponseApiSuccessResponseBuilder)? updates]) =>
       (LoginResponseApiSuccessResponseBuilder()..update(updates))._build();
 
   _$LoginResponseApiSuccessResponse._(
-      {this.success, this.message, this.statusCode, this.data})
+      {this.success, this.message, this.statusCode, this.data, this.metadata})
       : super._();
   @override
   LoginResponseApiSuccessResponse rebuild(
@@ -40,7 +42,8 @@ class _$LoginResponseApiSuccessResponse
         success == other.success &&
         message == other.message &&
         statusCode == other.statusCode &&
-        data == other.data;
+        data == other.data &&
+        metadata == other.metadata;
   }
 
   @override
@@ -50,6 +53,7 @@ class _$LoginResponseApiSuccessResponse
     _$hash = $jc(_$hash, message.hashCode);
     _$hash = $jc(_$hash, statusCode.hashCode);
     _$hash = $jc(_$hash, data.hashCode);
+    _$hash = $jc(_$hash, metadata.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -60,7 +64,8 @@ class _$LoginResponseApiSuccessResponse
           ..add('success', success)
           ..add('message', message)
           ..add('statusCode', statusCode)
-          ..add('data', data))
+          ..add('data', data)
+          ..add('metadata', metadata))
         .toString();
   }
 }
@@ -87,6 +92,10 @@ class LoginResponseApiSuccessResponseBuilder
   LoginResponseBuilder get data => _$this._data ??= LoginResponseBuilder();
   set data(LoginResponseBuilder? data) => _$this._data = data;
 
+  JsonObject? _metadata;
+  JsonObject? get metadata => _$this._metadata;
+  set metadata(JsonObject? metadata) => _$this._metadata = metadata;
+
   LoginResponseApiSuccessResponseBuilder() {
     LoginResponseApiSuccessResponse._defaults(this);
   }
@@ -98,6 +107,7 @@ class LoginResponseApiSuccessResponseBuilder
       _message = $v.message;
       _statusCode = $v.statusCode;
       _data = $v.data?.toBuilder();
+      _metadata = $v.metadata;
       _$v = null;
     }
     return this;
@@ -125,6 +135,7 @@ class LoginResponseApiSuccessResponseBuilder
             message: message,
             statusCode: statusCode,
             data: _data?.build(),
+            metadata: metadata,
           );
     } catch (_) {
       late String _$failedField;

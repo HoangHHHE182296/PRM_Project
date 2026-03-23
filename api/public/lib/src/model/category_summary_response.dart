@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:public_openapi/src/model/product_type.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -15,6 +16,9 @@ part 'category_summary_response.g.dart';
 /// * [name] 
 /// * [description] 
 /// * [imageUrl] 
+/// * [supportedProductType] 
+/// * [parentCategoryId] 
+/// * [parentCategoryName] 
 @BuiltValue()
 abstract class CategorySummaryResponse implements Built<CategorySummaryResponse, CategorySummaryResponseBuilder> {
   @BuiltValueField(wireName: r'id')
@@ -28,6 +32,16 @@ abstract class CategorySummaryResponse implements Built<CategorySummaryResponse,
 
   @BuiltValueField(wireName: r'imageUrl')
   String? get imageUrl;
+
+  @BuiltValueField(wireName: r'supportedProductType')
+  ProductType? get supportedProductType;
+  // enum supportedProductTypeEnum {  1,  2,  3,  };
+
+  @BuiltValueField(wireName: r'parentCategoryId')
+  String? get parentCategoryId;
+
+  @BuiltValueField(wireName: r'parentCategoryName')
+  String? get parentCategoryName;
 
   CategorySummaryResponse._();
 
@@ -77,6 +91,27 @@ class _$CategorySummaryResponseSerializer implements PrimitiveSerializer<Categor
       yield r'imageUrl';
       yield serializers.serialize(
         object.imageUrl,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.supportedProductType != null) {
+      yield r'supportedProductType';
+      yield serializers.serialize(
+        object.supportedProductType,
+        specifiedType: const FullType(ProductType),
+      );
+    }
+    if (object.parentCategoryId != null) {
+      yield r'parentCategoryId';
+      yield serializers.serialize(
+        object.parentCategoryId,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.parentCategoryName != null) {
+      yield r'parentCategoryName';
+      yield serializers.serialize(
+        object.parentCategoryName,
         specifiedType: const FullType.nullable(String),
       );
     }
@@ -133,6 +168,29 @@ class _$CategorySummaryResponseSerializer implements PrimitiveSerializer<Categor
           ) as String?;
           if (valueDes == null) continue;
           result.imageUrl = valueDes;
+          break;
+        case r'supportedProductType':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(ProductType),
+          ) as ProductType;
+          result.supportedProductType = valueDes;
+          break;
+        case r'parentCategoryId':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(String),
+          ) as String?;
+          if (valueDes == null) continue;
+          result.parentCategoryId = valueDes;
+          break;
+        case r'parentCategoryName':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(String),
+          ) as String?;
+          if (valueDes == null) continue;
+          result.parentCategoryName = valueDes;
           break;
         default:
           unhandled.add(key);

@@ -15,13 +15,25 @@ class _$CategorySummaryResponse extends CategorySummaryResponse {
   final String? description;
   @override
   final String? imageUrl;
+  @override
+  final ProductType? supportedProductType;
+  @override
+  final String? parentCategoryId;
+  @override
+  final String? parentCategoryName;
 
   factory _$CategorySummaryResponse(
           [void Function(CategorySummaryResponseBuilder)? updates]) =>
       (CategorySummaryResponseBuilder()..update(updates))._build();
 
   _$CategorySummaryResponse._(
-      {this.id, this.name, this.description, this.imageUrl})
+      {this.id,
+      this.name,
+      this.description,
+      this.imageUrl,
+      this.supportedProductType,
+      this.parentCategoryId,
+      this.parentCategoryName})
       : super._();
   @override
   CategorySummaryResponse rebuild(
@@ -39,7 +51,10 @@ class _$CategorySummaryResponse extends CategorySummaryResponse {
         id == other.id &&
         name == other.name &&
         description == other.description &&
-        imageUrl == other.imageUrl;
+        imageUrl == other.imageUrl &&
+        supportedProductType == other.supportedProductType &&
+        parentCategoryId == other.parentCategoryId &&
+        parentCategoryName == other.parentCategoryName;
   }
 
   @override
@@ -49,6 +64,9 @@ class _$CategorySummaryResponse extends CategorySummaryResponse {
     _$hash = $jc(_$hash, name.hashCode);
     _$hash = $jc(_$hash, description.hashCode);
     _$hash = $jc(_$hash, imageUrl.hashCode);
+    _$hash = $jc(_$hash, supportedProductType.hashCode);
+    _$hash = $jc(_$hash, parentCategoryId.hashCode);
+    _$hash = $jc(_$hash, parentCategoryName.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -59,7 +77,10 @@ class _$CategorySummaryResponse extends CategorySummaryResponse {
           ..add('id', id)
           ..add('name', name)
           ..add('description', description)
-          ..add('imageUrl', imageUrl))
+          ..add('imageUrl', imageUrl)
+          ..add('supportedProductType', supportedProductType)
+          ..add('parentCategoryId', parentCategoryId)
+          ..add('parentCategoryName', parentCategoryName))
         .toString();
   }
 }
@@ -85,6 +106,21 @@ class CategorySummaryResponseBuilder
   String? get imageUrl => _$this._imageUrl;
   set imageUrl(String? imageUrl) => _$this._imageUrl = imageUrl;
 
+  ProductType? _supportedProductType;
+  ProductType? get supportedProductType => _$this._supportedProductType;
+  set supportedProductType(ProductType? supportedProductType) =>
+      _$this._supportedProductType = supportedProductType;
+
+  String? _parentCategoryId;
+  String? get parentCategoryId => _$this._parentCategoryId;
+  set parentCategoryId(String? parentCategoryId) =>
+      _$this._parentCategoryId = parentCategoryId;
+
+  String? _parentCategoryName;
+  String? get parentCategoryName => _$this._parentCategoryName;
+  set parentCategoryName(String? parentCategoryName) =>
+      _$this._parentCategoryName = parentCategoryName;
+
   CategorySummaryResponseBuilder() {
     CategorySummaryResponse._defaults(this);
   }
@@ -96,6 +132,9 @@ class CategorySummaryResponseBuilder
       _name = $v.name;
       _description = $v.description;
       _imageUrl = $v.imageUrl;
+      _supportedProductType = $v.supportedProductType;
+      _parentCategoryId = $v.parentCategoryId;
+      _parentCategoryName = $v.parentCategoryName;
       _$v = null;
     }
     return this;
@@ -121,6 +160,9 @@ class CategorySummaryResponseBuilder
           name: name,
           description: description,
           imageUrl: imageUrl,
+          supportedProductType: supportedProductType,
+          parentCategoryId: parentCategoryId,
+          parentCategoryName: parentCategoryName,
         );
     replace(_$result);
     return _$result;

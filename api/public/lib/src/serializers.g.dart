@@ -12,36 +12,50 @@ Serializers _$serializers = (Serializers().toBuilder()
       ..add(ApiErrorDetail.serializer)
       ..add(ApiFailureResponse.serializer)
       ..add(BooleanApiSuccessResponse.serializer)
+      ..add(CategoryGroupResponse.serializer)
+      ..add(CategoryGroupResponseListApiSuccessResponse.serializer)
       ..add(CategorySummaryResponse.serializer)
-      ..add(CategorySummaryResponseIEnumerableApiSuccessResponse.serializer)
       ..add(ChangePasswordCommand.serializer)
-      ..add(ConsultationChatRequest.serializer)
       ..add(CreateOrderItemRequest.serializer)
       ..add(CreateOrderRequest.serializer)
       ..add(CreatePayOsLinkCommand.serializer)
       ..add(GenerateOtpCommand.serializer)
+      ..add(GiftBox.serializer)
+      ..add(GiftItem.serializer)
+      ..add(GiftSetIncludesResponse.serializer)
+      ..add(GiftSetItemResponse.serializer)
       ..add(GoogleLoginCommand.serializer)
       ..add(GuidApiSuccessResponse.serializer)
       ..add(LoginCommand.serializer)
       ..add(LoginResponse.serializer)
       ..add(LoginResponseApiSuccessResponse.serializer)
-      ..add(ProductResponse.serializer)
-      ..add(ProductResponsePaginatedList.serializer)
-      ..add(ProductResponsePaginatedListApiSuccessResponse.serializer)
+      ..add(ProductDetailResponse.serializer)
+      ..add(ProductDetailResponseApiSuccessResponse.serializer)
+      ..add(ProductListResponse.serializer)
+      ..add(ProductListResponseIEnumerableApiSuccessResponse.serializer)
+      ..add(ProductType.serializer)
       ..add(ProfileResponse.serializer)
       ..add(ProfileResponseApiSuccessResponse.serializer)
-      ..add(RecommendedBoxDto.serializer)
+      ..add(RecommendedGiftSet.serializer)
       ..add(RefreshTokenCommand.serializer)
       ..add(RegisterCommand.serializer)
+      ..add(SendConsultationMessageCommand.serializer)
       ..add(SetPasswordCommand.serializer)
-      ..add(StartConsultationRequest.serializer)
+      ..add(StartConsultationCommand.serializer)
       ..add(StringApiSuccessResponse.serializer)
+      ..add(StringIEnumerableApiSuccessResponse.serializer)
+      ..add(ThemeCollectionDto.serializer)
+      ..add(ThemeCollectionDtoIEnumerableApiSuccessResponse.serializer)
       ..add(UpdateProfileCommand.serializer)
       ..add(UserResponse.serializer)
       ..add(UserResponseApiSuccessResponse.serializer)
       ..add(VerifyAccountCommand.serializer)
       ..add(WebhookData.serializer)
       ..add(WebhookType.serializer)
+      ..addBuilderFactory(
+          const FullType(
+              BuiltList, const [const FullType(CategoryGroupResponse)]),
+          () => ListBuilder<CategoryGroupResponse>())
       ..addBuilderFactory(
           const FullType(
               BuiltList, const [const FullType(CategorySummaryResponse)]),
@@ -51,17 +65,34 @@ Serializers _$serializers = (Serializers().toBuilder()
               BuiltList, const [const FullType(CreateOrderItemRequest)]),
           () => ListBuilder<CreateOrderItemRequest>())
       ..addBuilderFactory(
-          const FullType(BuiltList, const [const FullType(ProductResponse)]),
-          () => ListBuilder<ProductResponse>())
+          const FullType(BuiltList, const [const FullType(GiftItem)]),
+          () => ListBuilder<GiftItem>())
       ..addBuilderFactory(
-          const FullType(BuiltList, const [const FullType(RecommendedBoxDto)]),
-          () => ListBuilder<RecommendedBoxDto>())
+          const FullType(
+              BuiltList, const [const FullType(GiftSetItemResponse)]),
+          () => ListBuilder<GiftSetItemResponse>())
+      ..addBuilderFactory(
+          const FullType(
+              BuiltList, const [const FullType(ProductListResponse)]),
+          () => ListBuilder<ProductListResponse>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(RecommendedGiftSet)]),
+          () => ListBuilder<RecommendedGiftSet>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(String)]),
           () => ListBuilder<String>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(String)]),
-          () => ListBuilder<String>()))
+          () => ListBuilder<String>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(String)]),
+          () => ListBuilder<String>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(String)]),
+          () => ListBuilder<String>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(ThemeCollectionDto)]),
+          () => ListBuilder<ThemeCollectionDto>()))
     .build();
 
 // ignore_for_file: deprecated_member_use_from_same_package,type=lint

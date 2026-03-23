@@ -14,7 +14,7 @@ Method | HTTP request | Description
 
 
 # **apiConsultationChatPost**
-> AiRecommendationResponseApiSuccessResponse apiConsultationChatPost(consultationChatRequest)
+> AiRecommendationResponseApiSuccessResponse apiConsultationChatPost(sendConsultationMessageCommand)
 
 
 
@@ -23,10 +23,10 @@ Method | HTTP request | Description
 import 'package:public_openapi/api.dart';
 
 final api = PublicOpenapi().getConsultationApi();
-final ConsultationChatRequest consultationChatRequest = ; // ConsultationChatRequest | 
+final SendConsultationMessageCommand sendConsultationMessageCommand = ; // SendConsultationMessageCommand | 
 
 try {
-    final response = api.apiConsultationChatPost(consultationChatRequest);
+    final response = api.apiConsultationChatPost(sendConsultationMessageCommand);
     print(response);
 } on DioException catch (e) {
     print('Exception when calling ConsultationApi->apiConsultationChatPost: $e\n');
@@ -37,7 +37,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **consultationChatRequest** | [**ConsultationChatRequest**](ConsultationChatRequest.md)|  | [optional] 
+ **sendConsultationMessageCommand** | [**SendConsultationMessageCommand**](SendConsultationMessageCommand.md)|  | [optional] 
 
 ### Return type
 
@@ -45,7 +45,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 
@@ -55,7 +55,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **apiConsultationStartPost**
-> GuidApiSuccessResponse apiConsultationStartPost(startConsultationRequest)
+> GuidApiSuccessResponse apiConsultationStartPost(startConsultationCommand)
 
 
 
@@ -64,10 +64,10 @@ No authorization required
 import 'package:public_openapi/api.dart';
 
 final api = PublicOpenapi().getConsultationApi();
-final StartConsultationRequest startConsultationRequest = ; // StartConsultationRequest | 
+final StartConsultationCommand startConsultationCommand = ; // StartConsultationCommand | 
 
 try {
-    final response = api.apiConsultationStartPost(startConsultationRequest);
+    final response = api.apiConsultationStartPost(startConsultationCommand);
     print(response);
 } on DioException catch (e) {
     print('Exception when calling ConsultationApi->apiConsultationStartPost: $e\n');
@@ -78,7 +78,7 @@ try {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **startConsultationRequest** | [**StartConsultationRequest**](StartConsultationRequest.md)|  | [optional] 
+ **startConsultationCommand** | [**StartConsultationCommand**](StartConsultationCommand.md)|  | [optional] 
 
 ### Return type
 
@@ -86,7 +86,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[Bearer](../README.md#Bearer)
 
 ### HTTP request headers
 
