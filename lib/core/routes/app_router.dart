@@ -5,6 +5,7 @@ import 'package:prm_project/core/routes/route_guard.dart';
 import 'package:prm_project/features/auth/ui/login/login_screen.dart';
 import 'package:prm_project/features/auth/ui/register/register_screen.dart';
 import 'package:prm_project/features/home/home_feature.dart';
+import 'package:prm_project/features/profile/ui/profile_screen.dart';
 import '../../shared/layouts/customer_layout.dart';
 
 class AppRouter {
@@ -75,7 +76,7 @@ class AppRouter {
                 pageBuilder: (context, state) => _buildPageWithTransition(
                   context: context,
                   state: state,
-                  child: const Scaffold(body: Center(child: Text("Hồ Sơ Tôi"))),
+                  child: const ProfileScreen(),
                 ),
               ),
             ],
