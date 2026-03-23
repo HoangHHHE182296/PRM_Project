@@ -11,7 +11,6 @@ class AuthInterceptor extends Interceptor {
       final token = credentialService.credential?['accessToken'];
       options.headers['Authorization'] = 'Bearer $token';
     }
-
     // Tiếp tục gửi request
     return handler.next(options);
   }
