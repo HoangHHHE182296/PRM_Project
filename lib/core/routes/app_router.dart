@@ -59,7 +59,8 @@ class AppRouter {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/gifts',
+                redirect: (context, state) => RouteGuard.check(RouterConst.gifts),
+                path: RouterConst.gifts.router,
                 pageBuilder: (context, state) => _buildPageWithTransition(
                   context: context,
                   state: state,
@@ -72,7 +73,8 @@ class AppRouter {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/profile',
+                redirect: (context, state) => RouteGuard.check(RouterConst.profile),
+                path: RouterConst.profile.router,
                 pageBuilder: (context, state) => _buildPageWithTransition(
                   context: context,
                   state: state,
