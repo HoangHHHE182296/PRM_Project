@@ -15,21 +15,45 @@ class _ProductListScreenState extends State<ProductListScreen> {
   // Sử dụng mô hình sinh ra từ Swagger
   late Future<List<ProductListResponse>> _productsFuture;
 
+  // Filter & Search states
+  final TextEditingController _searchController = TextEditingController();
+  String? _searchQuery;
+  double? _minPrice;
+  double? _maxPrice;
+  bool? _inStockOnly;
+  String? _sortBy;
+  bool? _sortDescending;
+
   @override
   void initState() {
     super.initState();
     _fetchProducts();
   }
 
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   void _fetchProducts() {
+    final Map<String, dynamic> queryParams = {};
+    // Không gửi Search lên API nữa để gom chung filter client-side cho cả description
+    if (_minPrice != null) queryParams['MinPrice'] = _minPrice;
+    if (_maxPrice != null) queryParams['MaxPrice'] = _maxPrice;
+    if (_inStockOnly == true) queryParams['InStockOnly'] = true;
+
     // Dùng Dio thuần để bypass lỗi Serialization của openapi-generator-cli
-    // do cấu trúc chuẩn JSON trả về (như Metadata hay nested Array) cấu hình chưa map khớp 100%
-    _productsFuture = ApiClient.openApi.dio.get('/api/products/get-public-product-list').then((res) {
+    _productsFuture = ApiClient.openApi.dio.get(
+      '/api/products/get-public-product-list',
+      queryParameters: queryParams,
+    ).then((res) {
       final json = res.data;
       if (json['success'] == true && json['data'] != null) {
         final List list = json['data'];
-        // Tự map thủ công JSON sang Model ProductListResponse chuẩn
-        return list
+        
+        // 1. Tự map thủ công JSON sang Model ProductListResponse
+        List<ProductListResponse> parsedList = list
             .map(
               (e) => ProductListResponse(
                 (b) => b
@@ -43,6 +67,33 @@ class _ProductListScreenState extends State<ProductListScreen> {
               ),
             )
             .toList();
+
+        // 2. Lọc danh sách client-side: Tìm kiếm bằng cả Name và Description
+        if (_searchQuery != null && _searchQuery!.trim().isNotEmpty) {
+          final query = _searchQuery!.trim().toLowerCase();
+          parsedList = parsedList.where((p) {
+            final matchName = p.name?.toLowerCase().contains(query) ?? false;
+            final matchDesc = p.description?.toLowerCase().contains(query) ?? false;
+            return matchName || matchDesc;
+          }).toList();
+        }
+
+        // 3. Sắp xếp client-side
+        if (_sortBy == 'name') {
+          parsedList.sort((a, b) {
+            final nameA = a.name ?? '';
+            final nameB = b.name ?? '';
+            return _sortDescending == true ? nameB.compareTo(nameA) : nameA.compareTo(nameB);
+          });
+        } else if (_sortBy == 'price') {
+          parsedList.sort((a, b) {
+            final priceA = a.price ?? 0.0;
+            final priceB = b.price ?? 0.0;
+            return _sortDescending == true ? priceB.compareTo(priceA) : priceA.compareTo(priceB);
+          });
+        }
+
+        return parsedList;
       }
       return [];
     });
@@ -51,11 +102,75 @@ class _ProductListScreenState extends State<ProductListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Các loại quà tặng')),
-      body: FutureBuilder(
-        future: _productsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+      appBar: AppBar(
+        title: const Text('Các loại quà tặng'),
+        actions: [
+          if (_searchQuery?.isNotEmpty == true || _minPrice != null || _maxPrice != null || _inStockOnly != null || _sortBy != null)
+            IconButton(
+              icon: const Icon(Icons.filter_alt_off),
+              color: Colors.red,
+              tooltip: 'Xoá tất cả bộ lọc',
+              onPressed: () {
+                _searchController.clear();
+                setState(() {
+                  _searchQuery = null;
+                  _minPrice = null;
+                  _maxPrice = null;
+                  _inStockOnly = null;
+                  _sortBy = null;
+                  _sortDescending = null;
+                  _fetchProducts();
+                });
+              },
+            ),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Search Bar & Filter Button
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Tìm kiếm tên, mô tả...',
+                      prefixIcon: const Icon(Icons.search),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                    ),
+                    onSubmitted: (value) {
+                      setState(() {
+                        _searchQuery = value;
+                        _fetchProducts();
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.filter_list, color: AppColors.primary),
+                    tooltip: 'Bộ lọc',
+                    onPressed: _showFilterBottomSheet,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // Danh sách sản phẩm
+          Expanded(
+            child: FutureBuilder(
+              future: _productsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Lỗi tải dữ liệu: ${snapshot.error}'));
@@ -65,7 +180,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
           final products = snapshot.data as List;
           return GridView.builder(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               crossAxisSpacing: 16.0,
@@ -125,6 +240,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
           );
         },
       ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -133,6 +251,180 @@ class _ProductListScreenState extends State<ProductListScreen> {
       width: double.infinity,
       color: Colors.grey[200],
       child: const Icon(Icons.image, size: 40, color: AppColors.textHint),
+    );
+  }
+
+  void _showFilterBottomSheet() {
+    // Temporary variables cho filter popup
+    double tempMin = _minPrice ?? 0;
+    double tempMax = _maxPrice ?? 5000000;
+    bool tempInStock = _inStockOnly ?? false;
+    String tempSort = 'default';
+    if (_sortBy == 'name' && _sortDescending == false) tempSort = 'name_asc';
+    if (_sortBy == 'name' && _sortDescending == true) tempSort = 'name_desc';
+    if (_sortBy == 'price' && _sortDescending == false) tempSort = 'price_asc';
+    if (_sortBy == 'price' && _sortDescending == true) tempSort = 'price_desc';
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      builder: (context) {
+        final TextEditingController minController = TextEditingController(text: tempMin.round().toString());
+        final TextEditingController maxController = TextEditingController(text: tempMax.round().toString());
+
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setModalState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+                top: 16, left: 16, right: 16,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Bộ lọc & Sắp xếp', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                        IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(context)),
+                      ],
+                    ),
+                    const Divider(),
+                    const SizedBox(height: 8),
+
+                    // Sort By
+                    const Text('Sắp xếp theo', style: TextStyle(fontWeight: FontWeight.bold)),
+                    DropdownButton<String>(
+                      isExpanded: true,
+                      value: tempSort,
+                      items: const [
+                        DropdownMenuItem(value: 'default', child: Text('Mặc định')),
+                        DropdownMenuItem(value: 'name_asc', child: Text('Tên (A-Z)')),
+                        DropdownMenuItem(value: 'name_desc', child: Text('Tên (Z-A)')),
+                        DropdownMenuItem(value: 'price_asc', child: Text('Giá (Thấp đến Cao)')),
+                        DropdownMenuItem(value: 'price_desc', child: Text('Giá (Cao xuống Thấp)')),
+                      ],
+                      onChanged: (val) {
+                        if (val != null) {
+                          setModalState(() { tempSort = val; });
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Price Range
+                    const Text('Khoảng giá (VNĐ)', style: TextStyle(fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: minController,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              labelText: 'Từ',
+                              border: OutlineInputBorder(),
+                              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            ),
+                            onChanged: (val) {
+                              final valDouble = double.tryParse(val);
+                              if (valDouble != null && valDouble >= 0 && valDouble <= tempMax) {
+                                setModalState(() { tempMin = valDouble; });
+                              }
+                            },
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text('-'),
+                        ),
+                        Expanded(
+                          child: TextField(
+                            controller: maxController,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              labelText: 'Đến',
+                              border: OutlineInputBorder(),
+                              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            ),
+                            onChanged: (val) {
+                              final valDouble = double.tryParse(val);
+                              if (valDouble != null && valDouble >= tempMin && valDouble <= 5000000) {
+                                setModalState(() { tempMax = valDouble; });
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    RangeSlider(
+                      values: RangeValues(tempMin, tempMax),
+                      min: 0,
+                      max: 5000000,
+                      divisions: 500,
+                      labels: RangeLabels('${tempMin.round()}đ', '${tempMax.round()}đ'),
+                      onChanged: (RangeValues values) {
+                        setModalState(() {
+                          tempMin = values.start;
+                          tempMax = values.end;
+                          minController.text = tempMin.round().toString();
+                          maxController.text = tempMax.round().toString();
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 16),
+
+                    // In Stock
+                    CheckboxListTile(
+                      title: const Text('Chỉ hiện hàng còn trong kho'),
+                      value: tempInStock,
+                      contentPadding: EdgeInsets.zero,
+                      controlAffinity: ListTileControlAffinity.leading,
+                      onChanged: (val) {
+                        setModalState(() { tempInStock = val ?? false; });
+                      },
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Buttons
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            _minPrice = tempMin > 0 ? tempMin : null;
+                            _maxPrice = tempMax < 5000000 ? tempMax : null;
+                            _inStockOnly = tempInStock ? true : null;
+
+                            switch (tempSort) {
+                              case 'name_asc': _sortBy = 'name'; _sortDescending = false; break;
+                              case 'name_desc': _sortBy = 'name'; _sortDescending = true; break;
+                              case 'price_asc': _sortBy = 'price'; _sortDescending = false; break;
+                              case 'price_desc': _sortBy = 'price'; _sortDescending = true; break;
+                              default: _sortBy = null; _sortDescending = null; break;
+                            }
+                            _fetchProducts();
+                          });
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                        ),
+                        child: const Text('Áp dụng', style: TextStyle(color: Colors.white, fontSize: 16)),
+                      ),
+                    ),
+                    const SizedBox(height: 16), // Optional extra space
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
