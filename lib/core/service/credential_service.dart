@@ -59,27 +59,18 @@ class CredentialService {
   }
 
   bool get isAuthenticated {
-  final token = _getItem(CredentialKey.accessToken);
-  if (token == null) return false;
+    final token = _getItem(CredentialKey.accessToken);
+    if (token == null) return false;
 
-  try {
-    // Decode token như cách bạn đang làm ở setCredential
-    final payload = _decodeJwt(utf8.decode(base64.decode(token)));
-    
-    // Kiểm tra thời gian hết hạn (exp)
-    if (payload.containsKey('exp')) {
-      final expiry = DateTime.fromMillisecondsSinceEpoch(payload['exp'] * 1000);
-      if (DateTime.now().isAfter(expiry)) {
-        clearAccessToken(); // Xóa sạch nếu đã hết hạn
-        return false;
-      }
+    try {
+      // Vẫn lấy payload để xem có decode được không nhưng không logout nữa
+      _decodeJwt(utf8.decode(base64.decode(token)));
+      return true;
+    } catch (e) {
+      clearAccessToken();
+      return false;
     }
-    return true;
-  } catch (e) {
-    clearAccessToken();
-    return false;
   }
-}
 
 
   LoggedUserModel? get userLoggedInfo {
