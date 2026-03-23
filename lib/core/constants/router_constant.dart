@@ -10,4 +10,6 @@ class RouterConst {
   static const home = RouterItem(title: 'Trang chủ', path: '', router: '/', protected: true);
 
   static const products = RouterItem(title: 'Quà tặng', path: 'products', router: '/products', protected: true);
+
+  static const profile = RouterItem(title: 'Hồ sơ', path: 'profile', router: '/profile', protected: true);
 }

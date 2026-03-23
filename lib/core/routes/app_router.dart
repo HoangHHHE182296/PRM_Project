@@ -6,6 +6,7 @@ import 'package:prm_project/features/auth/ui/login/login_screen.dart';
 import 'package:prm_project/features/auth/ui/register/register_screen.dart';
 import 'package:prm_project/features/home/home_feature.dart';
 import 'package:prm_project/features/products/product_list_screen.dart';
+import 'package:prm_project/features/profile/ui/profile_screen.dart';
 import '../../shared/layouts/customer_layout.dart';
 
 class AppRouter {
@@ -55,12 +56,9 @@ class AppRouter {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/profile',
-                pageBuilder: (context, state) => _buildPageWithTransition(
-                  context: context,
-                  state: state,
-                  child: const Scaffold(body: Center(child: Text("Hồ Sơ Tôi"))),
-                ),
+                redirect: (context, state) => RouteGuard.check(RouterConst.profile),
+                path: RouterConst.profile.router,
+                pageBuilder: (context, state) => _buildPageWithTransition(context: context, state: state, child: const ProfileScreen()),
               ),
             ],
           ),
