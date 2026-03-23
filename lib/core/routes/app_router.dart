@@ -45,7 +45,8 @@ class AppRouter {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/gifts',
+                redirect: (context, state) => RouteGuard.check(RouterConst.products),
+                path: RouterConst.products.router,
                 pageBuilder: (context, state) => _buildPageWithTransition(context: context, state: state, child: const ProductListScreen()),
               ),
             ],
