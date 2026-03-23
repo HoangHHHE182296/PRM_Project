@@ -12,8 +12,13 @@ class ProductListScreen extends StatefulWidget {
 }
 
 class _ProductListScreenState extends State<ProductListScreen> {
-  // Sử dụng mô hình sinh ra từ Swagger
-  late Future<List<ProductListResponse>> _productsFuture;
+  // Pagination states
+  int _pageNumber = 1;
+  final int _pageSize = 12;
+  bool _isLoading = false;
+  bool _hasMore = true;
+  List<ProductListResponse> _products = [];
+  final ScrollController _scrollController = ScrollController();
 
   // Filter & Search states
   final TextEditingController _searchController = TextEditingController();
@@ -28,31 +33,70 @@ class _ProductListScreenState extends State<ProductListScreen> {
   void initState() {
     super.initState();
     _fetchProducts();
+    _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _searchController.dispose();
     super.dispose();
   }
 
-  void _fetchProducts() {
-    final Map<String, dynamic> queryParams = {};
-    // Không gửi Search lên API nữa để gom chung filter client-side cho cả description
+  void _onScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200 &&
+        !_isLoading &&
+        _hasMore) {
+      _fetchProducts(loadMore: true);
+    }
+  }
+
+  Future<void> _fetchProducts({bool loadMore = false}) async {
+    if (_isLoading) return;
+
+    if (!loadMore) {
+      _pageNumber = 1;
+      _hasMore = true;
+      _products.clear();
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    final Map<String, dynamic> queryParams = {
+      'PageNumber': _pageNumber,
+      'PageSize': _pageSize,
+    };
+    
+    // Vẫn áp dụng filter lên API để tối ưu database
     if (_minPrice != null) queryParams['MinPrice'] = _minPrice;
     if (_maxPrice != null) queryParams['MaxPrice'] = _maxPrice;
     if (_inStockOnly == true) queryParams['InStockOnly'] = true;
+    if (_searchQuery != null && _searchQuery!.trim().isNotEmpty) {
+      // Gửi cả lên API để filter database trước, phòng khi database quá lớn
+      queryParams['Search'] = _searchQuery!.trim();
+    }
+    
+    // Sort
+    if (_sortBy == 'price') {
+      queryParams['SortBy'] = 'Price';
+      queryParams['SortDescending'] = _sortDescending;
+    } else if (_sortBy == 'name') {
+      queryParams['SortBy'] = 'Name';
+      queryParams['SortDescending'] = _sortDescending;
+    }
 
-    // Dùng Dio thuần để bypass lỗi Serialization của openapi-generator-cli
-    _productsFuture = ApiClient.openApi.dio.get(
-      '/api/products/get-public-product-list',
-      queryParameters: queryParams,
-    ).then((res) {
+    try {
+      final res = await ApiClient.openApi.dio.get(
+        '/api/products/get-public-product-list',
+        queryParameters: queryParams,
+      );
+      
       final json = res.data;
       if (json['success'] == true && json['data'] != null) {
         final List list = json['data'];
         
-        // 1. Tự map thủ công JSON sang Model ProductListResponse
         List<ProductListResponse> parsedList = list
             .map(
               (e) => ProductListResponse(
@@ -68,7 +112,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
             )
             .toList();
 
-        // 2. Lọc danh sách client-side: Tìm kiếm bằng cả Name và Description
+        // Bổ sung Lọc description client-side (vì API có thể chưa hỗ trợ triệt để mô tả)
         if (_searchQuery != null && _searchQuery!.trim().isNotEmpty) {
           final query = _searchQuery!.trim().toLowerCase();
           parsedList = parsedList.where((p) {
@@ -78,7 +122,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
           }).toList();
         }
 
-        // 3. Sắp xếp client-side
+        // Bổ sung Sắp xếp client-side (phòng API chưa sort chuẩn)
         if (_sortBy == 'name') {
           parsedList.sort((a, b) {
             final nameA = a.name ?? '';
@@ -93,10 +137,23 @@ class _ProductListScreenState extends State<ProductListScreen> {
           });
         }
 
-        return parsedList;
+        setState(() {
+          if (parsedList.isNotEmpty) {
+            _products.addAll(parsedList);
+            _pageNumber++;
+          }
+          if (list.length < _pageSize) {
+            _hasMore = false; // Đã hết data từ API
+          }
+        });
       }
-      return [];
-    });
+    } catch (e) {
+      debugPrint("Error fetching products: $e");
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -167,79 +224,74 @@ class _ProductListScreenState extends State<ProductListScreen> {
           
           // Danh sách sản phẩm
           Expanded(
-            child: FutureBuilder(
-              future: _productsFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Lỗi tải dữ liệu: ${snapshot.error}'));
-          } else if (!snapshot.hasData || (snapshot.data as List).isEmpty) {
-            return const Center(child: Text('Không có mục nào.'));
-          }
-
-          final products = snapshot.data as List;
-          return GridView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 16.0,
-              mainAxisSpacing: 16.0,
-              childAspectRatio: 0.75, // Tỉ lệ khung hình (width/height)
-            ),
-            itemCount: products.length,
-            itemBuilder: (context, index) {
-              final product = products[index];
-              return InkWell(
-                onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetailScreen(product: product)));
-                },
-                child: Card(
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  clipBehavior: Clip.antiAlias,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Hình ảnh
-                      Expanded(
-                        child: product.imageUrl != null && product.imageUrl!.isNotEmpty
-                            ? Image.network(
-                                product.imageUrl!,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) => _buildPlaceholderImage(),
-                              )
-                            : _buildPlaceholderImage(),
-                      ),
-                      // Thông tin
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              product.name ?? 'Không có tên',
-                              style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              product.price != null ? '${product.price}đ' : 'Liên hệ',
-                              style: Theme.of(context).textTheme.titleSmall?.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600),
-                            ),
-                          ],
+            child: _products.isEmpty && _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _products.isEmpty
+                    ? const Center(child: Text('Không có mục nào.'))
+                    : GridView.builder(
+                        controller: _scrollController,
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 16.0,
+                          mainAxisSpacing: 16.0,
+                          childAspectRatio: 0.75, // Tỉ lệ khung hình (width/height)
                         ),
+                        itemCount: _products.length + (_hasMore ? 1 : 0),
+                        itemBuilder: (context, index) {
+                          if (index == _products.length) {
+                            return const Center(child: CircularProgressIndicator());
+                          }
+
+                          final product = _products[index];
+                          return InkWell(
+                            onTap: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetailScreen(product: product)));
+                            },
+                            child: Card(
+                              elevation: 2,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              clipBehavior: Clip.antiAlias,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Hình ảnh
+                                  Expanded(
+                                    child: product.imageUrl != null && product.imageUrl!.isNotEmpty
+                                        ? Image.network(
+                                            product.imageUrl!,
+                                            width: double.infinity,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (context, error, stackTrace) => _buildPlaceholderImage(),
+                                          )
+                                        : _buildPlaceholderImage(),
+                                  ),
+                                  // Thông tin
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          product.name ?? 'Không có tên',
+                                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          product.price != null ? '${product.price}đ' : 'Liên hệ',
+                                          style: Theme.of(context).textTheme.titleSmall?.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
                       ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          );
-        },
-      ),
           ),
         ],
       ),
