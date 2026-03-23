@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prm_project/services/api_service.dart';
+import 'package:prm_project/core/api/api_client.dart';
 import 'package:prm_project/page/products/product_detail_screen.dart';
 import 'package:prm_project/shared/theme/app_colors.dart';
 import 'package:public_openapi/public_openapi.dart';
@@ -24,7 +24,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
   void _fetchProducts() {
     // Dùng Dio thuần để bypass lỗi Serialization của openapi-generator-cli
     // do cấu trúc chuẩn JSON trả về (như Metadata hay nested Array) cấu hình chưa map khớp 100%
-    _productsFuture = ApiService.client.dio.get('/api/products/get-public-product-list').then((res) {
+    _productsFuture = ApiClient.openApi.dio.get('/api/products/get-public-product-list').then((res) {
       final json = res.data;
       if (json['success'] == true && json['data'] != null) {
         final List list = json['data'];
@@ -51,7 +51,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Danh sách Sản phẩm')),
+      appBar: AppBar(title: const Text('Các loại quà tặng')),
       body: FutureBuilder(
         future: _productsFuture,
         builder: (context, snapshot) {
@@ -60,7 +60,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Lỗi tải dữ liệu: ${snapshot.error}'));
           } else if (!snapshot.hasData || (snapshot.data as List).isEmpty) {
-            return const Center(child: Text('Không có sản phẩm nào.'));
+            return const Center(child: Text('Không có mục nào.'));
           }
 
           final products = snapshot.data as List;

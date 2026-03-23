@@ -14,7 +14,7 @@ class ProductDetailScreen extends StatelessWidget {
     final String name = product.name ?? 'Không có tên';
     final String price = product.price != null ? '${product.price}đ' : 'Liên hệ';
     // Dùng try-catch hoặc kiểm tra thuộc tính description tuỳ vào dynamic object
-    String description = 'Đang cập nhật mô tả sản phẩm...';
+    String description = 'Đang cập nhật mô tả quà tặng...';
     String? imageUrl;
     try {
       if (product.description != null) {
@@ -27,12 +27,12 @@ class ProductDetailScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('Chi tiết sản phẩm'), backgroundColor: AppColors.background, elevation: 0, foregroundColor: AppColors.textDark),
+      appBar: AppBar(title: const Text('Chi tiết quà tặng'), backgroundColor: AppColors.background, elevation: 0, foregroundColor: AppColors.textDark),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Ảnh sản phẩm
+            // image
             imageUrl != null && imageUrl.isNotEmpty
                 ? Image.network(
                     imageUrl,
@@ -58,23 +58,23 @@ class ProductDetailScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Tên sản phẩm
+                  // product name
                   Text(
                     name,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: AppColors.textDark),
                   ),
                   const SizedBox(height: 8),
 
-                  // Giá sản phẩm
+                  // product price
                   Text(
                     price,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(color: AppColors.primary, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
 
-                  // Mô tả sản phẩm
+                  // product description
                   Text(
-                    'Mô tả sản phẩm',
+                    'Mô tả',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600, color: AppColors.textDark),
                   ),
                   const SizedBox(height: 8),
@@ -95,7 +95,7 @@ class ProductDetailScreen extends StatelessWidget {
             size: ButtonSize.large,
             type: ButtonType.primary,
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đã thêm sản phẩm vào giỏ hàng!')));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đã thêm quà tặng vào giỏ hàng!')));
             },
           ),
         ),
