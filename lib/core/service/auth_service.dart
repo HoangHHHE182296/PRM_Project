@@ -1,12 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:public_openapi/public_openapi.dart';
 import 'credential_service.dart';
-import 'package:public_openapi/src/model/verify_account_command.dart';
-import 'package:public_openapi/src/model/set_password_command.dart';
-import 'package:public_openapi/src/model/change_password_command.dart';
-import 'package:public_openapi/src/model/update_profile_command.dart';
-import 'package:public_openapi/src/model/profile_response_api_success_response.dart';
-import 'package:public_openapi/src/model/date.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
@@ -88,13 +82,7 @@ class AuthService {
       );
 
       return response.data?.success ?? false;
-    } on DioException catch (e) {
-      print("DIO ERROR TYPE: ${e.type}");
-
-      if (e.type == DioExceptionType.cancel) {
-        print("👉 Request bị CANCEL");
-      }
-
+    } on DioException catch (_) {
       return false;
     }
   }
@@ -146,9 +134,7 @@ class AuthService {
 
   Future<bool> setPassword(String newPassword) async {
     try {
-      final command = SetPasswordCommand(
-        (b) => b..newPassword = newPassword,
-      );
+      final command = SetPasswordCommand((b) => b..newPassword = newPassword);
       final response = await _accountApi.apiAccountPasswordSetPost(
         setPasswordCommand: command,
       );
@@ -158,7 +144,10 @@ class AuthService {
     }
   }
 
-  Future<bool> changePassword(String currentPassword, String newPassword) async {
+  Future<bool> changePassword(
+    String currentPassword,
+    String newPassword,
+  ) async {
     try {
       final command = ChangePasswordCommand(
         (b) => b
