@@ -13,8 +13,7 @@ class CredentialService {
   late SharedPreferences _prefs;
   final Map<String, String> _sessionStorage = {};
 
-  final StreamController<LoggedUserModel?> _userInfoController =
-      StreamController<LoggedUserModel?>.broadcast();
+  final StreamController<LoggedUserModel?> _userInfoController = StreamController<LoggedUserModel?>.broadcast();
   Stream<LoggedUserModel?> get userLoggedInfo$ => _userInfoController.stream;
 
   Future<void> init() async {
@@ -50,28 +49,14 @@ class CredentialService {
     final refreshToken = _getItem(CredentialKey.refreshToken);
 
     if (accessToken != null && refreshToken != null) {
-      return {
-        'accessToken': utf8.decode(base64.decode(accessToken)),
-        'refreshToken': utf8.decode(base64.decode(refreshToken)),
-      };
+      return {'accessToken': utf8.decode(base64.decode(accessToken)), 'refreshToken': utf8.decode(base64.decode(refreshToken))};
     }
     return null;
   }
 
   bool get isAuthenticated {
-    final token = _getItem(CredentialKey.accessToken);
-    if (token == null) return false;
-
-    try {
-      // Vẫn lấy payload để xem có decode được không nhưng không logout nữa
-      _decodeJwt(utf8.decode(base64.decode(token)));
-      return true;
-    } catch (e) {
-      clearAccessToken();
-      return false;
-    }
+    return _getItem(CredentialKey.accessToken) != null;
   }
-
 
   LoggedUserModel? get userLoggedInfo {
     final userInfo = _getItem(CredentialKey.userInfo);
@@ -94,11 +79,7 @@ class CredentialService {
       );
 
       final isRemember = _prefs.getString(CredentialKey.userInfo) != null;
-      _setItem(
-        CredentialKey.userInfo,
-        base64.encode(utf8.encode(jsonEncode(updatedInfo.toJson()))),
-        isRemember,
-      );
+      _setItem(CredentialKey.userInfo, base64.encode(utf8.encode(jsonEncode(updatedInfo.toJson()))), isRemember);
 
       _userInfoController.add(updatedInfo);
     }
@@ -116,16 +97,8 @@ class CredentialService {
         roles: _parseRoles(decodedToken['roles']),
       );
 
-      _setItem(
-        CredentialKey.userInfo,
-        base64.encode(utf8.encode(jsonEncode(loggedUser.toJson()))),
-        isRemember,
-      );
-      setAccessToken(
-        data.accessToken!,
-        data.refreshToken!,
-        isRemember: isRemember,
-      );
+      _setItem(CredentialKey.userInfo, base64.encode(utf8.encode(jsonEncode(loggedUser.toJson()))), isRemember);
+      setAccessToken(data.accessToken!, data.refreshToken!, isRemember: isRemember);
 
       _userInfoController.add(loggedUser);
     } else {
@@ -133,21 +106,9 @@ class CredentialService {
     }
   }
 
-  void setAccessToken(
-    String token,
-    String refreshToken, {
-    bool isRemember = false,
-  }) {
-    _setItem(
-      CredentialKey.accessToken,
-      base64.encode(utf8.encode(token)),
-      isRemember,
-    );
-    _setItem(
-      CredentialKey.refreshToken,
-      base64.encode(utf8.encode(refreshToken)),
-      isRemember,
-    );
+  void setAccessToken(String token, String refreshToken, {bool isRemember = false}) {
+    _setItem(CredentialKey.accessToken, base64.encode(utf8.encode(token)), isRemember);
+    _setItem(CredentialKey.refreshToken, base64.encode(utf8.encode(refreshToken)), isRemember);
   }
 
   void clearAccessToken() {
