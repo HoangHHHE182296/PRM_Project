@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:prm_project/core/di/injection.dart';
 import 'package:prm_project/core/routes/app_router.dart';
-import 'page/products/product_list_screen.dart';
+import 'features/products/product_list_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

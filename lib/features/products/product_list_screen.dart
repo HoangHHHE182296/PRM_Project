@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prm_project/core/api/api_client.dart';
-import 'package:prm_project/page/products/product_detail_screen.dart';
+import 'package:prm_project/features/products/product_detail_screen.dart';
 import 'package:prm_project/shared/theme/app_colors.dart';
 import 'package:public_openapi/public_openapi.dart';
 
@@ -44,9 +44,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200 &&
-        !_isLoading &&
-        _hasMore) {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200 && !_isLoading && _hasMore) {
       _fetchProducts(loadMore: true);
     }
   }
@@ -64,11 +62,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
       _isLoading = true;
     });
 
-    final Map<String, dynamic> queryParams = {
-      'PageNumber': _pageNumber,
-      'PageSize': _pageSize,
-    };
-    
+    final Map<String, dynamic> queryParams = {'PageNumber': _pageNumber, 'PageSize': _pageSize};
+
     // Vẫn áp dụng filter lên API để tối ưu database
     if (_minPrice != null) queryParams['MinPrice'] = _minPrice;
     if (_maxPrice != null) queryParams['MaxPrice'] = _maxPrice;
@@ -77,7 +72,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
       // Gửi cả lên API để filter database trước, phòng khi database quá lớn
       queryParams['Search'] = _searchQuery!.trim();
     }
-    
+
     // Sort
     if (_sortBy == 'price') {
       queryParams['SortBy'] = 'Price';
@@ -88,15 +83,12 @@ class _ProductListScreenState extends State<ProductListScreen> {
     }
 
     try {
-      final res = await ApiClient.openApi.dio.get(
-        '/api/products/get-public-product-list',
-        queryParameters: queryParams,
-      );
-      
+      final res = await ApiClient.openApi.dio.get('/api/products/get-public-product-list', queryParameters: queryParams);
+
       final json = res.data;
       if (json['success'] == true && json['data'] != null) {
         final List list = json['data'];
-        
+
         List<ProductListResponse> parsedList = list
             .map(
               (e) => ProductListResponse(
@@ -208,10 +200,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 ),
                 const SizedBox(width: 8),
                 Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
                   child: IconButton(
                     icon: const Icon(Icons.filter_list, color: AppColors.primary),
                     tooltip: 'Bộ lọc',
@@ -221,77 +210,77 @@ class _ProductListScreenState extends State<ProductListScreen> {
               ],
             ),
           ),
-          
+
           // Danh sách sản phẩm
           Expanded(
             child: _products.isEmpty && _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _products.isEmpty
-                    ? const Center(child: Text('Không có mục nào.'))
-                    : GridView.builder(
-                        controller: _scrollController,
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 16.0,
-                          mainAxisSpacing: 16.0,
-                          childAspectRatio: 0.75, // Tỉ lệ khung hình (width/height)
-                        ),
-                        itemCount: _products.length + (_hasMore ? 1 : 0),
-                        itemBuilder: (context, index) {
-                          if (index == _products.length) {
-                            return const Center(child: CircularProgressIndicator());
-                          }
+                ? const Center(child: Text('Không có mục nào.'))
+                : GridView.builder(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 16.0,
+                      mainAxisSpacing: 16.0,
+                      childAspectRatio: 0.75, // Tỉ lệ khung hình (width/height)
+                    ),
+                    itemCount: _products.length + (_hasMore ? 1 : 0),
+                    itemBuilder: (context, index) {
+                      if (index == _products.length) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
 
-                          final product = _products[index];
-                          return InkWell(
-                            onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetailScreen(product: product)));
-                            },
-                            child: Card(
-                              elevation: 2,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                              clipBehavior: Clip.antiAlias,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // Hình ảnh
-                                  Expanded(
-                                    child: product.imageUrl != null && product.imageUrl!.isNotEmpty
-                                        ? Image.network(
-                                            product.imageUrl!,
-                                            width: double.infinity,
-                                            fit: BoxFit.cover,
-                                            errorBuilder: (context, error, stackTrace) => _buildPlaceholderImage(),
-                                          )
-                                        : _buildPlaceholderImage(),
-                                  ),
-                                  // Thông tin
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          product.name ?? 'Không có tên',
-                                          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          product.price != null ? '${product.price}đ' : 'Liên hệ',
-                                          style: Theme.of(context).textTheme.titleSmall?.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
+                      final product = _products[index];
+                      return InkWell(
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetailScreen(product: product)));
                         },
-                      ),
+                        child: Card(
+                          elevation: 2,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          clipBehavior: Clip.antiAlias,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Hình ảnh
+                              Expanded(
+                                child: product.imageUrl != null && product.imageUrl!.isNotEmpty
+                                    ? Image.network(
+                                        product.imageUrl!,
+                                        width: double.infinity,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) => _buildPlaceholderImage(),
+                                      )
+                                    : _buildPlaceholderImage(),
+                              ),
+                              // Thông tin
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      product.name ?? 'Không có tên',
+                                      style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      product.price != null ? '${product.price}đ' : 'Liên hệ',
+                                      style: Theme.of(context).textTheme.titleSmall?.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
           ),
         ],
       ),
@@ -328,10 +317,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setModalState) {
             return Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-                top: 16, left: 16, right: 16,
-              ),
+              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, top: 16, left: 16, right: 16),
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -361,7 +347,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       ],
                       onChanged: (val) {
                         if (val != null) {
-                          setModalState(() { tempSort = val; });
+                          setModalState(() {
+                            tempSort = val;
+                          });
                         }
                       },
                     ),
@@ -384,15 +372,14 @@ class _ProductListScreenState extends State<ProductListScreen> {
                             onChanged: (val) {
                               final valDouble = double.tryParse(val);
                               if (valDouble != null && valDouble >= 0 && valDouble <= tempMax) {
-                                setModalState(() { tempMin = valDouble; });
+                                setModalState(() {
+                                  tempMin = valDouble;
+                                });
                               }
                             },
                           ),
                         ),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text('-'),
-                        ),
+                        const Padding(padding: EdgeInsets.symmetric(horizontal: 8.0), child: Text('-')),
                         Expanded(
                           child: TextField(
                             controller: maxController,
@@ -405,7 +392,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
                             onChanged: (val) {
                               final valDouble = double.tryParse(val);
                               if (valDouble != null && valDouble >= tempMin && valDouble <= 5000000) {
-                                setModalState(() { tempMax = valDouble; });
+                                setModalState(() {
+                                  tempMax = valDouble;
+                                });
                               }
                             },
                           ),
@@ -436,7 +425,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       contentPadding: EdgeInsets.zero,
                       controlAffinity: ListTileControlAffinity.leading,
                       onChanged: (val) {
-                        setModalState(() { tempInStock = val ?? false; });
+                        setModalState(() {
+                          tempInStock = val ?? false;
+                        });
                       },
                     ),
                     const SizedBox(height: 24),
@@ -452,20 +443,32 @@ class _ProductListScreenState extends State<ProductListScreen> {
                             _inStockOnly = tempInStock ? true : null;
 
                             switch (tempSort) {
-                              case 'name_asc': _sortBy = 'name'; _sortDescending = false; break;
-                              case 'name_desc': _sortBy = 'name'; _sortDescending = true; break;
-                              case 'price_asc': _sortBy = 'price'; _sortDescending = false; break;
-                              case 'price_desc': _sortBy = 'price'; _sortDescending = true; break;
-                              default: _sortBy = null; _sortDescending = null; break;
+                              case 'name_asc':
+                                _sortBy = 'name';
+                                _sortDescending = false;
+                                break;
+                              case 'name_desc':
+                                _sortBy = 'name';
+                                _sortDescending = true;
+                                break;
+                              case 'price_asc':
+                                _sortBy = 'price';
+                                _sortDescending = false;
+                                break;
+                              case 'price_desc':
+                                _sortBy = 'price';
+                                _sortDescending = true;
+                                break;
+                              default:
+                                _sortBy = null;
+                                _sortDescending = null;
+                                break;
                             }
                             _fetchProducts();
                           });
                           Navigator.pop(context);
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                        ),
+                        style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, padding: const EdgeInsets.symmetric(vertical: 16)),
                         child: const Text('Áp dụng', style: TextStyle(color: Colors.white, fontSize: 16)),
                       ),
                     ),
