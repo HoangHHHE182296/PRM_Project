@@ -45,4 +45,4 @@ app.*.map.json
 /android/app/release
 
 # Others
-swagger.json
+**/*swagger*.json
