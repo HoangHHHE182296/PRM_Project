@@ -127,6 +127,10 @@ class _ProfileLeftCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = sl<CredentialService>().userLoggedInfo;
+    final data = profileData?.data;
+    final fullNameFromProfile = '${data?.firstName ?? ''} ${data?.lastName ?? ''}'.trim();
+    final displayName = fullNameFromProfile.isNotEmpty ? fullNameFromProfile : (user?.name ?? 'Không có tên');
+    final firstChar = displayName.isNotEmpty ? displayName[0].toUpperCase() : '?';
 
     return Container(
       decoration: BoxDecoration(
@@ -170,9 +174,9 @@ class _ProfileLeftCard extends StatelessWidget {
                           border: Border.all(color: Colors.orange, width: 3),
                         ),
                         alignment: Alignment.center,
-                        child: const Text(
-                          'T',
-                          style: TextStyle(
+                        child: Text(
+                          firstChar,
+                          style: const TextStyle(
                             fontSize: 48,
                             color: Colors.white,
                             fontWeight: FontWeight.w400,
@@ -207,7 +211,7 @@ class _ProfileLeftCard extends StatelessWidget {
                 end: Alignment.centerRight,
               ).createShader(bounds),
               child: Text(
-                user?.name ?? 'Không có tên',
+                displayName,
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
