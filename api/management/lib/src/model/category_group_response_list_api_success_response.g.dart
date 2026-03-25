@@ -16,8 +16,6 @@ class _$CategoryGroupResponseListApiSuccessResponse
   final int? statusCode;
   @override
   final BuiltList<CategoryGroupResponse>? data;
-  @override
-  final JsonObject? metadata;
 
   factory _$CategoryGroupResponseListApiSuccessResponse(
           [void Function(CategoryGroupResponseListApiSuccessResponseBuilder)?
@@ -26,7 +24,7 @@ class _$CategoryGroupResponseListApiSuccessResponse
           ._build();
 
   _$CategoryGroupResponseListApiSuccessResponse._(
-      {this.success, this.message, this.statusCode, this.data, this.metadata})
+      {this.success, this.message, this.statusCode, this.data})
       : super._();
   @override
   CategoryGroupResponseListApiSuccessResponse rebuild(
@@ -45,8 +43,7 @@ class _$CategoryGroupResponseListApiSuccessResponse
         success == other.success &&
         message == other.message &&
         statusCode == other.statusCode &&
-        data == other.data &&
-        metadata == other.metadata;
+        data == other.data;
   }
 
   @override
@@ -56,7 +53,6 @@ class _$CategoryGroupResponseListApiSuccessResponse
     _$hash = $jc(_$hash, message.hashCode);
     _$hash = $jc(_$hash, statusCode.hashCode);
     _$hash = $jc(_$hash, data.hashCode);
-    _$hash = $jc(_$hash, metadata.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -68,8 +64,7 @@ class _$CategoryGroupResponseListApiSuccessResponse
           ..add('success', success)
           ..add('message', message)
           ..add('statusCode', statusCode)
-          ..add('data', data)
-          ..add('metadata', metadata))
+          ..add('data', data))
         .toString();
   }
 }
@@ -97,10 +92,6 @@ class CategoryGroupResponseListApiSuccessResponseBuilder
       _$this._data ??= ListBuilder<CategoryGroupResponse>();
   set data(ListBuilder<CategoryGroupResponse>? data) => _$this._data = data;
 
-  JsonObject? _metadata;
-  JsonObject? get metadata => _$this._metadata;
-  set metadata(JsonObject? metadata) => _$this._metadata = metadata;
-
   CategoryGroupResponseListApiSuccessResponseBuilder() {
     CategoryGroupResponseListApiSuccessResponse._defaults(this);
   }
@@ -112,7 +103,6 @@ class CategoryGroupResponseListApiSuccessResponseBuilder
       _message = $v.message;
       _statusCode = $v.statusCode;
       _data = $v.data?.toBuilder();
-      _metadata = $v.metadata;
       _$v = null;
     }
     return this;
@@ -142,7 +132,6 @@ class CategoryGroupResponseListApiSuccessResponseBuilder
             message: message,
             statusCode: statusCode,
             data: _data?.build(),
-            metadata: metadata,
           );
     } catch (_) {
       late String _$failedField;

@@ -27,9 +27,11 @@ import 'package:management_openapi/src/model/category_summary_response_paged_res
 import 'package:management_openapi/src/model/category_summary_response_paged_result_api_success_response.dart';
 import 'package:management_openapi/src/model/change_password_command.dart';
 import 'package:management_openapi/src/model/create_category_command.dart';
+import 'package:management_openapi/src/model/feedback_reply.dart';
 import 'package:management_openapi/src/model/feedback_response.dart';
 import 'package:management_openapi/src/model/feedback_response_paged_result.dart';
 import 'package:management_openapi/src/model/feedback_response_paged_result_api_success_response.dart';
+import 'package:management_openapi/src/model/feedback_status.dart';
 import 'package:management_openapi/src/model/generate_otp_command.dart';
 import 'package:management_openapi/src/model/gift_set.dart';
 import 'package:management_openapi/src/model/gift_set_item.dart';
@@ -53,6 +55,7 @@ import 'package:management_openapi/src/model/product_type.dart';
 import 'package:management_openapi/src/model/profile_response.dart';
 import 'package:management_openapi/src/model/profile_response_api_success_response.dart';
 import 'package:management_openapi/src/model/refresh_token_command.dart';
+import 'package:management_openapi/src/model/reply_feedback_command.dart';
 import 'package:management_openapi/src/model/set_password_command.dart';
 import 'package:management_openapi/src/model/string_api_success_response.dart';
 import 'package:management_openapi/src/model/string_i_enumerable_api_success_response.dart';
@@ -79,9 +82,11 @@ part 'serializers.g.dart';
   CategorySummaryResponsePagedResultApiSuccessResponse,
   ChangePasswordCommand,
   CreateCategoryCommand,
+  FeedbackReply,
   FeedbackResponse,
   FeedbackResponsePagedResult,
   FeedbackResponsePagedResultApiSuccessResponse,
+  FeedbackStatus,
   GenerateOtpCommand,
   GiftSet,
   GiftSetItem,
@@ -105,6 +110,7 @@ part 'serializers.g.dart';
   ProfileResponse,
   ProfileResponseApiSuccessResponse,
   RefreshTokenCommand,
+  ReplyFeedbackCommand,
   SetPasswordCommand,
   StringApiSuccessResponse,
   StringIEnumerableApiSuccessResponse,

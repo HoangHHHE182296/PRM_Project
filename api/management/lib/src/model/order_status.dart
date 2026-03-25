@@ -11,10 +11,8 @@ part 'order_status.g.dart';
 
 class OrderStatus extends EnumClass {
 
-  @BuiltValueEnumConst(wireName: r'PendingPayment')
-  static const OrderStatus pendingPayment = _$pendingPayment;
-  @BuiltValueEnumConst(wireName: r'Paid')
-  static const OrderStatus paid = _$paid;
+  @BuiltValueEnumConst(wireName: r'Unpaid')
+  static const OrderStatus unpaid = _$unpaid;
   @BuiltValueEnumConst(wireName: r'Processing')
   static const OrderStatus processing = _$processing;
   @BuiltValueEnumConst(wireName: r'Shipped')
@@ -23,10 +21,8 @@ class OrderStatus extends EnumClass {
   static const OrderStatus delivered = _$delivered;
   @BuiltValueEnumConst(wireName: r'Cancelled')
   static const OrderStatus cancelled = _$cancelled;
-  @BuiltValueEnumConst(wireName: r'Refunded')
-  static const OrderStatus refunded = _$refunded;
-  @BuiltValueEnumConst(wireName: r'Failed')
-  static const OrderStatus failed = _$failed;
+  @BuiltValueEnumConst(wireName: r'PaymentFailed')
+  static const OrderStatus paymentFailed = _$paymentFailed;
 
   static Serializer<OrderStatus> get serializer => _$orderStatusSerializer;
 

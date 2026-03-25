@@ -6,21 +6,17 @@ part of 'order_status.dart';
 // BuiltValueGenerator
 // **************************************************************************
 
-const OrderStatus _$pendingPayment = const OrderStatus._('pendingPayment');
-const OrderStatus _$paid = const OrderStatus._('paid');
+const OrderStatus _$unpaid = const OrderStatus._('unpaid');
 const OrderStatus _$processing = const OrderStatus._('processing');
 const OrderStatus _$shipped = const OrderStatus._('shipped');
 const OrderStatus _$delivered = const OrderStatus._('delivered');
 const OrderStatus _$cancelled = const OrderStatus._('cancelled');
-const OrderStatus _$refunded = const OrderStatus._('refunded');
-const OrderStatus _$failed = const OrderStatus._('failed');
+const OrderStatus _$paymentFailed = const OrderStatus._('paymentFailed');
 
 OrderStatus _$valueOf(String name) {
   switch (name) {
-    case 'pendingPayment':
-      return _$pendingPayment;
-    case 'paid':
-      return _$paid;
+    case 'unpaid':
+      return _$unpaid;
     case 'processing':
       return _$processing;
     case 'shipped':
@@ -29,10 +25,8 @@ OrderStatus _$valueOf(String name) {
       return _$delivered;
     case 'cancelled':
       return _$cancelled;
-    case 'refunded':
-      return _$refunded;
-    case 'failed':
-      return _$failed;
+    case 'paymentFailed':
+      return _$paymentFailed;
     default:
       throw ArgumentError(name);
   }
@@ -40,26 +34,22 @@ OrderStatus _$valueOf(String name) {
 
 final BuiltSet<OrderStatus> _$values =
     BuiltSet<OrderStatus>(const <OrderStatus>[
-  _$pendingPayment,
-  _$paid,
+  _$unpaid,
   _$processing,
   _$shipped,
   _$delivered,
   _$cancelled,
-  _$refunded,
-  _$failed,
+  _$paymentFailed,
 ]);
 
 class _$OrderStatusMeta {
   const _$OrderStatusMeta();
-  OrderStatus get pendingPayment => _$pendingPayment;
-  OrderStatus get paid => _$paid;
+  OrderStatus get unpaid => _$unpaid;
   OrderStatus get processing => _$processing;
   OrderStatus get shipped => _$shipped;
   OrderStatus get delivered => _$delivered;
   OrderStatus get cancelled => _$cancelled;
-  OrderStatus get refunded => _$refunded;
-  OrderStatus get failed => _$failed;
+  OrderStatus get paymentFailed => _$paymentFailed;
   OrderStatus valueOf(String name) => _$valueOf(name);
   BuiltSet<OrderStatus> get values => _$values;
 }
@@ -73,24 +63,20 @@ Serializer<OrderStatus> _$orderStatusSerializer = _$OrderStatusSerializer();
 
 class _$OrderStatusSerializer implements PrimitiveSerializer<OrderStatus> {
   static const Map<String, Object> _toWire = const <String, Object>{
-    'pendingPayment': 'PendingPayment',
-    'paid': 'Paid',
+    'unpaid': 'Unpaid',
     'processing': 'Processing',
     'shipped': 'Shipped',
     'delivered': 'Delivered',
     'cancelled': 'Cancelled',
-    'refunded': 'Refunded',
-    'failed': 'Failed',
+    'paymentFailed': 'PaymentFailed',
   };
   static const Map<Object, String> _fromWire = const <Object, String>{
-    'PendingPayment': 'pendingPayment',
-    'Paid': 'paid',
+    'Unpaid': 'unpaid',
     'Processing': 'processing',
     'Shipped': 'shipped',
     'Delivered': 'delivered',
     'Cancelled': 'cancelled',
-    'Refunded': 'refunded',
-    'Failed': 'failed',
+    'PaymentFailed': 'paymentFailed',
   };
 
   @override

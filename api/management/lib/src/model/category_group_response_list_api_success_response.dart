@@ -5,7 +5,6 @@
 // ignore_for_file: unused_element
 import 'package:management_openapi/src/model/category_group_response.dart';
 import 'package:built_collection/built_collection.dart';
-import 'package:built_value/json_object.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -18,7 +17,6 @@ part 'category_group_response_list_api_success_response.g.dart';
 /// * [message] 
 /// * [statusCode] 
 /// * [data] 
-/// * [metadata] 
 @BuiltValue()
 abstract class CategoryGroupResponseListApiSuccessResponse implements Built<CategoryGroupResponseListApiSuccessResponse, CategoryGroupResponseListApiSuccessResponseBuilder> {
   @BuiltValueField(wireName: r'success')
@@ -32,9 +30,6 @@ abstract class CategoryGroupResponseListApiSuccessResponse implements Built<Cate
 
   @BuiltValueField(wireName: r'data')
   BuiltList<CategoryGroupResponse>? get data;
-
-  @BuiltValueField(wireName: r'metadata')
-  JsonObject? get metadata;
 
   CategoryGroupResponseListApiSuccessResponse._();
 
@@ -85,13 +80,6 @@ class _$CategoryGroupResponseListApiSuccessResponseSerializer implements Primiti
       yield serializers.serialize(
         object.data,
         specifiedType: const FullType.nullable(BuiltList, [FullType(CategoryGroupResponse)]),
-      );
-    }
-    if (object.metadata != null) {
-      yield r'metadata';
-      yield serializers.serialize(
-        object.metadata,
-        specifiedType: const FullType.nullable(JsonObject),
       );
     }
   }
@@ -146,14 +134,6 @@ class _$CategoryGroupResponseListApiSuccessResponseSerializer implements Primiti
           ) as BuiltList<CategoryGroupResponse>?;
           if (valueDes == null) continue;
           result.data.replace(valueDes);
-          break;
-        case r'metadata':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(JsonObject),
-          ) as JsonObject?;
-          if (valueDes == null) continue;
-          result.metadata = valueDes;
           break;
         default:
           unhandled.add(key);

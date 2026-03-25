@@ -21,6 +21,7 @@ part 'order_list_response.g.dart';
 /// * [shippingAddress] 
 /// * [status] 
 /// * [paymentMethod] 
+/// * [isPaid] 
 /// * [createdAt] 
 @BuiltValue()
 abstract class OrderListResponse implements Built<OrderListResponse, OrderListResponseBuilder> {
@@ -44,11 +45,14 @@ abstract class OrderListResponse implements Built<OrderListResponse, OrderListRe
 
   @BuiltValueField(wireName: r'status')
   OrderStatus? get status;
-  // enum statusEnum {  PendingPayment,  Paid,  Processing,  Shipped,  Delivered,  Cancelled,  Refunded,  Failed,  };
+  // enum statusEnum {  Unpaid,  Processing,  Shipped,  Delivered,  Cancelled,  PaymentFailed,  };
 
   @BuiltValueField(wireName: r'paymentMethod')
   PaymentMethod? get paymentMethod;
   // enum paymentMethodEnum {  COD,  Momo,  VNPay,  BankTransfer,  CreditCard,  };
+
+  @BuiltValueField(wireName: r'isPaid')
+  bool? get isPaid;
 
   @BuiltValueField(wireName: r'createdAt')
   DateTime? get createdAt;
@@ -130,6 +134,13 @@ class _$OrderListResponseSerializer implements PrimitiveSerializer<OrderListResp
       yield serializers.serialize(
         object.paymentMethod,
         specifiedType: const FullType(PaymentMethod),
+      );
+    }
+    if (object.isPaid != null) {
+      yield r'isPaid';
+      yield serializers.serialize(
+        object.isPaid,
+        specifiedType: const FullType(bool),
       );
     }
     if (object.createdAt != null) {
@@ -221,6 +232,13 @@ class _$OrderListResponseSerializer implements PrimitiveSerializer<OrderListResp
             specifiedType: const FullType(PaymentMethod),
           ) as PaymentMethod;
           result.paymentMethod = valueDes;
+          break;
+        case r'isPaid':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(bool),
+          ) as bool;
+          result.isPaid = valueDes;
           break;
         case r'createdAt':
           final valueDes = serializers.deserialize(

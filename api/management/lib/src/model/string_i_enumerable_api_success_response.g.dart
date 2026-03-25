@@ -16,8 +16,6 @@ class _$StringIEnumerableApiSuccessResponse
   final int? statusCode;
   @override
   final BuiltList<String>? data;
-  @override
-  final JsonObject? metadata;
 
   factory _$StringIEnumerableApiSuccessResponse(
           [void Function(StringIEnumerableApiSuccessResponseBuilder)?
@@ -25,7 +23,7 @@ class _$StringIEnumerableApiSuccessResponse
       (StringIEnumerableApiSuccessResponseBuilder()..update(updates))._build();
 
   _$StringIEnumerableApiSuccessResponse._(
-      {this.success, this.message, this.statusCode, this.data, this.metadata})
+      {this.success, this.message, this.statusCode, this.data})
       : super._();
   @override
   StringIEnumerableApiSuccessResponse rebuild(
@@ -43,8 +41,7 @@ class _$StringIEnumerableApiSuccessResponse
         success == other.success &&
         message == other.message &&
         statusCode == other.statusCode &&
-        data == other.data &&
-        metadata == other.metadata;
+        data == other.data;
   }
 
   @override
@@ -54,7 +51,6 @@ class _$StringIEnumerableApiSuccessResponse
     _$hash = $jc(_$hash, message.hashCode);
     _$hash = $jc(_$hash, statusCode.hashCode);
     _$hash = $jc(_$hash, data.hashCode);
-    _$hash = $jc(_$hash, metadata.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -65,8 +61,7 @@ class _$StringIEnumerableApiSuccessResponse
           ..add('success', success)
           ..add('message', message)
           ..add('statusCode', statusCode)
-          ..add('data', data)
-          ..add('metadata', metadata))
+          ..add('data', data))
         .toString();
   }
 }
@@ -93,10 +88,6 @@ class StringIEnumerableApiSuccessResponseBuilder
   ListBuilder<String> get data => _$this._data ??= ListBuilder<String>();
   set data(ListBuilder<String>? data) => _$this._data = data;
 
-  JsonObject? _metadata;
-  JsonObject? get metadata => _$this._metadata;
-  set metadata(JsonObject? metadata) => _$this._metadata = metadata;
-
   StringIEnumerableApiSuccessResponseBuilder() {
     StringIEnumerableApiSuccessResponse._defaults(this);
   }
@@ -108,7 +99,6 @@ class StringIEnumerableApiSuccessResponseBuilder
       _message = $v.message;
       _statusCode = $v.statusCode;
       _data = $v.data?.toBuilder();
-      _metadata = $v.metadata;
       _$v = null;
     }
     return this;
@@ -137,7 +127,6 @@ class StringIEnumerableApiSuccessResponseBuilder
             message: message,
             statusCode: statusCode,
             data: _data?.build(),
-            metadata: metadata,
           );
     } catch (_) {
       late String _$failedField;

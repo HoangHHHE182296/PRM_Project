@@ -12,6 +12,7 @@ import 'package:management_openapi/src/api_util.dart';
 import 'package:management_openapi/src/model/api_failure_response.dart';
 import 'package:management_openapi/src/model/boolean_api_success_response.dart';
 import 'package:management_openapi/src/model/feedback_response_paged_result_api_success_response.dart';
+import 'package:management_openapi/src/model/reply_feedback_command.dart';
 
 class FeedbackApi {
 
@@ -295,7 +296,7 @@ class FeedbackApi {
   ///
   /// Parameters:
   /// * [id] 
-  /// * [body] 
+  /// * [replyFeedbackCommand] 
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
   /// * [extras] - Can be used to add flags to the request
@@ -307,7 +308,7 @@ class FeedbackApi {
   /// Throws [DioException] if API call or serialization fails
   Future<Response<BooleanApiSuccessResponse>> apiFeedbacksAdminIdReplyPut({ 
     required String id,
-    String? body,
+    ReplyFeedbackCommand? replyFeedbackCommand,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
     Map<String, dynamic>? extra,
@@ -338,7 +339,8 @@ class FeedbackApi {
     dynamic _bodyData;
 
     try {
-      _bodyData = body;
+      const _type = FullType(ReplyFeedbackCommand);
+      _bodyData = replyFeedbackCommand == null ? null : _serializers.serialize(replyFeedbackCommand, specifiedType: _type);
 
     } catch(error, stackTrace) {
       throw DioException(

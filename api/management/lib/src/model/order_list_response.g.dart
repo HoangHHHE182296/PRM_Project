@@ -24,6 +24,8 @@ class _$OrderListResponse extends OrderListResponse {
   @override
   final PaymentMethod? paymentMethod;
   @override
+  final bool? isPaid;
+  @override
   final DateTime? createdAt;
 
   factory _$OrderListResponse(
@@ -39,6 +41,7 @@ class _$OrderListResponse extends OrderListResponse {
       this.shippingAddress,
       this.status,
       this.paymentMethod,
+      this.isPaid,
       this.createdAt})
       : super._();
   @override
@@ -61,6 +64,7 @@ class _$OrderListResponse extends OrderListResponse {
         shippingAddress == other.shippingAddress &&
         status == other.status &&
         paymentMethod == other.paymentMethod &&
+        isPaid == other.isPaid &&
         createdAt == other.createdAt;
   }
 
@@ -75,6 +79,7 @@ class _$OrderListResponse extends OrderListResponse {
     _$hash = $jc(_$hash, shippingAddress.hashCode);
     _$hash = $jc(_$hash, status.hashCode);
     _$hash = $jc(_$hash, paymentMethod.hashCode);
+    _$hash = $jc(_$hash, isPaid.hashCode);
     _$hash = $jc(_$hash, createdAt.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
@@ -91,6 +96,7 @@ class _$OrderListResponse extends OrderListResponse {
           ..add('shippingAddress', shippingAddress)
           ..add('status', status)
           ..add('paymentMethod', paymentMethod)
+          ..add('isPaid', isPaid)
           ..add('createdAt', createdAt))
         .toString();
   }
@@ -135,6 +141,10 @@ class OrderListResponseBuilder
   set paymentMethod(PaymentMethod? paymentMethod) =>
       _$this._paymentMethod = paymentMethod;
 
+  bool? _isPaid;
+  bool? get isPaid => _$this._isPaid;
+  set isPaid(bool? isPaid) => _$this._isPaid = isPaid;
+
   DateTime? _createdAt;
   DateTime? get createdAt => _$this._createdAt;
   set createdAt(DateTime? createdAt) => _$this._createdAt = createdAt;
@@ -154,6 +164,7 @@ class OrderListResponseBuilder
       _shippingAddress = $v.shippingAddress;
       _status = $v.status;
       _paymentMethod = $v.paymentMethod;
+      _isPaid = $v.isPaid;
       _createdAt = $v.createdAt;
       _$v = null;
     }
@@ -184,6 +195,7 @@ class OrderListResponseBuilder
           shippingAddress: shippingAddress,
           status: status,
           paymentMethod: paymentMethod,
+          isPaid: isPaid,
           createdAt: createdAt,
         );
     replace(_$result);

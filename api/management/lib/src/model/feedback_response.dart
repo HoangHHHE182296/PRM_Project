@@ -3,6 +3,8 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:management_openapi/src/model/feedback_status.dart';
+import 'package:management_openapi/src/model/feedback_reply.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -20,6 +22,7 @@ part 'feedback_response.g.dart';
 /// * [rating] 
 /// * [comment] 
 /// * [reply] 
+/// * [status] 
 /// * [createdAt] 
 @BuiltValue()
 abstract class FeedbackResponse implements Built<FeedbackResponse, FeedbackResponseBuilder> {
@@ -48,7 +51,11 @@ abstract class FeedbackResponse implements Built<FeedbackResponse, FeedbackRespo
   String? get comment;
 
   @BuiltValueField(wireName: r'reply')
-  String? get reply;
+  FeedbackReply? get reply;
+
+  @BuiltValueField(wireName: r'status')
+  FeedbackStatus? get status;
+  // enum statusEnum {  Processing,  Accepted,  Reject,  };
 
   @BuiltValueField(wireName: r'createdAt')
   DateTime? get createdAt;
@@ -94,7 +101,7 @@ class _$FeedbackResponseSerializer implements PrimitiveSerializer<FeedbackRespon
       yield r'orderId';
       yield serializers.serialize(
         object.orderId,
-        specifiedType: const FullType.nullable(String),
+        specifiedType: const FullType(String),
       );
     }
     if (object.userId != null) {
@@ -136,7 +143,14 @@ class _$FeedbackResponseSerializer implements PrimitiveSerializer<FeedbackRespon
       yield r'reply';
       yield serializers.serialize(
         object.reply,
-        specifiedType: const FullType.nullable(String),
+        specifiedType: const FullType(FeedbackReply),
+      );
+    }
+    if (object.status != null) {
+      yield r'status';
+      yield serializers.serialize(
+        object.status,
+        specifiedType: const FullType(FeedbackStatus),
       );
     }
     if (object.createdAt != null) {
@@ -186,9 +200,8 @@ class _$FeedbackResponseSerializer implements PrimitiveSerializer<FeedbackRespon
         case r'orderId':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
+            specifiedType: const FullType(String),
+          ) as String;
           result.orderId = valueDes;
           break;
         case r'userId':
@@ -232,10 +245,16 @@ class _$FeedbackResponseSerializer implements PrimitiveSerializer<FeedbackRespon
         case r'reply':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
-          result.reply = valueDes;
+            specifiedType: const FullType(FeedbackReply),
+          ) as FeedbackReply;
+          result.reply.replace(valueDes);
+          break;
+        case r'status':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(FeedbackStatus),
+          ) as FeedbackStatus;
+          result.status = valueDes;
           break;
         case r'createdAt':
           final valueDes = serializers.deserialize(

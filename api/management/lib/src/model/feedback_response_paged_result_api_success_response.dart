@@ -4,7 +4,6 @@
 
 // ignore_for_file: unused_element
 import 'package:management_openapi/src/model/feedback_response_paged_result.dart';
-import 'package:built_value/json_object.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -17,7 +16,6 @@ part 'feedback_response_paged_result_api_success_response.g.dart';
 /// * [message] 
 /// * [statusCode] 
 /// * [data] 
-/// * [metadata] 
 @BuiltValue()
 abstract class FeedbackResponsePagedResultApiSuccessResponse implements Built<FeedbackResponsePagedResultApiSuccessResponse, FeedbackResponsePagedResultApiSuccessResponseBuilder> {
   @BuiltValueField(wireName: r'success')
@@ -31,9 +29,6 @@ abstract class FeedbackResponsePagedResultApiSuccessResponse implements Built<Fe
 
   @BuiltValueField(wireName: r'data')
   FeedbackResponsePagedResult? get data;
-
-  @BuiltValueField(wireName: r'metadata')
-  JsonObject? get metadata;
 
   FeedbackResponsePagedResultApiSuccessResponse._();
 
@@ -84,13 +79,6 @@ class _$FeedbackResponsePagedResultApiSuccessResponseSerializer implements Primi
       yield serializers.serialize(
         object.data,
         specifiedType: const FullType(FeedbackResponsePagedResult),
-      );
-    }
-    if (object.metadata != null) {
-      yield r'metadata';
-      yield serializers.serialize(
-        object.metadata,
-        specifiedType: const FullType.nullable(JsonObject),
       );
     }
   }
@@ -144,14 +132,6 @@ class _$FeedbackResponsePagedResultApiSuccessResponseSerializer implements Primi
             specifiedType: const FullType(FeedbackResponsePagedResult),
           ) as FeedbackResponsePagedResult;
           result.data.replace(valueDes);
-          break;
-        case r'metadata':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(JsonObject),
-          ) as JsonObject?;
-          if (valueDes == null) continue;
-          result.metadata = valueDes;
           break;
         default:
           unhandled.add(key);

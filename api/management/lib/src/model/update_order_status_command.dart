@@ -17,7 +17,7 @@ part 'update_order_status_command.g.dart';
 abstract class UpdateOrderStatusCommand implements Built<UpdateOrderStatusCommand, UpdateOrderStatusCommandBuilder> {
   @BuiltValueField(wireName: r'status')
   OrderStatus? get status;
-  // enum statusEnum {  PendingPayment,  Paid,  Processing,  Shipped,  Delivered,  Cancelled,  Refunded,  Failed,  };
+  // enum statusEnum {  Unpaid,  Processing,  Shipped,  Delivered,  Cancelled,  PaymentFailed,  };
 
   UpdateOrderStatusCommand._();
 

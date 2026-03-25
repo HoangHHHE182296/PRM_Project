@@ -16,8 +16,6 @@ class _$OrderListResponsePagedResultApiSuccessResponse
   final int? statusCode;
   @override
   final OrderListResponsePagedResult? data;
-  @override
-  final JsonObject? metadata;
 
   factory _$OrderListResponsePagedResultApiSuccessResponse(
           [void Function(OrderListResponsePagedResultApiSuccessResponseBuilder)?
@@ -26,7 +24,7 @@ class _$OrderListResponsePagedResultApiSuccessResponse
           ._build();
 
   _$OrderListResponsePagedResultApiSuccessResponse._(
-      {this.success, this.message, this.statusCode, this.data, this.metadata})
+      {this.success, this.message, this.statusCode, this.data})
       : super._();
   @override
   OrderListResponsePagedResultApiSuccessResponse rebuild(
@@ -45,8 +43,7 @@ class _$OrderListResponsePagedResultApiSuccessResponse
         success == other.success &&
         message == other.message &&
         statusCode == other.statusCode &&
-        data == other.data &&
-        metadata == other.metadata;
+        data == other.data;
   }
 
   @override
@@ -56,7 +53,6 @@ class _$OrderListResponsePagedResultApiSuccessResponse
     _$hash = $jc(_$hash, message.hashCode);
     _$hash = $jc(_$hash, statusCode.hashCode);
     _$hash = $jc(_$hash, data.hashCode);
-    _$hash = $jc(_$hash, metadata.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -68,8 +64,7 @@ class _$OrderListResponsePagedResultApiSuccessResponse
           ..add('success', success)
           ..add('message', message)
           ..add('statusCode', statusCode)
-          ..add('data', data)
-          ..add('metadata', metadata))
+          ..add('data', data))
         .toString();
   }
 }
@@ -97,10 +92,6 @@ class OrderListResponsePagedResultApiSuccessResponseBuilder
       _$this._data ??= OrderListResponsePagedResultBuilder();
   set data(OrderListResponsePagedResultBuilder? data) => _$this._data = data;
 
-  JsonObject? _metadata;
-  JsonObject? get metadata => _$this._metadata;
-  set metadata(JsonObject? metadata) => _$this._metadata = metadata;
-
   OrderListResponsePagedResultApiSuccessResponseBuilder() {
     OrderListResponsePagedResultApiSuccessResponse._defaults(this);
   }
@@ -112,7 +103,6 @@ class OrderListResponsePagedResultApiSuccessResponseBuilder
       _message = $v.message;
       _statusCode = $v.statusCode;
       _data = $v.data?.toBuilder();
-      _metadata = $v.metadata;
       _$v = null;
     }
     return this;
@@ -142,7 +132,6 @@ class OrderListResponsePagedResultApiSuccessResponseBuilder
             message: message,
             statusCode: statusCode,
             data: _data?.build(),
-            metadata: metadata,
           );
     } catch (_) {
       late String _$failedField;

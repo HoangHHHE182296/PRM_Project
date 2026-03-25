@@ -153,7 +153,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **apiFeedbacksAdminIdReplyPut**
-> BooleanApiSuccessResponse apiFeedbacksAdminIdReplyPut(id, body)
+> BooleanApiSuccessResponse apiFeedbacksAdminIdReplyPut(id, replyFeedbackCommand)
 
 
 
@@ -163,10 +163,10 @@ import 'package:management_openapi/api.dart';
 
 final api = ManagementOpenapi().getFeedbackApi();
 final String id = 38400000-8cf0-11bd-b23e-10b96e4ef00d; // String | 
-final String body = body_example; // String | 
+final ReplyFeedbackCommand replyFeedbackCommand = ; // ReplyFeedbackCommand | 
 
 try {
-    final response = api.apiFeedbacksAdminIdReplyPut(id, body);
+    final response = api.apiFeedbacksAdminIdReplyPut(id, replyFeedbackCommand);
     print(response);
 } on DioException catch (e) {
     print('Exception when calling FeedbackApi->apiFeedbacksAdminIdReplyPut: $e\n');
@@ -178,7 +178,7 @@ try {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **id** | **String**|  | 
- **body** | **String**|  | [optional] 
+ **replyFeedbackCommand** | [**ReplyFeedbackCommand**](ReplyFeedbackCommand.md)|  | [optional] 
 
 ### Return type
 

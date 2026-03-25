@@ -15,15 +15,13 @@ class _$BooleanApiSuccessResponse extends BooleanApiSuccessResponse {
   final int? statusCode;
   @override
   final bool? data;
-  @override
-  final JsonObject? metadata;
 
   factory _$BooleanApiSuccessResponse(
           [void Function(BooleanApiSuccessResponseBuilder)? updates]) =>
       (BooleanApiSuccessResponseBuilder()..update(updates))._build();
 
   _$BooleanApiSuccessResponse._(
-      {this.success, this.message, this.statusCode, this.data, this.metadata})
+      {this.success, this.message, this.statusCode, this.data})
       : super._();
   @override
   BooleanApiSuccessResponse rebuild(
@@ -41,8 +39,7 @@ class _$BooleanApiSuccessResponse extends BooleanApiSuccessResponse {
         success == other.success &&
         message == other.message &&
         statusCode == other.statusCode &&
-        data == other.data &&
-        metadata == other.metadata;
+        data == other.data;
   }
 
   @override
@@ -52,7 +49,6 @@ class _$BooleanApiSuccessResponse extends BooleanApiSuccessResponse {
     _$hash = $jc(_$hash, message.hashCode);
     _$hash = $jc(_$hash, statusCode.hashCode);
     _$hash = $jc(_$hash, data.hashCode);
-    _$hash = $jc(_$hash, metadata.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -63,8 +59,7 @@ class _$BooleanApiSuccessResponse extends BooleanApiSuccessResponse {
           ..add('success', success)
           ..add('message', message)
           ..add('statusCode', statusCode)
-          ..add('data', data)
-          ..add('metadata', metadata))
+          ..add('data', data))
         .toString();
   }
 }
@@ -90,10 +85,6 @@ class BooleanApiSuccessResponseBuilder
   bool? get data => _$this._data;
   set data(bool? data) => _$this._data = data;
 
-  JsonObject? _metadata;
-  JsonObject? get metadata => _$this._metadata;
-  set metadata(JsonObject? metadata) => _$this._metadata = metadata;
-
   BooleanApiSuccessResponseBuilder() {
     BooleanApiSuccessResponse._defaults(this);
   }
@@ -105,7 +96,6 @@ class BooleanApiSuccessResponseBuilder
       _message = $v.message;
       _statusCode = $v.statusCode;
       _data = $v.data;
-      _metadata = $v.metadata;
       _$v = null;
     }
     return this;
@@ -131,7 +121,6 @@ class BooleanApiSuccessResponseBuilder
           message: message,
           statusCode: statusCode,
           data: data,
-          metadata: metadata,
         );
     replace(_$result);
     return _$result;

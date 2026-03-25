@@ -3,7 +3,6 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:built_value/json_object.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -16,7 +15,6 @@ part 'string_api_success_response.g.dart';
 /// * [message] 
 /// * [statusCode] 
 /// * [data] 
-/// * [metadata] 
 @BuiltValue()
 abstract class StringApiSuccessResponse implements Built<StringApiSuccessResponse, StringApiSuccessResponseBuilder> {
   @BuiltValueField(wireName: r'success')
@@ -30,9 +28,6 @@ abstract class StringApiSuccessResponse implements Built<StringApiSuccessRespons
 
   @BuiltValueField(wireName: r'data')
   String? get data;
-
-  @BuiltValueField(wireName: r'metadata')
-  JsonObject? get metadata;
 
   StringApiSuccessResponse._();
 
@@ -83,13 +78,6 @@ class _$StringApiSuccessResponseSerializer implements PrimitiveSerializer<String
       yield serializers.serialize(
         object.data,
         specifiedType: const FullType.nullable(String),
-      );
-    }
-    if (object.metadata != null) {
-      yield r'metadata';
-      yield serializers.serialize(
-        object.metadata,
-        specifiedType: const FullType.nullable(JsonObject),
       );
     }
   }
@@ -144,14 +132,6 @@ class _$StringApiSuccessResponseSerializer implements PrimitiveSerializer<String
           ) as String?;
           if (valueDes == null) continue;
           result.data = valueDes;
-          break;
-        case r'metadata':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(JsonObject),
-          ) as JsonObject?;
-          if (valueDes == null) continue;
-          result.metadata = valueDes;
           break;
         default:
           unhandled.add(key);

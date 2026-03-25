@@ -4,7 +4,6 @@
 
 // ignore_for_file: unused_element
 import 'package:built_collection/built_collection.dart';
-import 'package:built_value/json_object.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -17,7 +16,6 @@ part 'string_i_enumerable_api_success_response.g.dart';
 /// * [message] 
 /// * [statusCode] 
 /// * [data] 
-/// * [metadata] 
 @BuiltValue()
 abstract class StringIEnumerableApiSuccessResponse implements Built<StringIEnumerableApiSuccessResponse, StringIEnumerableApiSuccessResponseBuilder> {
   @BuiltValueField(wireName: r'success')
@@ -31,9 +29,6 @@ abstract class StringIEnumerableApiSuccessResponse implements Built<StringIEnume
 
   @BuiltValueField(wireName: r'data')
   BuiltList<String>? get data;
-
-  @BuiltValueField(wireName: r'metadata')
-  JsonObject? get metadata;
 
   StringIEnumerableApiSuccessResponse._();
 
@@ -84,13 +79,6 @@ class _$StringIEnumerableApiSuccessResponseSerializer implements PrimitiveSerial
       yield serializers.serialize(
         object.data,
         specifiedType: const FullType.nullable(BuiltList, [FullType(String)]),
-      );
-    }
-    if (object.metadata != null) {
-      yield r'metadata';
-      yield serializers.serialize(
-        object.metadata,
-        specifiedType: const FullType.nullable(JsonObject),
       );
     }
   }
@@ -145,14 +133,6 @@ class _$StringIEnumerableApiSuccessResponseSerializer implements PrimitiveSerial
           ) as BuiltList<String>?;
           if (valueDes == null) continue;
           result.data.replace(valueDes);
-          break;
-        case r'metadata':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(JsonObject),
-          ) as JsonObject?;
-          if (valueDes == null) continue;
-          result.metadata = valueDes;
           break;
         default:
           unhandled.add(key);

@@ -5,7 +5,6 @@
 // ignore_for_file: unused_element
 import 'package:management_openapi/src/model/theme_collection_response.dart';
 import 'package:built_collection/built_collection.dart';
-import 'package:built_value/json_object.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -18,7 +17,6 @@ part 'theme_collection_response_i_enumerable_api_success_response.g.dart';
 /// * [message] 
 /// * [statusCode] 
 /// * [data] 
-/// * [metadata] 
 @BuiltValue()
 abstract class ThemeCollectionResponseIEnumerableApiSuccessResponse implements Built<ThemeCollectionResponseIEnumerableApiSuccessResponse, ThemeCollectionResponseIEnumerableApiSuccessResponseBuilder> {
   @BuiltValueField(wireName: r'success')
@@ -32,9 +30,6 @@ abstract class ThemeCollectionResponseIEnumerableApiSuccessResponse implements B
 
   @BuiltValueField(wireName: r'data')
   BuiltList<ThemeCollectionResponse>? get data;
-
-  @BuiltValueField(wireName: r'metadata')
-  JsonObject? get metadata;
 
   ThemeCollectionResponseIEnumerableApiSuccessResponse._();
 
@@ -85,13 +80,6 @@ class _$ThemeCollectionResponseIEnumerableApiSuccessResponseSerializer implement
       yield serializers.serialize(
         object.data,
         specifiedType: const FullType.nullable(BuiltList, [FullType(ThemeCollectionResponse)]),
-      );
-    }
-    if (object.metadata != null) {
-      yield r'metadata';
-      yield serializers.serialize(
-        object.metadata,
-        specifiedType: const FullType.nullable(JsonObject),
       );
     }
   }
@@ -146,14 +134,6 @@ class _$ThemeCollectionResponseIEnumerableApiSuccessResponseSerializer implement
           ) as BuiltList<ThemeCollectionResponse>?;
           if (valueDes == null) continue;
           result.data.replace(valueDes);
-          break;
-        case r'metadata':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(JsonObject),
-          ) as JsonObject?;
-          if (valueDes == null) continue;
-          result.metadata = valueDes;
           break;
         default:
           unhandled.add(key);

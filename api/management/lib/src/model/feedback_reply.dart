@@ -6,78 +6,78 @@
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
-part 'boolean_api_success_response.g.dart';
+part 'feedback_reply.g.dart';
 
-/// BooleanApiSuccessResponse
+/// FeedbackReply
 ///
 /// Properties:
-/// * [success] 
-/// * [message] 
-/// * [statusCode] 
-/// * [data] 
+/// * [responderName] 
+/// * [responderUrl] 
+/// * [content] 
+/// * [replyTime] 
 @BuiltValue()
-abstract class BooleanApiSuccessResponse implements Built<BooleanApiSuccessResponse, BooleanApiSuccessResponseBuilder> {
-  @BuiltValueField(wireName: r'success')
-  bool? get success;
+abstract class FeedbackReply implements Built<FeedbackReply, FeedbackReplyBuilder> {
+  @BuiltValueField(wireName: r'responderName')
+  String? get responderName;
 
-  @BuiltValueField(wireName: r'message')
-  String? get message;
+  @BuiltValueField(wireName: r'responderUrl')
+  String? get responderUrl;
 
-  @BuiltValueField(wireName: r'statusCode')
-  int? get statusCode;
+  @BuiltValueField(wireName: r'content')
+  String? get content;
 
-  @BuiltValueField(wireName: r'data')
-  bool? get data;
+  @BuiltValueField(wireName: r'replyTime')
+  DateTime? get replyTime;
 
-  BooleanApiSuccessResponse._();
+  FeedbackReply._();
 
-  factory BooleanApiSuccessResponse([void updates(BooleanApiSuccessResponseBuilder b)]) = _$BooleanApiSuccessResponse;
+  factory FeedbackReply([void updates(FeedbackReplyBuilder b)]) = _$FeedbackReply;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(BooleanApiSuccessResponseBuilder b) => b;
+  static void _defaults(FeedbackReplyBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<BooleanApiSuccessResponse> get serializer => _$BooleanApiSuccessResponseSerializer();
+  static Serializer<FeedbackReply> get serializer => _$FeedbackReplySerializer();
 }
 
-class _$BooleanApiSuccessResponseSerializer implements PrimitiveSerializer<BooleanApiSuccessResponse> {
+class _$FeedbackReplySerializer implements PrimitiveSerializer<FeedbackReply> {
   @override
-  final Iterable<Type> types = const [BooleanApiSuccessResponse, _$BooleanApiSuccessResponse];
+  final Iterable<Type> types = const [FeedbackReply, _$FeedbackReply];
 
   @override
-  final String wireName = r'BooleanApiSuccessResponse';
+  final String wireName = r'FeedbackReply';
 
   Iterable<Object?> _serializeProperties(
     Serializers serializers,
-    BooleanApiSuccessResponse object, {
+    FeedbackReply object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.success != null) {
-      yield r'success';
+    if (object.responderName != null) {
+      yield r'responderName';
       yield serializers.serialize(
-        object.success,
-        specifiedType: const FullType(bool),
-      );
-    }
-    if (object.message != null) {
-      yield r'message';
-      yield serializers.serialize(
-        object.message,
+        object.responderName,
         specifiedType: const FullType.nullable(String),
       );
     }
-    if (object.statusCode != null) {
-      yield r'statusCode';
+    if (object.responderUrl != null) {
+      yield r'responderUrl';
       yield serializers.serialize(
-        object.statusCode,
-        specifiedType: const FullType(int),
+        object.responderUrl,
+        specifiedType: const FullType.nullable(String),
       );
     }
-    if (object.data != null) {
-      yield r'data';
+    if (object.content != null) {
+      yield r'content';
       yield serializers.serialize(
-        object.data,
-        specifiedType: const FullType(bool),
+        object.content,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.replyTime != null) {
+      yield r'replyTime';
+      yield serializers.serialize(
+        object.replyTime,
+        specifiedType: const FullType.nullable(DateTime),
       );
     }
   }
@@ -85,7 +85,7 @@ class _$BooleanApiSuccessResponseSerializer implements PrimitiveSerializer<Boole
   @override
   Object serialize(
     Serializers serializers,
-    BooleanApiSuccessResponse object, {
+    FeedbackReply object, {
     FullType specifiedType = FullType.unspecified,
   }) {
     return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
@@ -96,41 +96,44 @@ class _$BooleanApiSuccessResponseSerializer implements PrimitiveSerializer<Boole
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
     required List<Object?> serializedList,
-    required BooleanApiSuccessResponseBuilder result,
+    required FeedbackReplyBuilder result,
     required List<Object?> unhandled,
   }) {
     for (var i = 0; i < serializedList.length; i += 2) {
       final key = serializedList[i] as String;
       final value = serializedList[i + 1];
       switch (key) {
-        case r'success':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(bool),
-          ) as bool;
-          result.success = valueDes;
-          break;
-        case r'message':
+        case r'responderName':
           final valueDes = serializers.deserialize(
             value,
             specifiedType: const FullType.nullable(String),
           ) as String?;
           if (valueDes == null) continue;
-          result.message = valueDes;
+          result.responderName = valueDes;
           break;
-        case r'statusCode':
+        case r'responderUrl':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(int),
-          ) as int;
-          result.statusCode = valueDes;
+            specifiedType: const FullType.nullable(String),
+          ) as String?;
+          if (valueDes == null) continue;
+          result.responderUrl = valueDes;
           break;
-        case r'data':
+        case r'content':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(bool),
-          ) as bool;
-          result.data = valueDes;
+            specifiedType: const FullType.nullable(String),
+          ) as String?;
+          if (valueDes == null) continue;
+          result.content = valueDes;
+          break;
+        case r'replyTime':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType.nullable(DateTime),
+          ) as DateTime?;
+          if (valueDes == null) continue;
+          result.replyTime = valueDes;
           break;
         default:
           unhandled.add(key);
@@ -141,12 +144,12 @@ class _$BooleanApiSuccessResponseSerializer implements PrimitiveSerializer<Boole
   }
 
   @override
-  BooleanApiSuccessResponse deserialize(
+  FeedbackReply deserialize(
     Serializers serializers,
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    final result = BooleanApiSuccessResponseBuilder();
+    final result = FeedbackReplyBuilder();
     final serializedList = (serialized as Iterable<Object?>).toList();
     final unhandled = <Object?>[];
     _deserializeProperties(

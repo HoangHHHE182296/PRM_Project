@@ -16,7 +16,8 @@ Name | Type | Description | Notes
 **userAvatarUrl** | **String** |  | [optional] 
 **rating** | **int** |  | [optional] 
 **comment** | **String** |  | [optional] 
-**reply** | **String** |  | [optional] 
+**reply** | [**FeedbackReply**](FeedbackReply.md) |  | [optional] 
+**status** | [**FeedbackStatus**](FeedbackStatus.md) |  | [optional] 
 **createdAt** | [**DateTime**](DateTime.md) |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

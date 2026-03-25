@@ -24,7 +24,9 @@ class _$FeedbackResponse extends FeedbackResponse {
   @override
   final String? comment;
   @override
-  final String? reply;
+  final FeedbackReply? reply;
+  @override
+  final FeedbackStatus? status;
   @override
   final DateTime? createdAt;
 
@@ -42,6 +44,7 @@ class _$FeedbackResponse extends FeedbackResponse {
       this.rating,
       this.comment,
       this.reply,
+      this.status,
       this.createdAt})
       : super._();
   @override
@@ -65,6 +68,7 @@ class _$FeedbackResponse extends FeedbackResponse {
         rating == other.rating &&
         comment == other.comment &&
         reply == other.reply &&
+        status == other.status &&
         createdAt == other.createdAt;
   }
 
@@ -80,6 +84,7 @@ class _$FeedbackResponse extends FeedbackResponse {
     _$hash = $jc(_$hash, rating.hashCode);
     _$hash = $jc(_$hash, comment.hashCode);
     _$hash = $jc(_$hash, reply.hashCode);
+    _$hash = $jc(_$hash, status.hashCode);
     _$hash = $jc(_$hash, createdAt.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
@@ -97,6 +102,7 @@ class _$FeedbackResponse extends FeedbackResponse {
           ..add('rating', rating)
           ..add('comment', comment)
           ..add('reply', reply)
+          ..add('status', status)
           ..add('createdAt', createdAt))
         .toString();
   }
@@ -139,9 +145,13 @@ class FeedbackResponseBuilder
   String? get comment => _$this._comment;
   set comment(String? comment) => _$this._comment = comment;
 
-  String? _reply;
-  String? get reply => _$this._reply;
-  set reply(String? reply) => _$this._reply = reply;
+  FeedbackReplyBuilder? _reply;
+  FeedbackReplyBuilder get reply => _$this._reply ??= FeedbackReplyBuilder();
+  set reply(FeedbackReplyBuilder? reply) => _$this._reply = reply;
+
+  FeedbackStatus? _status;
+  FeedbackStatus? get status => _$this._status;
+  set status(FeedbackStatus? status) => _$this._status = status;
 
   DateTime? _createdAt;
   DateTime? get createdAt => _$this._createdAt;
@@ -162,7 +172,8 @@ class FeedbackResponseBuilder
       _userAvatarUrl = $v.userAvatarUrl;
       _rating = $v.rating;
       _comment = $v.comment;
-      _reply = $v.reply;
+      _reply = $v.reply?.toBuilder();
+      _status = $v.status;
       _createdAt = $v.createdAt;
       _$v = null;
     }
@@ -183,19 +194,33 @@ class FeedbackResponseBuilder
   FeedbackResponse build() => _build();
 
   _$FeedbackResponse _build() {
-    final _$result = _$v ??
-        _$FeedbackResponse._(
-          id: id,
-          productId: productId,
-          orderId: orderId,
-          userId: userId,
-          userFullName: userFullName,
-          userAvatarUrl: userAvatarUrl,
-          rating: rating,
-          comment: comment,
-          reply: reply,
-          createdAt: createdAt,
-        );
+    _$FeedbackResponse _$result;
+    try {
+      _$result = _$v ??
+          _$FeedbackResponse._(
+            id: id,
+            productId: productId,
+            orderId: orderId,
+            userId: userId,
+            userFullName: userFullName,
+            userAvatarUrl: userAvatarUrl,
+            rating: rating,
+            comment: comment,
+            reply: _reply?.build(),
+            status: status,
+            createdAt: createdAt,
+          );
+    } catch (_) {
+      late String _$failedField;
+      try {
+        _$failedField = 'reply';
+        _reply?.build();
+      } catch (e) {
+        throw BuiltValueNestedFieldError(
+            r'FeedbackResponse', _$failedField, e.toString());
+      }
+      rethrow;
+    }
     replace(_$result);
     return _$result;
   }

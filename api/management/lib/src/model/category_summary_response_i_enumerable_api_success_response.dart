@@ -5,7 +5,6 @@
 // ignore_for_file: unused_element
 import 'package:built_collection/built_collection.dart';
 import 'package:management_openapi/src/model/category_summary_response.dart';
-import 'package:built_value/json_object.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -18,7 +17,6 @@ part 'category_summary_response_i_enumerable_api_success_response.g.dart';
 /// * [message] 
 /// * [statusCode] 
 /// * [data] 
-/// * [metadata] 
 @BuiltValue()
 abstract class CategorySummaryResponseIEnumerableApiSuccessResponse implements Built<CategorySummaryResponseIEnumerableApiSuccessResponse, CategorySummaryResponseIEnumerableApiSuccessResponseBuilder> {
   @BuiltValueField(wireName: r'success')
@@ -32,9 +30,6 @@ abstract class CategorySummaryResponseIEnumerableApiSuccessResponse implements B
 
   @BuiltValueField(wireName: r'data')
   BuiltList<CategorySummaryResponse>? get data;
-
-  @BuiltValueField(wireName: r'metadata')
-  JsonObject? get metadata;
 
   CategorySummaryResponseIEnumerableApiSuccessResponse._();
 
@@ -85,13 +80,6 @@ class _$CategorySummaryResponseIEnumerableApiSuccessResponseSerializer implement
       yield serializers.serialize(
         object.data,
         specifiedType: const FullType.nullable(BuiltList, [FullType(CategorySummaryResponse)]),
-      );
-    }
-    if (object.metadata != null) {
-      yield r'metadata';
-      yield serializers.serialize(
-        object.metadata,
-        specifiedType: const FullType.nullable(JsonObject),
       );
     }
   }
@@ -146,14 +134,6 @@ class _$CategorySummaryResponseIEnumerableApiSuccessResponseSerializer implement
           ) as BuiltList<CategorySummaryResponse>?;
           if (valueDes == null) continue;
           result.data.replace(valueDes);
-          break;
-        case r'metadata':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(JsonObject),
-          ) as JsonObject?;
-          if (valueDes == null) continue;
-          result.metadata = valueDes;
           break;
         default:
           unhandled.add(key);
