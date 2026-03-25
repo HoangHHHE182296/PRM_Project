@@ -15,7 +15,12 @@ class RouteGuard {
     }
 
     if (route.roles != null && route.roles!.isNotEmpty) {
-      if (!credentialService.hasAnyRole(route.roles!)) {
+      final userRoles = credentialService.userLoggedInfo?.roles ?? [];
+      // Case-insensitive substring match: 'admin' khớp với 'Super Admin', 'Administrator', ...
+      final hasRequired = route.roles!.any(
+        (required) => userRoles.any((userRole) => userRole.toLowerCase().contains(required.toLowerCase())),
+      );
+      if (!hasRequired) {
         return '/403';
       }
     }

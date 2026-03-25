@@ -59,6 +59,8 @@ class _CustomerDrawer extends StatelessWidget {
     final cred = sl<CredentialService>();
     final user = cred.userLoggedInfo;
 
+    final bool isAdmin = (user?.roles ?? []).any((r) => r.toLowerCase().contains('admin'));
+
     return Drawer(
       child: Column(
         children: [
@@ -74,18 +76,44 @@ class _CustomerDrawer extends StatelessWidget {
             accountEmail: Text(user?.email ?? 'Chưa đăng nhập'),
           ),
 
-          // Danh sách các Menu điều hướng
-          ListTile(leading: const Icon(Icons.history), title: const Text('Lịch sử đơn hàng'), onTap: () => context.push('/orders')),
-          ListTile(leading: const Icon(Icons.favorite_border), title: const Text('Quà tặng đã lưu'), onTap: () {}),
-          const Divider(), // Đường kẻ ngang phân cách
+          // Menu điều hướng theo role (cuộn được, chiếm hết khoảng trống còn lại)
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                if (isAdmin) ...[
+                  // Menu chiều hướng cho Admin
+                  ListTile(
+                    leading: const Icon(Icons.inventory_2_outlined),
+                    title: const Text('Quản lý sản phẩm'),
+                    onTap: () => context.push('/manage/products'),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.category_outlined),
+                    title: const Text('Quản lý danh mục'),
+                    onTap: () => context.push('/manage/categories'),
+                  ),
+                  ListTile(leading: const Icon(Icons.receipt_long_outlined), title: const Text('Quản lý đơn đặt'), onTap: () => context.push('/manage/orders')),
+                ] else ...[
+                  // Menu chiều hướng cho Customer
+                  ListTile(leading: const Icon(Icons.history), title: const Text('Lịch sử đơn hàng'), onTap: () => context.push('/orders')),
+                  ListTile(leading: const Icon(Icons.favorite_border), title: const Text('Quà tặng đã lưu'), onTap: () {}),
+                ],
+              ],
+            ),
+          ),
+
+          // Nút đăng xuất ghim dưới cùng
+          const Divider(height: 1),
           ListTile(
             leading: const Icon(Icons.logout, color: Colors.red),
             title: const Text('Đăng xuất', style: TextStyle(color: Colors.red)),
             onTap: () {
-              cred.clearAccessToken(); // Xóa token
-              context.go(RouterConst.login.router); // Đá về trang login
+              cred.clearAccessToken();
+              context.go(RouterConst.login.router);
             },
           ),
+          const SizedBox(height: 8),
         ],
       ),
     );
