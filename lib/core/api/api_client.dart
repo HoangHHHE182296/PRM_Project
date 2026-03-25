@@ -7,6 +7,9 @@ import 'package:public_openapi/public_openapi.dart';
 class ApiClient {
   static final Dio _dio = _createDio();
 
+  /// Public getter for Dio instance
+  static Dio get dio => _dio;
+
   static Dio _createDio() {
     final dio = Dio(
       BaseOptions(

@@ -35,7 +35,7 @@ abstract class CategorySummaryResponse implements Built<CategorySummaryResponse,
 
   @BuiltValueField(wireName: r'supportedProductType')
   ProductType? get supportedProductType;
-  // enum supportedProductTypeEnum {  1,  2,  3,  };
+  // enum supportedProductTypeEnum {  Component,  BaseBox,  GiftSet,  };
 
   @BuiltValueField(wireName: r'parentCategoryId')
   String? get parentCategoryId;

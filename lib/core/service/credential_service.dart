@@ -13,7 +13,8 @@ class CredentialService {
   late SharedPreferences _prefs;
   final Map<String, String> _sessionStorage = {};
 
-  final StreamController<LoggedUserModel?> _userInfoController = StreamController<LoggedUserModel?>.broadcast();
+  final StreamController<LoggedUserModel?> _userInfoController =
+      StreamController<LoggedUserModel?>.broadcast();
   Stream<LoggedUserModel?> get userLoggedInfo$ => _userInfoController.stream;
 
   Future<void> init() async {
@@ -49,7 +50,10 @@ class CredentialService {
     final refreshToken = _getItem(CredentialKey.refreshToken);
 
     if (accessToken != null && refreshToken != null) {
-      return {'accessToken': utf8.decode(base64.decode(accessToken)), 'refreshToken': utf8.decode(base64.decode(refreshToken))};
+      return {
+        'accessToken': utf8.decode(base64.decode(accessToken)),
+        'refreshToken': utf8.decode(base64.decode(refreshToken)),
+      };
     }
     return null;
   }
@@ -79,7 +83,11 @@ class CredentialService {
       );
 
       final isRemember = _prefs.getString(CredentialKey.userInfo) != null;
-      _setItem(CredentialKey.userInfo, base64.encode(utf8.encode(jsonEncode(updatedInfo.toJson()))), isRemember);
+      _setItem(
+        CredentialKey.userInfo,
+        base64.encode(utf8.encode(jsonEncode(updatedInfo.toJson()))),
+        isRemember,
+      );
 
       _userInfoController.add(updatedInfo);
     }
@@ -88,17 +96,26 @@ class CredentialService {
   void setCredential(LoginResponse? data, {bool isRemember = false}) {
     if (data?.accessToken != null && data?.refreshToken != null) {
       final decodedToken = _decodeJwt(data!.accessToken!);
+      final extractedRoles = _extractRolesFromToken(decodedToken);
 
       final loggedUser = LoggedUserModel(
         id: decodedToken['sub']?.toString() ?? '',
         email: decodedToken['email']?.toString() ?? '',
         name: decodedToken['name']?.toString() ?? '',
         imgUrl: decodedToken['imgUrl']?.toString() ?? '',
-        roles: _parseRoles(decodedToken['roles']),
+        roles: extractedRoles,
       );
 
-      _setItem(CredentialKey.userInfo, base64.encode(utf8.encode(jsonEncode(loggedUser.toJson()))), isRemember);
-      setAccessToken(data.accessToken!, data.refreshToken!, isRemember: isRemember);
+      _setItem(
+        CredentialKey.userInfo,
+        base64.encode(utf8.encode(jsonEncode(loggedUser.toJson()))),
+        isRemember,
+      );
+      setAccessToken(
+        data.accessToken!,
+        data.refreshToken!,
+        isRemember: isRemember,
+      );
 
       _userInfoController.add(loggedUser);
     } else {
@@ -106,9 +123,21 @@ class CredentialService {
     }
   }
 
-  void setAccessToken(String token, String refreshToken, {bool isRemember = false}) {
-    _setItem(CredentialKey.accessToken, base64.encode(utf8.encode(token)), isRemember);
-    _setItem(CredentialKey.refreshToken, base64.encode(utf8.encode(refreshToken)), isRemember);
+  void setAccessToken(
+    String token,
+    String refreshToken, {
+    bool isRemember = false,
+  }) {
+    _setItem(
+      CredentialKey.accessToken,
+      base64.encode(utf8.encode(token)),
+      isRemember,
+    );
+    _setItem(
+      CredentialKey.refreshToken,
+      base64.encode(utf8.encode(refreshToken)),
+      isRemember,
+    );
   }
 
   void clearAccessToken() {
@@ -121,13 +150,17 @@ class CredentialService {
   bool hasRole(String requiredRole) {
     final userInfo = userLoggedInfo;
     if (userInfo == null || userInfo.roles.isEmpty) return false;
-    return userInfo.roles.contains(requiredRole);
+    final expected = _normalizeRole(requiredRole);
+    return userInfo.roles.any((role) => _normalizeRole(role) == expected);
   }
 
   bool hasAnyRole(List<String> requiredRoles) {
     final userInfo = userLoggedInfo;
     if (userInfo == null || userInfo.roles.isEmpty) return false;
-    return requiredRoles.any((role) => userInfo.roles.contains(role));
+    final required = requiredRoles.map(_normalizeRole).toSet();
+    return userInfo.roles.any(
+      (role) => required.contains(_normalizeRole(role)),
+    );
   }
 
   Map<String, dynamic> _decodeJwt(String token) {
@@ -165,5 +198,35 @@ class CredentialService {
     if (rolesData is String) return [rolesData];
     if (rolesData is Iterable) return List<String>.from(rolesData);
     return [];
+  }
+
+  List<String> _extractRolesFromToken(Map<String, dynamic> token) {
+    final candidates = <dynamic>[
+      token['roles'],
+      token['role'],
+      token['Roles'],
+      token['Role'],
+      token['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'],
+      token['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role'],
+    ];
+
+    for (final candidate in candidates) {
+      final parsed = _parseRoles(candidate);
+      if (parsed.isNotEmpty) return parsed;
+    }
+
+    return [];
+  }
+
+  String _normalizeRole(String role) {
+    var normalized = role.trim().toLowerCase();
+    if (normalized.startsWith('role_')) {
+      normalized = normalized.substring(5);
+    }
+    normalized = normalized
+        .replaceAll(' ', '')
+        .replaceAll('_', '')
+        .replaceAll('-', '');
+    return normalized;
   }
 }

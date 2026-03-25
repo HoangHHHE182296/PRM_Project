@@ -8,8 +8,6 @@ part of 'update_profile_command.dart';
 
 class _$UpdateProfileCommand extends UpdateProfileCommand {
   @override
-  final String? userId;
-  @override
   final String? firstName;
   @override
   final String? lastName;
@@ -25,8 +23,7 @@ class _$UpdateProfileCommand extends UpdateProfileCommand {
       (UpdateProfileCommandBuilder()..update(updates))._build();
 
   _$UpdateProfileCommand._(
-      {this.userId,
-      this.firstName,
+      {this.firstName,
       this.lastName,
       this.phone,
       this.dateOfBirth,
@@ -45,7 +42,6 @@ class _$UpdateProfileCommand extends UpdateProfileCommand {
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is UpdateProfileCommand &&
-        userId == other.userId &&
         firstName == other.firstName &&
         lastName == other.lastName &&
         phone == other.phone &&
@@ -56,7 +52,6 @@ class _$UpdateProfileCommand extends UpdateProfileCommand {
   @override
   int get hashCode {
     var _$hash = 0;
-    _$hash = $jc(_$hash, userId.hashCode);
     _$hash = $jc(_$hash, firstName.hashCode);
     _$hash = $jc(_$hash, lastName.hashCode);
     _$hash = $jc(_$hash, phone.hashCode);
@@ -69,7 +64,6 @@ class _$UpdateProfileCommand extends UpdateProfileCommand {
   @override
   String toString() {
     return (newBuiltValueToStringHelper(r'UpdateProfileCommand')
-          ..add('userId', userId)
           ..add('firstName', firstName)
           ..add('lastName', lastName)
           ..add('phone', phone)
@@ -82,10 +76,6 @@ class _$UpdateProfileCommand extends UpdateProfileCommand {
 class UpdateProfileCommandBuilder
     implements Builder<UpdateProfileCommand, UpdateProfileCommandBuilder> {
   _$UpdateProfileCommand? _$v;
-
-  String? _userId;
-  String? get userId => _$this._userId;
-  set userId(String? userId) => _$this._userId = userId;
 
   String? _firstName;
   String? get firstName => _$this._firstName;
@@ -114,7 +104,6 @@ class UpdateProfileCommandBuilder
   UpdateProfileCommandBuilder get _$this {
     final $v = _$v;
     if ($v != null) {
-      _userId = $v.userId;
       _firstName = $v.firstName;
       _lastName = $v.lastName;
       _phone = $v.phone;
@@ -141,7 +130,6 @@ class UpdateProfileCommandBuilder
   _$UpdateProfileCommand _build() {
     final _$result = _$v ??
         _$UpdateProfileCommand._(
-          userId: userId,
           firstName: firstName,
           lastName: lastName,
           phone: phone,

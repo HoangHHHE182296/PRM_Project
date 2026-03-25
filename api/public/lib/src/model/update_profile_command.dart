@@ -12,7 +12,6 @@ part 'update_profile_command.g.dart';
 /// UpdateProfileCommand
 ///
 /// Properties:
-/// * [userId] 
 /// * [firstName] 
 /// * [lastName] 
 /// * [phone] 
@@ -20,9 +19,6 @@ part 'update_profile_command.g.dart';
 /// * [gender] 
 @BuiltValue()
 abstract class UpdateProfileCommand implements Built<UpdateProfileCommand, UpdateProfileCommandBuilder> {
-  @BuiltValueField(wireName: r'userId')
-  String? get userId;
-
   @BuiltValueField(wireName: r'firstName')
   String? get firstName;
 
@@ -61,13 +57,6 @@ class _$UpdateProfileCommandSerializer implements PrimitiveSerializer<UpdateProf
     UpdateProfileCommand object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.userId != null) {
-      yield r'userId';
-      yield serializers.serialize(
-        object.userId,
-        specifiedType: const FullType.nullable(String),
-      );
-    }
     if (object.firstName != null) {
       yield r'firstName';
       yield serializers.serialize(
@@ -126,14 +115,6 @@ class _$UpdateProfileCommandSerializer implements PrimitiveSerializer<UpdateProf
       final key = serializedList[i] as String;
       final value = serializedList[i + 1];
       switch (key) {
-        case r'userId':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType.nullable(String),
-          ) as String?;
-          if (valueDes == null) continue;
-          result.userId = valueDes;
-          break;
         case r'firstName':
           final valueDes = serializers.deserialize(
             value,

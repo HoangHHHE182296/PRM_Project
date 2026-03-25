@@ -6,18 +6,18 @@ part of 'product_type.dart';
 // BuiltValueGenerator
 // **************************************************************************
 
-const ProductType _$number1 = const ProductType._('number1');
-const ProductType _$number2 = const ProductType._('number2');
-const ProductType _$number3 = const ProductType._('number3');
+const ProductType _$component = const ProductType._('component');
+const ProductType _$baseBox = const ProductType._('baseBox');
+const ProductType _$giftSet = const ProductType._('giftSet');
 
 ProductType _$valueOf(String name) {
   switch (name) {
-    case 'number1':
-      return _$number1;
-    case 'number2':
-      return _$number2;
-    case 'number3':
-      return _$number3;
+    case 'component':
+      return _$component;
+    case 'baseBox':
+      return _$baseBox;
+    case 'giftSet':
+      return _$giftSet;
     default:
       throw ArgumentError(name);
   }
@@ -25,16 +25,16 @@ ProductType _$valueOf(String name) {
 
 final BuiltSet<ProductType> _$values =
     BuiltSet<ProductType>(const <ProductType>[
-  _$number1,
-  _$number2,
-  _$number3,
+  _$component,
+  _$baseBox,
+  _$giftSet,
 ]);
 
 class _$ProductTypeMeta {
   const _$ProductTypeMeta();
-  ProductType get number1 => _$number1;
-  ProductType get number2 => _$number2;
-  ProductType get number3 => _$number3;
+  ProductType get component => _$component;
+  ProductType get baseBox => _$baseBox;
+  ProductType get giftSet => _$giftSet;
   ProductType valueOf(String name) => _$valueOf(name);
   BuiltSet<ProductType> get values => _$values;
 }
@@ -48,14 +48,14 @@ Serializer<ProductType> _$productTypeSerializer = _$ProductTypeSerializer();
 
 class _$ProductTypeSerializer implements PrimitiveSerializer<ProductType> {
   static const Map<String, Object> _toWire = const <String, Object>{
-    'number1': 1,
-    'number2': 2,
-    'number3': 3,
+    'component': 'Component',
+    'baseBox': 'BaseBox',
+    'giftSet': 'GiftSet',
   };
   static const Map<Object, String> _fromWire = const <Object, String>{
-    1: 'number1',
-    2: 'number2',
-    3: 'number3',
+    'Component': 'component',
+    'BaseBox': 'baseBox',
+    'GiftSet': 'giftSet',
   };
 
   @override

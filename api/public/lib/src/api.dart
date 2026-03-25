@@ -10,13 +10,13 @@ import 'package:public_openapi/src/auth/basic_auth.dart';
 import 'package:public_openapi/src/auth/bearer_auth.dart';
 import 'package:public_openapi/src/auth/oauth.dart';
 import 'package:public_openapi/src/api/account_api.dart';
+import 'package:public_openapi/src/api/admin_analytics_api.dart';
 import 'package:public_openapi/src/api/auth_api.dart';
 import 'package:public_openapi/src/api/category_api.dart';
-import 'package:public_openapi/src/api/consultation_api.dart';
 import 'package:public_openapi/src/api/health_check_api.dart';
 import 'package:public_openapi/src/api/order_api.dart';
-import 'package:public_openapi/src/api/payment_api.dart';
 import 'package:public_openapi/src/api/product_api.dart';
+import 'package:public_openapi/src/api/seed_api.dart';
 
 class PublicOpenapi {
   static const String basePath = r'http://localhost';
@@ -78,6 +78,12 @@ class PublicOpenapi {
     return AccountApi(dio, serializers);
   }
 
+  /// Get AdminAnalyticsApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  AdminAnalyticsApi getAdminAnalyticsApi() {
+    return AdminAnalyticsApi(dio, serializers);
+  }
+
   /// Get AuthApi instance, base route and serializer can be overridden by a given but be careful,
   /// by doing that all interceptors will not be executed
   AuthApi getAuthApi() {
@@ -88,12 +94,6 @@ class PublicOpenapi {
   /// by doing that all interceptors will not be executed
   CategoryApi getCategoryApi() {
     return CategoryApi(dio, serializers);
-  }
-
-  /// Get ConsultationApi instance, base route and serializer can be overridden by a given but be careful,
-  /// by doing that all interceptors will not be executed
-  ConsultationApi getConsultationApi() {
-    return ConsultationApi(dio, serializers);
   }
 
   /// Get HealthCheckApi instance, base route and serializer can be overridden by a given but be careful,
@@ -108,15 +108,15 @@ class PublicOpenapi {
     return OrderApi(dio, serializers);
   }
 
-  /// Get PaymentApi instance, base route and serializer can be overridden by a given but be careful,
-  /// by doing that all interceptors will not be executed
-  PaymentApi getPaymentApi() {
-    return PaymentApi(dio, serializers);
-  }
-
   /// Get ProductApi instance, base route and serializer can be overridden by a given but be careful,
   /// by doing that all interceptors will not be executed
   ProductApi getProductApi() {
     return ProductApi(dio, serializers);
+  }
+
+  /// Get SeedApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  SeedApi getSeedApi() {
+    return SeedApi(dio, serializers);
   }
 }

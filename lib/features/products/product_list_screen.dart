@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prm_project/core/api/api_client.dart';
+import 'package:prm_project/core/utils/refresh_bus.dart';
 import 'package:prm_project/features/products/product_detail_screen.dart';
 import 'package:prm_project/shared/theme/app_colors.dart';
 import 'package:public_openapi/public_openapi.dart';
@@ -18,6 +19,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
   bool _isLoading = false;
   bool _hasMore = true;
   List<ProductListResponse> _products = [];
+  final Set<String> _productIds = <String>{};
   final ScrollController _scrollController = ScrollController();
 
   // Filter & Search states
@@ -34,17 +36,27 @@ class _ProductListScreenState extends State<ProductListScreen> {
     super.initState();
     _fetchProducts();
     _scrollController.addListener(_onScroll);
+    RefreshBus.productsTick.addListener(_onProductsRefresh);
   }
 
   @override
   void dispose() {
+    RefreshBus.productsTick.removeListener(_onProductsRefresh);
     _scrollController.dispose();
     _searchController.dispose();
     super.dispose();
   }
 
+  void _onProductsRefresh() {
+    if (!mounted) return;
+    _fetchProducts(loadMore: false);
+  }
+
   void _onScroll() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200 && !_isLoading && _hasMore) {
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 200 &&
+        !_isLoading &&
+        _hasMore) {
       _fetchProducts(loadMore: true);
     }
   }
@@ -56,13 +68,21 @@ class _ProductListScreenState extends State<ProductListScreen> {
       _pageNumber = 1;
       _hasMore = true;
       _products.clear();
+      _productIds.clear();
     }
 
     setState(() {
       _isLoading = true;
     });
 
-    final Map<String, dynamic> queryParams = {'PageNumber': _pageNumber, 'PageSize': _pageSize};
+    final Map<String, dynamic> queryParams = {
+      // Different endpoints in this backend are inconsistent about whether
+      // they use PageNumber (1-based) or PageIndex (0-based). Send both to
+      // avoid broken pagination that repeatedly returns the first page.
+      'PageNumber': _pageNumber,
+      'PageIndex': _pageNumber - 1,
+      'PageSize': _pageSize,
+    };
 
     // Vẫn áp dụng filter lên API để tối ưu database
     if (_minPrice != null) queryParams['MinPrice'] = _minPrice;
@@ -83,7 +103,10 @@ class _ProductListScreenState extends State<ProductListScreen> {
     }
 
     try {
-      final res = await ApiClient.openApi.dio.get('/api/products/get-public-product-list', queryParameters: queryParams);
+      final res = await ApiClient.openApi.dio.get(
+        '/api/products/get-public-product-list',
+        queryParameters: queryParams,
+      );
 
       final json = res.data;
       if (json['success'] == true && json['data'] != null) {
@@ -109,7 +132,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
           final query = _searchQuery!.trim().toLowerCase();
           parsedList = parsedList.where((p) {
             final matchName = p.name?.toLowerCase().contains(query) ?? false;
-            final matchDesc = p.description?.toLowerCase().contains(query) ?? false;
+            final matchDesc =
+                p.description?.toLowerCase().contains(query) ?? false;
             return matchName || matchDesc;
           }).toList();
         }
@@ -119,21 +143,47 @@ class _ProductListScreenState extends State<ProductListScreen> {
           parsedList.sort((a, b) {
             final nameA = a.name ?? '';
             final nameB = b.name ?? '';
-            return _sortDescending == true ? nameB.compareTo(nameA) : nameA.compareTo(nameB);
+            return _sortDescending == true
+                ? nameB.compareTo(nameA)
+                : nameA.compareTo(nameB);
           });
         } else if (_sortBy == 'price') {
           parsedList.sort((a, b) {
             final priceA = a.price ?? 0.0;
             final priceB = b.price ?? 0.0;
-            return _sortDescending == true ? priceB.compareTo(priceA) : priceA.compareTo(priceB);
+            return _sortDescending == true
+                ? priceB.compareTo(priceA)
+                : priceA.compareTo(priceB);
           });
         }
 
+        final List<ProductListResponse> newItems = <ProductListResponse>[];
+        for (final p in parsedList) {
+          final id = p.id;
+          if (id == null || id.isEmpty) {
+            newItems.add(p);
+            continue;
+          }
+          if (_productIds.add(id)) {
+            newItems.add(p);
+          }
+        }
+
         setState(() {
-          if (parsedList.isNotEmpty) {
-            _products.addAll(parsedList);
+          if (newItems.isNotEmpty) {
+            _products.addAll(newItems);
+          }
+
+          if (parsedList.isNotEmpty && newItems.isEmpty) {
+            // Server might be ignoring pagination and returning the same items.
+            // If we can't add anything new, stop loading more.
+            _hasMore = false;
+          } else if (list.isNotEmpty) {
+            // Even if client-side filters removed all items, still advance
+            // the page to avoid re-fetching the same page forever.
             _pageNumber++;
           }
+
           if (list.length < _pageSize) {
             _hasMore = false; // Đã hết data từ API
           }
@@ -154,7 +204,11 @@ class _ProductListScreenState extends State<ProductListScreen> {
       appBar: AppBar(
         title: const Text('Các loại quà tặng'),
         actions: [
-          if (_searchQuery?.isNotEmpty == true || _minPrice != null || _maxPrice != null || _inStockOnly != null || _sortBy != null)
+          if (_searchQuery?.isNotEmpty == true ||
+              _minPrice != null ||
+              _maxPrice != null ||
+              _inStockOnly != null ||
+              _sortBy != null)
             IconButton(
               icon: const Icon(Icons.filter_alt_off),
               color: Colors.red,
@@ -187,7 +241,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
                     decoration: InputDecoration(
                       hintText: 'Tìm kiếm tên, mô tả...',
                       prefixIcon: const Icon(Icons.search),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       contentPadding: const EdgeInsets.symmetric(vertical: 0),
                     ),
                     onSubmitted: (value) {
@@ -200,9 +256,15 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 ),
                 const SizedBox(width: 8),
                 Container(
-                  decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   child: IconButton(
-                    icon: const Icon(Icons.filter_list, color: AppColors.primary),
+                    icon: const Icon(
+                      Icons.filter_list,
+                      color: AppColors.primary,
+                    ),
                     tooltip: 'Bộ lọc',
                     onPressed: _showFilterBottomSheet,
                   ),
@@ -220,12 +282,14 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 : GridView.builder(
                     controller: _scrollController,
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 16.0,
-                      mainAxisSpacing: 16.0,
-                      childAspectRatio: 0.75, // Tỉ lệ khung hình (width/height)
-                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 16.0,
+                          mainAxisSpacing: 16.0,
+                          childAspectRatio:
+                              0.75, // Tỉ lệ khung hình (width/height)
+                        ),
                     itemCount: _products.length + (_hasMore ? 1 : 0),
                     itemBuilder: (context, index) {
                       if (index == _products.length) {
@@ -235,23 +299,35 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       final product = _products[index];
                       return InkWell(
                         onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetailScreen(product: product)));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ProductDetailScreen(product: product),
+                            ),
+                          );
                         },
                         child: Card(
                           elevation: 2,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                           clipBehavior: Clip.antiAlias,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               // Hình ảnh
                               Expanded(
-                                child: product.imageUrl != null && product.imageUrl!.isNotEmpty
+                                child:
+                                    product.imageUrl != null &&
+                                        product.imageUrl!.isNotEmpty
                                     ? Image.network(
                                         product.imageUrl!,
                                         width: double.infinity,
                                         fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) => _buildPlaceholderImage(),
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                                _buildPlaceholderImage(),
                                       )
                                     : _buildPlaceholderImage(),
                               ),
@@ -263,14 +339,27 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                   children: [
                                     Text(
                                       product.name ?? 'Không có tên',
-                                      style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      product.price != null ? '${product.price}đ' : 'Liên hệ',
-                                      style: Theme.of(context).textTheme.titleSmall?.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600),
+                                      product.price != null
+                                          ? '${product.price}đ'
+                                          : 'Liên hệ',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall
+                                          ?.copyWith(
+                                            color: AppColors.primary,
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                     ),
                                   ],
                                 ),
@@ -309,15 +398,26 @@ class _ProductListScreenState extends State<ProductListScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
       builder: (context) {
-        final TextEditingController minController = TextEditingController(text: tempMin.round().toString());
-        final TextEditingController maxController = TextEditingController(text: tempMax.round().toString());
+        final TextEditingController minController = TextEditingController(
+          text: tempMin.round().toString(),
+        );
+        final TextEditingController maxController = TextEditingController(
+          text: tempMax.round().toString(),
+        );
 
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setModalState) {
             return Padding(
-              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, top: 16, left: 16, right: 16),
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+                top: 16,
+                left: 16,
+                right: 16,
+              ),
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -326,24 +426,51 @@ class _ProductListScreenState extends State<ProductListScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Bộ lọc & Sắp xếp', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                        IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(context)),
+                        const Text(
+                          'Bộ lọc & Sắp xếp',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () => Navigator.pop(context),
+                        ),
                       ],
                     ),
                     const Divider(),
                     const SizedBox(height: 8),
 
                     // Sort By
-                    const Text('Sắp xếp theo', style: TextStyle(fontWeight: FontWeight.bold)),
+                    const Text(
+                      'Sắp xếp theo',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     DropdownButton<String>(
                       isExpanded: true,
                       value: tempSort,
                       items: const [
-                        DropdownMenuItem(value: 'default', child: Text('Mặc định')),
-                        DropdownMenuItem(value: 'name_asc', child: Text('Tên (A-Z)')),
-                        DropdownMenuItem(value: 'name_desc', child: Text('Tên (Z-A)')),
-                        DropdownMenuItem(value: 'price_asc', child: Text('Giá (Thấp đến Cao)')),
-                        DropdownMenuItem(value: 'price_desc', child: Text('Giá (Cao xuống Thấp)')),
+                        DropdownMenuItem(
+                          value: 'default',
+                          child: Text('Mặc định'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'name_asc',
+                          child: Text('Tên (A-Z)'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'name_desc',
+                          child: Text('Tên (Z-A)'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'price_asc',
+                          child: Text('Giá (Thấp đến Cao)'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'price_desc',
+                          child: Text('Giá (Cao xuống Thấp)'),
+                        ),
                       ],
                       onChanged: (val) {
                         if (val != null) {
@@ -356,7 +483,10 @@ class _ProductListScreenState extends State<ProductListScreen> {
                     const SizedBox(height: 16),
 
                     // Price Range
-                    const Text('Khoảng giá (VNĐ)', style: TextStyle(fontWeight: FontWeight.bold)),
+                    const Text(
+                      'Khoảng giá (VNĐ)',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     const SizedBox(height: 8),
                     Row(
                       children: [
@@ -367,11 +497,16 @@ class _ProductListScreenState extends State<ProductListScreen> {
                             decoration: const InputDecoration(
                               labelText: 'Từ',
                               border: OutlineInputBorder(),
-                              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
                             ),
                             onChanged: (val) {
                               final valDouble = double.tryParse(val);
-                              if (valDouble != null && valDouble >= 0 && valDouble <= tempMax) {
+                              if (valDouble != null &&
+                                  valDouble >= 0 &&
+                                  valDouble <= tempMax) {
                                 setModalState(() {
                                   tempMin = valDouble;
                                 });
@@ -379,7 +514,10 @@ class _ProductListScreenState extends State<ProductListScreen> {
                             },
                           ),
                         ),
-                        const Padding(padding: EdgeInsets.symmetric(horizontal: 8.0), child: Text('-')),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text('-'),
+                        ),
                         Expanded(
                           child: TextField(
                             controller: maxController,
@@ -387,11 +525,16 @@ class _ProductListScreenState extends State<ProductListScreen> {
                             decoration: const InputDecoration(
                               labelText: 'Đến',
                               border: OutlineInputBorder(),
-                              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
                             ),
                             onChanged: (val) {
                               final valDouble = double.tryParse(val);
-                              if (valDouble != null && valDouble >= tempMin && valDouble <= 5000000) {
+                              if (valDouble != null &&
+                                  valDouble >= tempMin &&
+                                  valDouble <= 5000000) {
                                 setModalState(() {
                                   tempMax = valDouble;
                                 });
@@ -406,7 +549,10 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       min: 0,
                       max: 5000000,
                       divisions: 500,
-                      labels: RangeLabels('${tempMin.round()}đ', '${tempMax.round()}đ'),
+                      labels: RangeLabels(
+                        '${tempMin.round()}đ',
+                        '${tempMax.round()}đ',
+                      ),
                       onChanged: (RangeValues values) {
                         setModalState(() {
                           tempMin = values.start;
@@ -468,8 +614,14 @@ class _ProductListScreenState extends State<ProductListScreen> {
                           });
                           Navigator.pop(context);
                         },
-                        style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, padding: const EdgeInsets.symmetric(vertical: 16)),
-                        child: const Text('Áp dụng', style: TextStyle(color: Colors.white, fontSize: 16)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                        ),
+                        child: const Text(
+                          'Áp dụng',
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 16), // Optional extra space

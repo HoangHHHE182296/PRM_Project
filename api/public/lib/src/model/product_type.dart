@@ -11,12 +11,12 @@ part 'product_type.g.dart';
 
 class ProductType extends EnumClass {
 
-  @BuiltValueEnumConst(wireNumber: 1)
-  static const ProductType number1 = _$number1;
-  @BuiltValueEnumConst(wireNumber: 2)
-  static const ProductType number2 = _$number2;
-  @BuiltValueEnumConst(wireNumber: 3)
-  static const ProductType number3 = _$number3;
+  @BuiltValueEnumConst(wireName: r'Component')
+  static const ProductType component = _$component;
+  @BuiltValueEnumConst(wireName: r'BaseBox')
+  static const ProductType baseBox = _$baseBox;
+  @BuiltValueEnumConst(wireName: r'GiftSet')
+  static const ProductType giftSet = _$giftSet;
 
   static Serializer<ProductType> get serializer => _$productTypeSerializer;
 

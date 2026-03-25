@@ -53,23 +53,10 @@ class AuthService {
     }
   }
 
-  Future<UserResponse?> register(RegisterCommand command) async {
-    try {
-      final response = await _authApi.apiAuthRegisterPost(
-        registerCommand: command,
-      );
-      if (response.data?.success == true) {
-        return response.data?.data;
-      }
-      return null;
-    } on DioException catch (e) {
-      final errorData = e.response?.data;
-
-      if (errorData != null && errorData['error']?['code'] == "DUPLICATE") {
-        throw Exception("DUPLICATE_EMAIL");
-      }
-
-      throw Exception(errorData?['message'] ?? "Đăng ký thất bại");
+  Future<void> register(String email) async {
+    final isSent = await generateOtp(email);
+    if (!isSent) {
+      throw Exception('Không thể gửi mã OTP. Vui lòng thử lại sau.');
     }
   }
 

@@ -42,7 +42,7 @@ class _$ProductDetailResponse extends ProductDetailResponse {
   @override
   final BuiltList<String>? imageUrls;
   @override
-  final GiftSetIncludesResponse? includedItems;
+  final GiftSet? includedItems;
 
   factory _$ProductDetailResponse(
           [void Function(ProductDetailResponseBuilder)? updates]) =>
@@ -227,10 +227,10 @@ class ProductDetailResponseBuilder
   set imageUrls(ListBuilder<String>? imageUrls) =>
       _$this._imageUrls = imageUrls;
 
-  GiftSetIncludesResponseBuilder? _includedItems;
-  GiftSetIncludesResponseBuilder get includedItems =>
-      _$this._includedItems ??= GiftSetIncludesResponseBuilder();
-  set includedItems(GiftSetIncludesResponseBuilder? includedItems) =>
+  GiftSetBuilder? _includedItems;
+  GiftSetBuilder get includedItems =>
+      _$this._includedItems ??= GiftSetBuilder();
+  set includedItems(GiftSetBuilder? includedItems) =>
       _$this._includedItems = includedItems;
 
   ProductDetailResponseBuilder() {

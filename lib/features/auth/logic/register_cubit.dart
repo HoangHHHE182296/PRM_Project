@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:public_openapi/public_openapi.dart';
 import '../../../core/service/auth_service.dart';
 
 part 'register_state.dart';
@@ -9,22 +8,13 @@ class RegisterCubit extends Cubit<RegisterState> {
 
   RegisterCubit(this._authService) : super(RegisterInitial());
 
-  Future<void> register(RegisterCommand command) async {
+  Future<void> register(String email) async {
     emit(RegisterLoading());
     try {
-      final user = await _authService.register(command);
-      if (user != null) {
-        emit(RegisterSuccess(user));
-      } else {
-        emit(RegisterError("Đăng ký thất bại"));
-      }
+      await _authService.register(email);
+      emit(RegisterSuccess(email));
     } catch (e) {
-      final errorMessage = e.toString();
-      if (errorMessage.contains("DUPLICATE_EMAIL")) {
-        emit(RegisterError("Email này đã được sử dụng, vui lòng thử email khác!", isDuplicateEmail: true));
-      } else {
-        emit(RegisterError(errorMessage.replaceAll("Exception: ", "")));
-      }
+      emit(RegisterError(e.toString().replaceAll('Exception: ', '')));
     }
   }
 

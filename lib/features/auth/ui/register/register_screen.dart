@@ -7,7 +7,6 @@ import 'package:prm_project/shared/widgets/fields/app_date_picker.widget.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prm_project/core/di/injection.dart';
 import 'package:prm_project/features/auth/auth_feature.dart';
-import 'package:public_openapi/public_openapi.dart';
 import 'package:prm_project/shared/widgets/modal/otp_verification_dialog.widget.dart';
 import 'package:prm_project/core/utils/validator_utils.dart';
 
@@ -93,20 +92,7 @@ class _RegisterViewState extends State<_RegisterView> {
       return;
     }
 
-    final command = RegisterCommand(
-      (b) => b
-        ..firstName = _firstNameController.text
-        ..lastName = _lastNameController.text
-        ..email = _emailController.text
-        ..password = _passwordController.text
-        ..phone = _phoneController.text
-        ..gender = _gender
-        ..dateOfBirth = _birthDate == null
-            ? null
-            : Date(_birthDate!.year, _birthDate!.month, _birthDate!.day),
-    );
-
-    context.read<RegisterCubit>().register(command);
+    context.read<RegisterCubit>().register(_emailController.text);
   }
 
   String _formatDate(DateTime date) {

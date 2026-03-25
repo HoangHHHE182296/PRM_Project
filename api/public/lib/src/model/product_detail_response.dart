@@ -4,7 +4,7 @@
 
 // ignore_for_file: unused_element
 import 'package:built_collection/built_collection.dart';
-import 'package:public_openapi/src/model/gift_set_includes_response.dart';
+import 'package:public_openapi/src/model/gift_set.dart';
 import 'package:built_value/json_object.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
@@ -86,7 +86,7 @@ abstract class ProductDetailResponse implements Built<ProductDetailResponse, Pro
   BuiltList<String>? get imageUrls;
 
   @BuiltValueField(wireName: r'includedItems')
-  GiftSetIncludesResponse? get includedItems;
+  GiftSet? get includedItems;
 
   ProductDetailResponse._();
 
@@ -234,7 +234,7 @@ class _$ProductDetailResponseSerializer implements PrimitiveSerializer<ProductDe
       yield r'includedItems';
       yield serializers.serialize(
         object.includedItems,
-        specifiedType: const FullType(GiftSetIncludesResponse),
+        specifiedType: const FullType(GiftSet),
       );
     }
   }
@@ -393,8 +393,8 @@ class _$ProductDetailResponseSerializer implements PrimitiveSerializer<ProductDe
         case r'includedItems':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(GiftSetIncludesResponse),
-          ) as GiftSetIncludesResponse;
+            specifiedType: const FullType(GiftSet),
+          ) as GiftSet;
           result.includedItems.replace(valueDes);
           break;
         default:
