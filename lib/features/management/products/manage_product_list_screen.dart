@@ -77,13 +77,17 @@ class _ManageProductListScreenState extends State<ManageProductListScreen> {
 
       final json = res.data;
       if (json['success'] == true && json['data'] != null) {
+        final dynamic dataField = json['data'];
+        
         // Parse metadata for total count
         final metadata = json['metadata'];
         if (metadata != null) {
           _totalCount = metadata['totalCount'] ?? 0;
+        } else if (dataField is Map && dataField.containsKey('totalCount')) {
+          _totalCount = dataField['totalCount'] ?? 0;
         }
 
-        final List list = json['data'];
+        final List list = (dataField is Map) ? (dataField['data'] ?? dataField['items'] ?? []) : dataField;
         List<ProductListResponse> parsedList = list
             .map(
               (e) => ProductListResponse(
