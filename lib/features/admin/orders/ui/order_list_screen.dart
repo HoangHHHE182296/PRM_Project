@@ -79,7 +79,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
       final newItems = <AdminOrder>[];
       for (final order in filtered) {
         final id = order.id;
-        if (id == null || id.isEmpty) {
+        if (id.isEmpty) {
           newItems.add(order);
           continue;
         }
@@ -127,12 +127,12 @@ class _OrderListScreenState extends State<OrderListScreen> {
 
   Future<void> _changeStatus(AdminOrder order) async {
     final id = order.id;
-    if (id == null || id.isEmpty) {
+    if (id.isEmpty) {
       _showSnackBar('Đơn hàng không hợp lệ (thiếu id).');
       return;
     }
 
-    OrderStatus selectedStatus = order.status ?? OrderStatus.pendingPayment;
+    OrderStatus selectedStatus = order.status;
 
     final updated = await showModalBottomSheet<bool>(
       context: context,
@@ -440,9 +440,21 @@ class _OrderListScreenState extends State<OrderListScreen> {
                   color: Colors.red.shade100,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Text(
-                  _errorMessage!,
-                  style: const TextStyle(color: Colors.red),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _errorMessage!,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    TextButton(
+                      onPressed: _refresh,
+                      child: const Text('Thử lại'),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -450,7 +462,36 @@ class _OrderListScreenState extends State<OrderListScreen> {
             child: _orders.isEmpty && _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : visibleOrders.isEmpty
-                ? const Center(child: Text('Không có đơn hàng nào'))
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            _errorMessage == null
+                                ? 'Không có đơn hàng nào'
+                                : 'Không tải được danh sách đơn hàng',
+                            textAlign: TextAlign.center,
+                          ),
+                          if (_errorMessage != null) ...[
+                            const SizedBox(height: 8),
+                            Text(
+                              'Hãy kiểm tra đăng nhập/quyền admin rồi thử lại.',
+                              style: TextStyle(color: Colors.grey.shade700),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 12),
+                            ElevatedButton.icon(
+                              onPressed: _refresh,
+                              icon: const Icon(Icons.refresh),
+                              label: const Text('Tải lại'),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  )
                 : RefreshIndicator(
                     onRefresh: _refresh,
                     child: ListView.builder(
@@ -488,8 +529,9 @@ class _OrderListScreenState extends State<OrderListScreen> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              order.receiverName ??
-                                                  'Không có tên người nhận',
+                                              order.receiverName.isNotEmpty
+                                                  ? order.receiverName
+                                                  : 'Không có tên người nhận',
                                               style: const TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.bold,
@@ -497,7 +539,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
                                             ),
                                             const SizedBox(height: 4),
                                             Text(
-                                              'SĐT: ${order.receiverPhone ?? '—'}',
+                                              'SĐT: ${order.receiverPhone.isNotEmpty ? order.receiverPhone : '—'}',
                                             ),
                                             const SizedBox(height: 4),
                                             Text(
@@ -520,8 +562,9 @@ class _OrderListScreenState extends State<OrderListScreen> {
                                   ),
                                   const SizedBox(height: 12),
                                   Text(
-                                    order.shippingAddress ??
-                                        'Không có địa chỉ giao hàng',
+                                    order.shippingAddress.isNotEmpty
+                                        ? order.shippingAddress
+                                        : 'Không có địa chỉ giao hàng',
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -668,7 +711,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
                                       ),
                                       _infoChip(
                                         'Tổng tiền',
-                                        '${(order.totalAmount ?? 0).toStringAsFixed(0)}đ',
+                                        '${(order.totalAmount).toStringAsFixed(0)}đ',
                                       ),
                                     ],
                                   ),

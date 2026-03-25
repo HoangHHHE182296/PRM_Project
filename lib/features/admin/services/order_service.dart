@@ -95,11 +95,19 @@ class OrderService {
       }
 
       final payload = body['data'];
+
+      // OpenAPI: successResponse.data is OrderListResponsePagedResult { data: [..], metadata: {...} }
+      // Some backends may also attach metadata at root: successResponse.metadata.
       final dataMap = payload is Map<String, dynamic>
           ? payload
           : <String, dynamic>{};
 
-      final rows = dataMap['data'];
+      dynamic rows = dataMap['data'];
+      if (rows is! List) {
+        // Fallbacks if server returns a direct list or uses a different key.
+        rows = payload is List ? payload : dataMap['items'];
+      }
+
       final orders = rows is List
           ? rows
                 .whereType<Map>()
@@ -107,7 +115,8 @@ class OrderService {
                 .toList()
           : const <AdminOrder>[];
 
-      final metadata = _mapMetadata(dataMap['metadata']);
+      final metadata =
+          _mapMetadata(body['metadata']) ?? _mapMetadata(dataMap['metadata']);
 
       return OrderPageResult(orders: orders, metadata: metadata);
     } on DioException catch (e) {
