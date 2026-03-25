@@ -87,7 +87,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
       final json = res.data;
       if (json['success'] == true && json['data'] != null) {
-        final List list = json['data'];
+        final dynamic dataField = json['data'];
+        final List list = (dataField is Map) ? (dataField['data'] ?? dataField['items'] ?? []) : dataField;
 
         List<ProductListResponse> parsedList = list
             .map(
