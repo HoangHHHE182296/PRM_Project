@@ -8,6 +8,10 @@ import 'package:prm_project/features/home/home_feature.dart';
 import 'package:prm_project/features/products/product_list_screen.dart';
 import 'package:prm_project/features/profile/ui/profile_screen.dart';
 import '../../shared/layouts/customer_layout.dart';
+import 'package:prm_project/features/chatai/chatai_screen.dart';
+import 'package:prm_project/features/chatai/bloc/chatai_cubit.dart';
+import 'package:prm_project/core/di/injection.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AppRouter {
   static CustomTransitionPage _buildPageWithTransition({required BuildContext context, required GoRouterState state, required Widget child}) {
@@ -69,6 +73,14 @@ class AppRouter {
       GoRoute(path: RouterConst.login.router, builder: (context, state) => const LoginScreen()),
 
       GoRoute(path: RouterConst.register.router, builder: (context, state) => const RegisterScreen()),
+
+      GoRoute(
+        path: RouterConst.chatAi.router,
+        builder: (context, state) => BlocProvider<ChatAiCubit>(
+          create: (_) => sl<ChatAiCubit>(),
+          child: const ChatAiScreen(),
+        ),
+      ),
 
       GoRoute(
         path: '/403',

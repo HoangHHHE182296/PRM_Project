@@ -12,4 +12,6 @@ class RouterConst {
   static const products = RouterItem(title: 'Quà tặng', path: 'products', router: '/products', protected: true);
 
   static const profile = RouterItem(title: 'Hồ sơ', path: 'profile', router: '/profile', protected: true);
+
+  static const chatAi = RouterItem(title: 'Tư vấn quà tặng', path: 'chatai', router: '/chatai', protected: true);
 }
