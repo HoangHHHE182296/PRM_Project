@@ -75,6 +75,14 @@ class _CustomerDrawer extends StatelessWidget {
           ),
 
           // Danh sách các Menu điều hướng
+          ListTile(
+            leading: const Icon(Icons.auto_awesome, color: Colors.purple),
+            title: const Text('Tư vấn quà tặng AI'),
+            onTap: () {
+              Navigator.pop(context); // Close drawer
+              context.push(RouterConst.chatAi.router);
+            },
+          ),
           ListTile(leading: const Icon(Icons.history), title: const Text('Lịch sử đơn hàng'), onTap: () => context.push('/orders')),
           ListTile(leading: const Icon(Icons.favorite_border), title: const Text('Quà tặng đã lưu'), onTap: () {}),
           const Divider(), // Đường kẻ ngang phân cách
