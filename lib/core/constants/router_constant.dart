@@ -14,4 +14,6 @@ class RouterConst {
   static const profile = RouterItem(title: 'Hồ sơ', path: 'profile', router: '/profile', protected: true);
 
   static const manageProducts = RouterItem(title: 'Quản lý sản phẩm', path: 'manage-products', router: '/manage/products', protected: true, roles: ['admin']);
+
+  static const chatAi = RouterItem(title: 'Tư vấn quà tặng', path: 'chatai', router: '/chatai', protected: true);
 }

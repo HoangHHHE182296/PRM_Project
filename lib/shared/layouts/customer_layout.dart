@@ -82,7 +82,7 @@ class _CustomerDrawer extends StatelessWidget {
               padding: EdgeInsets.zero,
               children: [
                 if (isAdmin) ...[
-                  // Menu chiều hướng cho Admin
+                  // ================= MENU DÀNH CHO ADMIN =================
                   ListTile(
                     leading: const Icon(Icons.inventory_2_outlined),
                     title: const Text('Quản lý sản phẩm'),
@@ -95,7 +95,23 @@ class _CustomerDrawer extends StatelessWidget {
                   ),
                   ListTile(leading: const Icon(Icons.receipt_long_outlined), title: const Text('Quản lý đơn đặt'), onTap: () => context.push('/manage/orders')),
                 ] else ...[
-                  // Menu chiều hướng cho Customer
+                  // ================= MENU DÀNH CHO CUSTOMER =================
+
+                  // 🌟 Tính năng mới: Tư vấn AI (Được highlight để thu hút chú ý)
+                  ListTile(
+                    leading: const Icon(Icons.auto_awesome, color: Colors.orange), // Icon ngôi sao lấp lánh
+                    title: const Text(
+                      'Tư vấn quà tặng AI',
+                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.orange),
+                    ),
+                    onTap: () {
+                      // Đóng Drawer trước khi chuyển trang (Optional nhưng nên làm)
+                      Navigator.pop(context);
+                      context.push('/ai-consultant'); // Route màn hình chat AI
+                    },
+                  ),
+                  const Divider(), // Tách biệt phần AI và phần lịch sử cá nhân
+
                   ListTile(leading: const Icon(Icons.history), title: const Text('Lịch sử đơn hàng'), onTap: () => context.push('/orders')),
                   ListTile(leading: const Icon(Icons.favorite_border), title: const Text('Quà tặng đã lưu'), onTap: () {}),
                 ],

@@ -4,6 +4,7 @@ import 'package:prm_project/core/service/auth_service.dart';
 import 'package:prm_project/core/service/credential_service.dart';
 import 'package:prm_project/features/auth/auth_feature.dart';
 import 'package:public_openapi/public_openapi.dart';
+import 'package:prm_project/features/chatai/bloc/chatai_cubit.dart';
 
 final sl = GetIt.instance;
 
@@ -22,4 +23,5 @@ Future<void> setupDI() async {
   );
 
   registerAuthFeature(sl);
+  sl.registerFactory<ChatAiCubit>(() => ChatAiCubit(sl<PublicOpenapi>().getConsultationApi()));
 }
