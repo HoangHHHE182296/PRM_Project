@@ -1,0 +1,26 @@
+import 'package:test/test.dart';
+import 'package:internal_openapi/internal_openapi.dart';
+
+
+/// tests for AuthApi
+void main() {
+  final instance = InternalOpenapi().getAuthApi();
+
+  group(AuthApi, () {
+    //Future<LoginResponseApiSuccessResponse> apiAuthGoogleLoginPost({ GoogleLoginCommand googleLoginCommand }) async
+    test('test apiAuthGoogleLoginPost', () async {
+      // TODO
+    });
+
+    //Future<LoginResponseApiSuccessResponse> apiAuthLoginPost({ LoginCommand loginCommand }) async
+    test('test apiAuthLoginPost', () async {
+      // TODO
+    });
+
+    //Future<LoginResponseApiSuccessResponse> apiAuthRefreshTokenPost({ RefreshTokenCommand refreshTokenCommand }) async
+    test('test apiAuthRefreshTokenPost', () async {
+      // TODO
+    });
+
+  });
+}

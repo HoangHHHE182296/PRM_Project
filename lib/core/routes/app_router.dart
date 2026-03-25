@@ -7,6 +7,9 @@ import 'package:prm_project/features/auth/ui/register/register_screen.dart';
 import 'package:prm_project/features/home/home_feature.dart';
 import 'package:prm_project/features/products/product_list_screen.dart';
 import 'package:prm_project/features/profile/ui/profile_screen.dart';
+import 'package:prm_project/features/admin/categories/ui/category_form_screen.dart';
+import 'package:prm_project/features/admin/categories/ui/category_list_screen.dart';
+import 'package:prm_project/features/admin/orders/ui/order_list_screen.dart';
 import '../../shared/layouts/customer_layout.dart';
 import 'package:prm_project/features/chatai/chatai_screen.dart';
 import 'package:prm_project/features/chatai/bloc/chatai_cubit.dart';
@@ -14,13 +17,22 @@ import 'package:prm_project/core/di/injection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AppRouter {
-  static CustomTransitionPage _buildPageWithTransition({required BuildContext context, required GoRouterState state, required Widget child}) {
+  static CustomTransitionPage _buildPageWithTransition({
+    required BuildContext context,
+    required GoRouterState state,
+    required Widget child,
+  }) {
     return CustomTransitionPage(
       key: state.pageKey,
       child: child,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         return SlideTransition(
-          position: animation.drive(Tween(begin: const Offset(1.0, 0.0), end: Offset.zero).chain(CurveTween(curve: Curves.easeInOut))),
+          position: animation.drive(
+            Tween(
+              begin: const Offset(1.0, 0.0),
+              end: Offset.zero,
+            ).chain(CurveTween(curve: Curves.easeInOut)),
+          ),
           child: child,
         );
       },
@@ -40,9 +52,14 @@ class AppRouter {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                redirect: (context, state) => RouteGuard.check(RouterConst.home),
+                redirect: (context, state) =>
+                    RouteGuard.check(RouterConst.home),
                 path: RouterConst.home.router,
-                pageBuilder: (context, state) => _buildPageWithTransition(context: context, state: state, child: const HomeScreen()),
+                pageBuilder: (context, state) => _buildPageWithTransition(
+                  context: context,
+                  state: state,
+                  child: const HomeScreen(),
+                ),
               ),
             ],
           ),
@@ -50,9 +67,14 @@ class AppRouter {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                redirect: (context, state) => RouteGuard.check(RouterConst.products),
+                redirect: (context, state) =>
+                    RouteGuard.check(RouterConst.products),
                 path: RouterConst.products.router,
-                pageBuilder: (context, state) => _buildPageWithTransition(context: context, state: state, child: const ProductListScreen()),
+                pageBuilder: (context, state) => _buildPageWithTransition(
+                  context: context,
+                  state: state,
+                  child: const ProductListScreen(),
+                ),
               ),
             ],
           ),
@@ -60,9 +82,14 @@ class AppRouter {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                redirect: (context, state) => RouteGuard.check(RouterConst.profile),
+                redirect: (context, state) =>
+                    RouteGuard.check(RouterConst.profile),
                 path: RouterConst.profile.router,
-                pageBuilder: (context, state) => _buildPageWithTransition(context: context, state: state, child: const ProfileScreen()),
+                pageBuilder: (context, state) => _buildPageWithTransition(
+                  context: context,
+                  state: state,
+                  child: const ProfileScreen(),
+                ),
               ),
             ],
           ),
@@ -70,9 +97,15 @@ class AppRouter {
       ),
 
       // 2. CÁC TRANG KHÔNG DÙNG LAYOUT (FULL SCREEN)
-      GoRoute(path: RouterConst.login.router, builder: (context, state) => const LoginScreen()),
+      GoRoute(
+        path: RouterConst.login.router,
+        builder: (context, state) => const LoginScreen(),
+      ),
 
-      GoRoute(path: RouterConst.register.router, builder: (context, state) => const RegisterScreen()),
+      GoRoute(
+        path: RouterConst.register.router,
+        builder: (context, state) => const RegisterScreen(),
+      ),
 
       GoRoute(
         path: RouterConst.chatAi.router,
@@ -84,12 +117,36 @@ class AppRouter {
 
       GoRoute(
         path: '/403',
-        builder: (context, state) => const Scaffold(body: Center(child: Text("Bạn không có quyền truy cập trang này!"))),
+        builder: (context, state) => const Scaffold(
+          body: Center(child: Text("Bạn không có quyền truy cập trang này!")),
+        ),
+      ),
+
+      GoRoute(
+        path: '/manage/orders',
+        builder: (context, state) => const OrderListScreen(),
+      ),
+
+      GoRoute(
+        path: '/manage/categories',
+        builder: (context, state) => const CategoryListScreen(),
+      ),
+
+      GoRoute(
+        path: '/manage/categories/create',
+        builder: (context, state) => const CategoryFormScreen(),
+      ),
+
+      GoRoute(
+        path: '/manage/categories/edit/:id',
+        builder: (context, state) =>
+            CategoryFormScreen(categoryId: state.pathParameters['id']),
       ),
 
       GoRoute(
         path: '/404',
-        builder: (context, state) => const Scaffold(body: Center(child: Text("Trang không tồn tại!"))),
+        builder: (context, state) =>
+            const Scaffold(body: Center(child: Text("Trang không tồn tại!"))),
       ),
     ],
   );
