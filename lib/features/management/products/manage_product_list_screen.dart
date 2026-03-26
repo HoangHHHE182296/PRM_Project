@@ -140,7 +140,43 @@ class _ManageProductListScreenState extends State<ManageProductListScreen> {
     _fetchProducts();
   }
 
+  Future<void> _deleteProduct(ProductListResponse product) async {
+    setState(() => _isLoading = true);
+    bool success = false;
+    try {
+      final res = await ApiClient.managementApi.getProductApi().apiProductsDeleteProductIdDelete(id: product.id!);
+      if (res.data?.success == true) {
+        success = true;
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Xoá sản phẩm "${product.name}" thành công'), backgroundColor: Colors.green),
+          );
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(res.data?.message ?? 'Xoá thất bại'), backgroundColor: Colors.red),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('Error deleting product: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Lỗi khi xoá: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        if (success) _fetchProducts();
+      }
+    }
+  }
+
   void _showDeleteConfirmDialog(ProductListResponse product) {
+    if (product.id == null) return;
+    
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -151,10 +187,7 @@ class _ManageProductListScreenState extends State<ManageProductListScreen> {
           TextButton(
             onPressed: () {
               Navigator.pop(ctx);
-              // TODO: Gọi API xoá khi có endpoint
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Chức năng xoá chưa được triển khai')),
-              );
+              _deleteProduct(product);
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text('Xoá'),
