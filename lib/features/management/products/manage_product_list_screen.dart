@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:prm_project/core/api/api_client.dart';
 import 'package:prm_project/features/management/products/manage_product_form_screen.dart';
+import 'package:prm_project/features/management/products/manage_product_detail_screen.dart';
 import 'package:prm_project/shared/theme/app_colors.dart';
 import 'package:public_openapi/public_openapi.dart';
 
@@ -301,26 +302,37 @@ class _ManageProductListScreenState extends State<ManageProductListScreen> {
                             return Card(
                               elevation: 1,
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                                child: Row(
-                                  children: [
-                                    // Ảnh thumbnail
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(8),
-                                      child: SizedBox(
-                                        width: 56,
-                                        height: 56,
-                                        child: p.imageUrl != null && p.imageUrl!.isNotEmpty
-                                            ? Image.network(
-                                                p.imageUrl!,
-                                                fit: BoxFit.cover,
-                                                errorBuilder: (_, _, _) => _buildImagePlaceholder(),
-                                              )
-                                            : _buildImagePlaceholder(),
+                              clipBehavior: Clip.antiAlias,
+                              child: InkWell(
+                                onTap: () async {
+                                  final needsRefresh = await Navigator.push<bool>(
+                                    context,
+                                    MaterialPageRoute(builder: (_) => ManageProductDetailScreen(productId: p.id!)),
+                                  );
+                                  if (needsRefresh == true) {
+                                    _fetchProducts();
+                                  }
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                  child: Row(
+                                    children: [
+                                      // Ảnh thumbnail
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: SizedBox(
+                                          width: 56,
+                                          height: 56,
+                                          child: p.imageUrl != null && p.imageUrl!.isNotEmpty
+                                              ? Image.network(
+                                                  p.imageUrl!,
+                                                  fit: BoxFit.cover,
+                                                  errorBuilder: (_, _, _) => _buildImagePlaceholder(),
+                                                )
+                                              : _buildImagePlaceholder(),
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(width: 12),
+                                      const SizedBox(width: 12),
 
                                     // Thông tin sản phẩm
                                     Expanded(
@@ -385,6 +397,7 @@ class _ManageProductListScreenState extends State<ManageProductListScreen> {
                                   ],
                                 ),
                               ),
+                             ),
                             );
                           },
                         ),
