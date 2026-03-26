@@ -331,11 +331,14 @@ class _ManageProductListScreenState extends State<ManageProductListScreen> {
                                           icon: const Icon(Icons.edit_outlined, size: 20),
                                           color: Colors.blue,
                                           tooltip: 'Sửa',
-                                          onPressed: () {
-                                            // TODO: navigate to edit screen
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              const SnackBar(content: Text('Chức năng sửa chưa được triển khai')),
+                                          onPressed: () async {
+                                            final updated = await Navigator.push<bool>(
+                                              context,
+                                              MaterialPageRoute(builder: (_) => ManageProductFormScreen(productId: p.id)),
                                             );
+                                            if (updated == true) {
+                                              _fetchProducts();
+                                            }
                                           },
                                         ),
                                         IconButton(

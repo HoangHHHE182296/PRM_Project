@@ -36,7 +36,8 @@ class _GiftSetItemEntry {
 // ─────────────────────────────────────────────────────────────────────────────
 
 class ManageProductFormScreen extends StatefulWidget {
-  const ManageProductFormScreen({super.key});
+  final String? productId; // If null, create new; else, update.
+  const ManageProductFormScreen({super.key, this.productId});
 
   @override
   State<ManageProductFormScreen> createState() => _ManageProductFormScreenState();
@@ -60,6 +61,7 @@ class _ManageProductFormScreenState extends State<ManageProductFormScreen> {
   // ── Dropdown data ──
   List<_Category> _categories = [];
   bool _loadingCategories = false;
+  bool _isLoadingProduct = false;
 
   // ── GiftSet data ──
   List<_Product> _availableBaseBoxes = [];
@@ -78,7 +80,64 @@ class _ManageProductFormScreenState extends State<ManageProductFormScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchCategories();
+    _initData();
+  }
+
+  Future<void> _initData() async {
+    await _fetchCategories();
+    if (widget.productId != null) {
+      await _fetchProductDetails();
+    }
+  }
+
+  Future<void> _fetchProductDetails() async {
+    if (!mounted) return;
+    setState(() => _isLoadingProduct = true);
+    
+    try {
+      final res = await ApiClient.managementApi.getProductApi().apiProductsGetProductDetailIdGet(id: widget.productId!);
+      final data = res.data?.data;
+      if (data != null) {
+        _nameCtrl.text = data.name ?? '';
+        _skuCtrl.text = data.sku ?? '';
+        _priceCtrl.text = _currencyFormat.format(data.price ?? 0).replaceAll('đ', '').trim();
+        _stockCtrl.text = data.stockQuantity?.toString() ?? '0';
+        _lowStockCtrl.text = data.lowStockThreshold?.toString() ?? '5';
+        _descCtrl.text = data.description ?? '';
+        
+        final typeName = data.typeName ?? '';
+        if (typeName.toLowerCase().contains('component')) _productType = ProductType.component;
+        else if (typeName.toLowerCase().contains('basebox')) _productType = ProductType.baseBox;
+        else if (typeName.toLowerCase().contains('giftset')) _productType = ProductType.giftSet;
+
+        // Ensure the fetched category matches the product type restrictions in the UI
+        if (_categories.any((c) => c.id == data.categoryId && (c.supportedType == null || c.supportedType == _productType))) {
+          _selectedCategoryId = data.categoryId;
+        }
+
+        if (_productType == ProductType.giftSet) {
+          await _fetchGiftSetData(); // Need components to map existing items
+          _selectedBaseBoxId = data.includedItems?.baseBoxId;
+          _selectedBaseBoxPrice = _availableBaseBoxes.where((b) => b.id == _selectedBaseBoxId).firstOrNull?.price;
+
+          final items = data.includedItems?.items;
+          if (items != null) {
+            _giftSetItems = items.map((i) {
+              final comp = _availableComponents.firstWhere(
+                (c) => c.id == i.componentId,
+                orElse: () => _Product(id: i.componentId ?? '', name: i.componentName ?? 'Sản phẩm ẩn', price: 0),
+              );
+              return _GiftSetItemEntry(component: comp, quantity: i.quantity ?? 1);
+            }).toList();
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('Error fetching product details: $e');
+      if (mounted) _showError('Không thể tải thông tin sản phẩm: $e');
+    } finally {
+      if (mounted) setState(() => _isLoadingProduct = false);
+    }
   }
 
   @override
@@ -312,32 +371,46 @@ class _ManageProductFormScreenState extends State<ManageProductFormScreen> {
       }
       debugPrint('--------------------------');
 
-      final res = await ApiClient.managementApi.getProductApi().apiProductsCreateProductPost(
-            name: _nameCtrl.text.trim(),
-            SKU: _skuCtrl.text.trim(),
-            price: double.tryParse(_priceCtrl.text.replaceAll(',', '')) ?? 0,
-            description: _descCtrl.text.trim().isNotEmpty ? _descCtrl.text.trim() : null,
-            productType: _productType,
-            categoryId: _selectedCategoryId,
-            stockQuantity: int.tryParse(_stockCtrl.text) ?? 0,
-            lowStockThreshold: int.tryParse(_lowStockCtrl.text) ?? 5,
-            baseBoxId: _productType == ProductType.giftSet ? _selectedBaseBoxId : null,
-            giftSetItems: giftSetItemsList?.build(),
-          );
+      final api = ApiClient.managementApi.getProductApi();
+      final pName = _nameCtrl.text.trim();
+      final pSku = _skuCtrl.text.trim();
+      final pPrice = double.tryParse(_priceCtrl.text.replaceAll('.', '').replaceAll(',', '')) ?? 0;
+      final pDesc = _descCtrl.text.trim().isNotEmpty ? _descCtrl.text.trim() : null;
+      final pStock = int.tryParse(_stockCtrl.text) ?? 0;
+      final pLowStock = int.tryParse(_lowStockCtrl.text) ?? 5;
+      final pBaseBox = _productType == ProductType.giftSet ? _selectedBaseBoxId : null;
+
+      Response<dynamic>? res;
+      if (widget.productId == null) {
+        res = await api.apiProductsCreateProductPost(
+          name: pName, SKU: pSku, price: pPrice, description: pDesc,
+          productType: _productType, categoryId: _selectedCategoryId,
+          stockQuantity: pStock, lowStockThreshold: pLowStock,
+          baseBoxId: pBaseBox, giftSetItems: giftSetItemsList?.build(),
+        );
+      } else {
+        res = await api.apiProductsUpdateProductIdPut(
+          id: widget.productId!, id2: widget.productId!,
+          name: pName, SKU: pSku, price: pPrice, description: pDesc,
+          productType: _productType, categoryId: _selectedCategoryId,
+          stockQuantity: pStock, lowStockThreshold: pLowStock,
+          baseBoxId: pBaseBox, giftSetItems: giftSetItemsList?.build(),
+        );
+      }
 
       if (res.data?.success == true) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Tạo sản phẩm thành công!'),
+              content: Text(widget.productId == null ? 'Tạo sản phẩm thành công!' : 'Cập nhật sản phẩm thành công!'),
               backgroundColor: Colors.green[600],
             ),
           );
-          Navigator.pop(context, true); // return true = refresh list
+          Navigator.pop(context, true);
         }
       } else {
         debugPrint('Backend reported failure: ${res.data?.message}');
-        _showError(res.data?.message ?? 'Tạo sản phẩm thất bại.');
+        _showError(res.data?.message ?? (widget.productId == null ? 'Tạo sản phẩm thất bại.' : 'Cập nhật thất bại.'));
       }
     } on DioException catch (e) {
       // Detailed error logging for debugging
@@ -383,7 +456,7 @@ class _ManageProductFormScreenState extends State<ManageProductFormScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Thêm Mới Sản Phẩm'),
+        title: Text(widget.productId == null ? 'Thêm Mới Sản Phẩm' : 'Cập Nhật Sản Phẩm'),
         centerTitle: false,
         actions: [
           Padding(
@@ -391,14 +464,16 @@ class _ManageProductFormScreenState extends State<ManageProductFormScreen> {
             child: _isSubmitting
                 ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2.5))
                 : FilledButton(
-                    onPressed: _submit,
+                    onPressed: _isLoadingProduct ? null : _submit,
                     style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
                     child: const Text('Lưu lại'),
                   ),
           ),
         ],
       ),
-      body: Form(
+      body: _isLoadingProduct 
+        ? const Center(child: CircularProgressIndicator())
+        : Form(
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
