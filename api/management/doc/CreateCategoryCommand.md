@@ -1,0 +1,19 @@
+# management_openapi.model.CreateCategoryCommand
+
+## Load the model package
+```dart
+import 'package:management_openapi/api.dart';
+```
+
+## Properties
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**name** | **String** |  | [optional] 
+**description** | **String** |  | [optional] 
+**imageUrl** | **String** |  | [optional] 
+**supportedProductType** | [**ProductType**](ProductType.md) |  | [optional] 
+**parentCategoryId** | **String** |  | [optional] 
+
+[[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

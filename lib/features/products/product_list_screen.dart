@@ -87,7 +87,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
       final json = res.data;
       if (json['success'] == true && json['data'] != null) {
-        final List list = json['data'];
+        final dynamic dataField = json['data'];
+        final List list = (dataField is Map) ? (dataField['data'] ?? dataField['items'] ?? []) : dataField;
 
         List<ProductListResponse> parsedList = list
             .map(
@@ -213,74 +214,86 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
           // Danh sách sản phẩm
           Expanded(
-            child: _products.isEmpty && _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : _products.isEmpty
-                ? const Center(child: Text('Không có mục nào.'))
-                : GridView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 16.0,
-                      mainAxisSpacing: 16.0,
-                      childAspectRatio: 0.75, // Tỉ lệ khung hình (width/height)
-                    ),
-                    itemCount: _products.length + (_hasMore ? 1 : 0),
-                    itemBuilder: (context, index) {
-                      if (index == _products.length) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
+            child: RefreshIndicator(
+              onRefresh: () => _fetchProducts(),
+              child: _products.isEmpty && _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _products.isEmpty
+                      ? ListView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          children: [
+                            SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.6,
+                              child: const Center(child: Text('Không có mục nào.')),
+                            ),
+                          ],
+                        )
+                      : GridView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          controller: _scrollController,
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 16.0,
+                            mainAxisSpacing: 16.0,
+                            childAspectRatio: 0.75, // Tỉ lệ khung hình (width/height)
+                          ),
+                          itemCount: _products.length + (_hasMore ? 1 : 0),
+                          itemBuilder: (context, index) {
+                            if (index == _products.length) {
+                              return const Center(child: CircularProgressIndicator());
+                            }
 
-                      final product = _products[index];
-                      return InkWell(
-                        onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetailScreen(product: product)));
-                        },
-                        child: Card(
-                          elevation: 2,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          clipBehavior: Clip.antiAlias,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Hình ảnh
-                              Expanded(
-                                child: product.imageUrl != null && product.imageUrl!.isNotEmpty
-                                    ? Image.network(
-                                        product.imageUrl!,
-                                        width: double.infinity,
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) => _buildPlaceholderImage(),
-                                      )
-                                    : _buildPlaceholderImage(),
-                              ),
-                              // Thông tin
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
+                            final product = _products[index];
+                            return InkWell(
+                              onTap: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => ProductDetailScreen(product: product)));
+                              },
+                              child: Card(
+                                elevation: 2,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                clipBehavior: Clip.antiAlias,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      product.name ?? 'Không có tên',
-                                      style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
+                                    // Hình ảnh
+                                    Expanded(
+                                      child: product.imageUrl != null && product.imageUrl!.isNotEmpty
+                                          ? Image.network(
+                                              product.imageUrl!,
+                                              width: double.infinity,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (context, error, stackTrace) => _buildPlaceholderImage(),
+                                            )
+                                          : _buildPlaceholderImage(),
                                     ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      product.price != null ? '${product.price}đ' : 'Liên hệ',
-                                      style: Theme.of(context).textTheme.titleSmall?.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600),
+                                    // Thôngত্তি
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            product.name ?? 'Không có tên',
+                                            style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            product.price != null ? '${product.price}đ' : 'Liên hệ',
+                                            style: Theme.of(context).textTheme.titleSmall?.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 ),
                               ),
-                            ],
-                          ),
+                            );
+                          },
                         ),
-                      );
-                    },
-                  ),
+            ),
           ),
         ],
       ),

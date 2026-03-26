@@ -6,6 +6,7 @@ import 'package:prm_project/features/auth/ui/login/login_screen.dart';
 import 'package:prm_project/features/auth/ui/register/register_screen.dart';
 import 'package:prm_project/features/home/home_feature.dart';
 import 'package:prm_project/features/products/product_list_screen.dart';
+import 'package:prm_project/features/management/products/manage_product_list_screen.dart';
 import 'package:prm_project/features/profile/ui/profile_screen.dart';
 import '../../shared/layouts/customer_layout.dart';
 import 'package:prm_project/features/chatai/chatai_screen.dart';
@@ -73,6 +74,13 @@ class AppRouter {
       GoRoute(path: RouterConst.login.router, builder: (context, state) => const LoginScreen()),
 
       GoRoute(path: RouterConst.register.router, builder: (context, state) => const RegisterScreen()),
+
+      // 3. MANAGEMENT ROUTES (full screen, no shell layout)
+      GoRoute(
+        path: RouterConst.manageProducts.router,
+        redirect: (context, state) => RouteGuard.check(RouterConst.manageProducts),
+        pageBuilder: (context, state) => _buildPageWithTransition(context: context, state: state, child: const ManageProductListScreen()),
+      ),
 
       GoRoute(
         path: RouterConst.chatAi.router,
