@@ -44,9 +44,7 @@ class _ManageProductListScreenState extends State<ManageProductListScreen> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200 &&
-        !_isLoading &&
-        _hasMore) {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200 && !_isLoading && _hasMore) {
       _fetchProducts(loadMore: true);
     }
   }
@@ -62,25 +60,19 @@ class _ManageProductListScreenState extends State<ManageProductListScreen> {
 
     setState(() => _isLoading = true);
 
-    final Map<String, dynamic> queryParams = {
-      'PageNumber': _pageNumber,
-      'PageSize': _pageSize,
-    };
+    final Map<String, dynamic> queryParams = {'PageNumber': _pageNumber, 'PageSize': _pageSize};
 
     if (_searchQuery != null && _searchQuery!.trim().isNotEmpty) {
       queryParams['Search'] = _searchQuery!.trim();
     }
 
     try {
-      final res = await ApiClient.openApi.dio.get(
-        '/api/products/get-public-product-list',
-        queryParameters: queryParams,
-      );
+      final res = await ApiClient.openApi.dio.get('/api/products/get-public-product-list', queryParameters: queryParams);
 
       final json = res.data;
       if (json['success'] == true && json['data'] != null) {
         final dynamic dataField = json['data'];
-        
+
         // Parse metadata for total count
         final metadata = json['metadata'];
         if (metadata != null) {
@@ -123,11 +115,8 @@ class _ManageProductListScreenState extends State<ManageProductListScreen> {
         });
       }
     } catch (e) {
-      debugPrint('Error fetching products (management): $e');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi tải danh sách: $e'), backgroundColor: Colors.red),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lỗi tải danh sách: $e'), backgroundColor: Colors.red));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -149,23 +138,16 @@ class _ManageProductListScreenState extends State<ManageProductListScreen> {
       if (res.data?.success == true) {
         success = true;
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Xoá sản phẩm "${product.name}" thành công'), backgroundColor: Colors.green),
-          );
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Xoá sản phẩm "${product.name}" thành công'), backgroundColor: Colors.green));
         }
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(res.data?.message ?? 'Xoá thất bại'), backgroundColor: Colors.red),
-          );
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res.data?.message ?? 'Xoá thất bại'), backgroundColor: Colors.red));
         }
       }
     } catch (e) {
-      debugPrint('Error deleting product: $e');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi khi xoá: $e'), backgroundColor: Colors.red),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lỗi khi xoá: $e'), backgroundColor: Colors.red));
       }
     } finally {
       if (mounted) {
@@ -177,7 +159,7 @@ class _ManageProductListScreenState extends State<ManageProductListScreen> {
 
   void _showDeleteConfirmDialog(ProductListResponse product) {
     if (product.id == null) return;
-    
+
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -207,10 +189,7 @@ class _ManageProductListScreenState extends State<ManageProductListScreen> {
           // Nút thêm sản phẩm mới
           FilledButton.icon(
             onPressed: () async {
-              final created = await Navigator.push<bool>(
-                context,
-                MaterialPageRoute(builder: (_) => const ManageProductFormScreen()),
-              );
+              final created = await Navigator.push<bool>(context, MaterialPageRoute(builder: (_) => const ManageProductFormScreen()));
               if (created == true) {
                 _fetchProducts();
               }
@@ -258,11 +237,7 @@ class _ManageProductListScreenState extends State<ManageProductListScreen> {
                   ),
                 ),
                 const SizedBox(width: 12),
-                if (!_isLoading)
-                  Text(
-                    'Tổng: $_totalCount',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textLight),
-                  ),
+                if (!_isLoading) Text('Tổng: $_totalCount', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textLight)),
               ],
             ),
           ),
@@ -272,136 +247,125 @@ class _ManageProductListScreenState extends State<ManageProductListScreen> {
             child: _products.isEmpty && _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _products.isEmpty
-                    ? Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.inventory_2_outlined, size: 64, color: Colors.grey[300]),
-                            const SizedBox(height: 12),
-                            const Text('Không tìm thấy sản phẩm nào'),
-                          ],
-                        ),
-                      )
-                    : RefreshIndicator(
-                        onRefresh: () => _fetchProducts(),
-                        child: ListView.separated(
-                          controller: _scrollController,
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                          itemCount: _products.length + (_hasMore ? 1 : 0),
-                          separatorBuilder: (_, _) => const SizedBox(height: 8),
-                          itemBuilder: (context, index) {
-                            // Loading indicator cuối danh sách
-                            if (index == _products.length) {
-                              return const Padding(
-                                padding: EdgeInsets.all(24),
-                                child: Center(child: CircularProgressIndicator()),
+                ? Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.inventory_2_outlined, size: 64, color: Colors.grey[300]),
+                        const SizedBox(height: 12),
+                        const Text('Không tìm thấy sản phẩm nào'),
+                      ],
+                    ),
+                  )
+                : RefreshIndicator(
+                    onRefresh: () => _fetchProducts(),
+                    child: ListView.separated(
+                      controller: _scrollController,
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                      itemCount: _products.length + (_hasMore ? 1 : 0),
+                      separatorBuilder: (_, _) => const SizedBox(height: 8),
+                      itemBuilder: (context, index) {
+                        // Loading indicator cuối danh sách
+                        if (index == _products.length) {
+                          return const Padding(
+                            padding: EdgeInsets.all(24),
+                            child: Center(child: CircularProgressIndicator()),
+                          );
+                        }
+
+                        final p = _products[index];
+                        return Card(
+                          elevation: 1,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          clipBehavior: Clip.antiAlias,
+                          child: InkWell(
+                            onTap: () async {
+                              final needsRefresh = await Navigator.push<bool>(
+                                context,
+                                MaterialPageRoute(builder: (_) => ManageProductDetailScreen(productId: p.id!)),
                               );
-                            }
-
-                            final p = _products[index];
-                            return Card(
-                              elevation: 1,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                              clipBehavior: Clip.antiAlias,
-                              child: InkWell(
-                                onTap: () async {
-                                  final needsRefresh = await Navigator.push<bool>(
-                                    context,
-                                    MaterialPageRoute(builder: (_) => ManageProductDetailScreen(productId: p.id!)),
-                                  );
-                                  if (needsRefresh == true) {
-                                    _fetchProducts();
-                                  }
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                                  child: Row(
-                                    children: [
-                                      // Ảnh thumbnail
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
-                                        child: SizedBox(
-                                          width: 56,
-                                          height: 56,
-                                          child: p.imageUrl != null && p.imageUrl!.isNotEmpty
-                                              ? Image.network(
-                                                  p.imageUrl!,
-                                                  fit: BoxFit.cover,
-                                                  errorBuilder: (_, _, _) => _buildImagePlaceholder(),
-                                                )
-                                              : _buildImagePlaceholder(),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 12),
-
-                                    // Thông tin sản phẩm
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            p.name ?? 'N/A',
-                                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                p.price != null ? _currencyFormat.format(p.price) : 'Liên hệ',
-                                                style: TextStyle(
-                                                  color: AppColors.primary,
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 13,
-                                                ),
-                                              ),
-                                              const SizedBox(width: 8),
-                                              _StockBadge(inStock: p.isInStock ?? false),
-                                            ],
-                                          ),
-                                          if (p.categoryName != null)
-                                            Text(
-                                              p.categoryName!,
-                                              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textLight),
-                                            ),
-                                        ],
-                                      ),
+                              if (needsRefresh == true) {
+                                _fetchProducts();
+                              }
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                              child: Row(
+                                children: [
+                                  // Ảnh thumbnail
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: SizedBox(
+                                      width: 56,
+                                      height: 56,
+                                      child: p.imageUrl != null && p.imageUrl!.isNotEmpty
+                                          ? Image.network(p.imageUrl!, fit: BoxFit.cover, errorBuilder: (_, _, _) => _buildImagePlaceholder())
+                                          : _buildImagePlaceholder(),
                                     ),
+                                  ),
+                                  const SizedBox(width: 12),
 
-                                    // Action buttons
-                                    Column(
+                                  // Thông tin sản phẩm
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        IconButton(
-                                          icon: const Icon(Icons.edit_outlined, size: 20),
-                                          color: Colors.blue,
-                                          tooltip: 'Sửa',
-                                          onPressed: () async {
-                                            final updated = await Navigator.push<bool>(
-                                              context,
-                                              MaterialPageRoute(builder: (_) => ManageProductFormScreen(productId: p.id)),
-                                            );
-                                            if (updated == true) {
-                                              _fetchProducts();
-                                            }
-                                          },
+                                        Text(
+                                          p.name ?? 'N/A',
+                                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
-                                        IconButton(
-                                          icon: const Icon(Icons.delete_outlined, size: 20),
-                                          color: Colors.red,
-                                          tooltip: 'Xoá',
-                                          onPressed: () => _showDeleteConfirmDialog(p),
+                                        const SizedBox(height: 4),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              p.price != null ? _currencyFormat.format(p.price) : 'Liên hệ',
+                                              style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600, fontSize: 13),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            _StockBadge(inStock: p.isInStock ?? false),
+                                          ],
                                         ),
+                                        if (p.categoryName != null)
+                                          Text(p.categoryName!, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textLight)),
                                       ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+
+                                  // Action buttons
+                                  Column(
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(Icons.edit_outlined, size: 20),
+                                        color: Colors.blue,
+                                        tooltip: 'Sửa',
+                                        onPressed: () async {
+                                          final updated = await Navigator.push<bool>(
+                                            context,
+                                            MaterialPageRoute(builder: (_) => ManageProductFormScreen(productId: p.id)),
+                                          );
+                                          if (updated == true) {
+                                            _fetchProducts();
+                                          }
+                                        },
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.delete_outlined, size: 20),
+                                        color: Colors.red,
+                                        tooltip: 'Xoá',
+                                        onPressed: () => _showDeleteConfirmDialog(p),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                             ),
-                            );
-                          },
-                        ),
-                      ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
           ),
         ],
       ),
@@ -430,11 +394,7 @@ class _StockBadge extends StatelessWidget {
       ),
       child: Text(
         inStock ? 'Còn hàng' : 'Hết hàng',
-        style: TextStyle(
-          fontSize: 11,
-          color: inStock ? Colors.green[700] : Colors.red[700],
-          fontWeight: FontWeight.w500,
-        ),
+        style: TextStyle(fontSize: 11, color: inStock ? Colors.green[700] : Colors.red[700], fontWeight: FontWeight.w500),
       ),
     );
   }

@@ -93,7 +93,7 @@ class _ManageProductFormScreenState extends State<ManageProductFormScreen> {
   Future<void> _fetchProductDetails() async {
     if (!mounted) return;
     setState(() => _isLoadingProduct = true);
-    
+
     try {
       final res = await ApiClient.managementApi.getProductApi().apiProductsGetProductDetailIdGet(id: widget.productId!);
       final data = res.data?.data;
@@ -104,11 +104,14 @@ class _ManageProductFormScreenState extends State<ManageProductFormScreen> {
         _stockCtrl.text = data.stockQuantity?.toString() ?? '0';
         _lowStockCtrl.text = data.lowStockThreshold?.toString() ?? '5';
         _descCtrl.text = data.description ?? '';
-        
+
         final typeName = data.typeName ?? '';
-        if (typeName.toLowerCase().contains('component')) _productType = ProductType.component;
-        else if (typeName.toLowerCase().contains('basebox')) _productType = ProductType.baseBox;
-        else if (typeName.toLowerCase().contains('giftset')) _productType = ProductType.giftSet;
+        if (typeName.toLowerCase().contains('component'))
+          _productType = ProductType.component;
+        else if (typeName.toLowerCase().contains('basebox'))
+          _productType = ProductType.baseBox;
+        else if (typeName.toLowerCase().contains('giftset'))
+          _productType = ProductType.giftSet;
 
         // Ensure the fetched category matches the product type restrictions in the UI
         if (_categories.any((c) => c.id == data.categoryId && (c.supportedType == null || c.supportedType == _productType))) {
@@ -133,7 +136,6 @@ class _ManageProductFormScreenState extends State<ManageProductFormScreen> {
         }
       }
     } catch (e) {
-      debugPrint('Error fetching product details: $e');
       if (mounted) _showError('Không thể tải thông tin sản phẩm: $e');
     } finally {
       if (mounted) setState(() => _isLoadingProduct = false);
@@ -160,7 +162,6 @@ class _ManageProductFormScreenState extends State<ManageProductFormScreen> {
     setState(() => _loadingCategories = true);
     try {
       final res = await ApiClient.openApi.dio.get('/api/categories/get-categories');
-      debugPrint('Raw categories response: ${res.data}');
       final json = res.data;
       if (json is Map && json['success'] == true) {
         final dynamic data = json['data'];
@@ -175,21 +176,16 @@ class _ManageProductFormScreenState extends State<ManageProductFormScreen> {
             ProductType? type;
             final typeStr = e['supportedProductType']?.toString();
             if (typeStr != null) {
-              if (typeStr == 'Component') type = ProductType.component;
-              else if (typeStr == 'BaseBox') type = ProductType.baseBox;
-              else if (typeStr == 'GiftSet') type = ProductType.giftSet;
+              if (typeStr == 'Component')
+                type = ProductType.component;
+              else if (typeStr == 'BaseBox')
+                type = ProductType.baseBox;
+              else if (typeStr == 'GiftSet')
+                type = ProductType.giftSet;
             }
-            return _Category(
-              id: e['id']?.toString() ?? '',
-              name: e['name']?.toString() ?? '',
-              supportedType: type,
-            );
+            return _Category(id: e['id']?.toString() ?? '', name: e['name']?.toString() ?? '', supportedType: type);
           }).toList();
         });
-        debugPrint('Fetched ${_categories.length} categories');
-        for (var c in _categories) {
-          debugPrint('  - ${c.name} (${c.id}) type=${c.supportedType}');
-        }
       }
     } catch (e) {
       debugPrint('Error fetching categories: $e');
@@ -218,11 +214,7 @@ class _ManageProductFormScreenState extends State<ManageProductFormScreen> {
             rawList = data['data'] ?? data['items'] ?? [];
           }
           return rawList
-              .map((e) => _Product(
-                    id: e['id']?.toString() ?? '',
-                    name: e['name']?.toString() ?? '',
-                    price: (e['price'] as num?)?.toDouble(),
-                  ))
+              .map((e) => _Product(id: e['id']?.toString() ?? '', name: e['name']?.toString() ?? '', price: (e['price'] as num?)?.toDouble()))
               .toList();
         }
         return [];
@@ -233,7 +225,7 @@ class _ManageProductFormScreenState extends State<ManageProductFormScreen> {
         _availableComponents = parseProducts(results[1]);
       });
     } catch (e) {
-      debugPrint('Error fetching giftset data: $e');
+      // Ignored or handled elsewhere
     } finally {
       if (mounted) setState(() => _loadingGiftSetData = false);
     }
@@ -280,7 +272,11 @@ class _ManageProductFormScreenState extends State<ManageProductFormScreen> {
             return Column(
               children: [
                 const SizedBox(height: 8),
-                Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2))),
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2)),
+                ),
                 const SizedBox(height: 12),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -352,24 +348,15 @@ class _ManageProductFormScreenState extends State<ManageProductFormScreen> {
       if (_productType == ProductType.giftSet) {
         giftSetItemsList = ListBuilder<GiftSetItem>();
         for (final item in _giftSetItems) {
-          giftSetItemsList.add(GiftSetItem((b) => b
-            ..componentId = item.component.id
-            ..quantity = item.quantity));
+          giftSetItemsList.add(
+            GiftSetItem(
+              (b) => b
+                ..componentId = item.component.id
+                ..quantity = item.quantity,
+            ),
+          );
         }
       }
-
-      debugPrint('--- SUBMITTING PRODUCT ---');
-      debugPrint('Name: ${_nameCtrl.text}');
-      debugPrint('SKU: ${_skuCtrl.text}');
-      debugPrint('Type: $_productType');
-      debugPrint('Category: $_selectedCategoryId');
-      debugPrint('Price: ${_priceCtrl.text}');
-      debugPrint('Stock: ${_stockCtrl.text}');
-      if (_productType == ProductType.giftSet) {
-        debugPrint('BaseBox: $_selectedBaseBoxId');
-        debugPrint('Items: ${giftSetItemsList?.length}');
-      }
-      debugPrint('--------------------------');
 
       final api = ApiClient.managementApi.getProductApi();
       final pName = _nameCtrl.text.trim();
@@ -383,18 +370,31 @@ class _ManageProductFormScreenState extends State<ManageProductFormScreen> {
       Response<dynamic>? res;
       if (widget.productId == null) {
         res = await api.apiProductsCreateProductPost(
-          name: pName, SKU: pSku, price: pPrice, description: pDesc,
-          productType: _productType, categoryId: _selectedCategoryId,
-          stockQuantity: pStock, lowStockThreshold: pLowStock,
-          baseBoxId: pBaseBox, giftSetItems: giftSetItemsList?.build(),
+          name: pName,
+          SKU: pSku,
+          price: pPrice,
+          description: pDesc,
+          productType: _productType,
+          categoryId: _selectedCategoryId,
+          stockQuantity: pStock,
+          lowStockThreshold: pLowStock,
+          baseBoxId: pBaseBox,
+          giftSetItems: giftSetItemsList?.build(),
         );
       } else {
         res = await api.apiProductsUpdateProductIdPut(
-          id: widget.productId!, id2: widget.productId!,
-          name: pName, SKU: pSku, price: pPrice, description: pDesc,
-          productType: _productType, categoryId: _selectedCategoryId,
-          stockQuantity: pStock, lowStockThreshold: pLowStock,
-          baseBoxId: pBaseBox, giftSetItems: giftSetItemsList?.build(),
+          id: widget.productId!,
+          id2: widget.productId!,
+          name: pName,
+          SKU: pSku,
+          price: pPrice,
+          description: pDesc,
+          productType: _productType,
+          categoryId: _selectedCategoryId,
+          stockQuantity: pStock,
+          lowStockThreshold: pLowStock,
+          baseBoxId: pBaseBox,
+          giftSetItems: giftSetItemsList?.build(),
         );
       }
 
@@ -409,16 +409,12 @@ class _ManageProductFormScreenState extends State<ManageProductFormScreen> {
           Navigator.pop(context, true);
         }
       } else {
-        debugPrint('Backend reported failure: ${res.data?.message}');
         _showError(res.data?.message ?? (widget.productId == null ? 'Tạo sản phẩm thất bại.' : 'Cập nhật thất bại.'));
       }
     } on DioException catch (e) {
-      // Detailed error logging for debugging
-      debugPrint('DioException details: ${e.response?.data}');
-      
       final dynamic errorData = e.response?.data;
       String errorMsg = 'Lỗi không xác định';
-      
+
       if (errorData is Map) {
         errorMsg = errorData['message']?.toString() ?? errorData['title']?.toString() ?? errorMsg;
         // If there are validation errors, append them
@@ -430,7 +426,7 @@ class _ManageProductFormScreenState extends State<ManageProductFormScreen> {
       } else if (e.message != null) {
         errorMsg = e.message!;
       }
-      
+
       _showError(errorMsg);
     } catch (e) {
       _showError('Lỗi: $e');
@@ -439,12 +435,9 @@ class _ManageProductFormScreenState extends State<ManageProductFormScreen> {
     }
   }
 
-
   void _showError(String msg) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg), backgroundColor: Colors.red[700]),
-    );
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), backgroundColor: Colors.red[700]));
   }
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -471,22 +464,17 @@ class _ManageProductFormScreenState extends State<ManageProductFormScreen> {
           ),
         ],
       ),
-      body: _isLoadingProduct 
-        ? const Center(child: CircularProgressIndicator())
-        : Form(
-        key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          children: [
-            // ── Basic Info Card ──────────────────────────────────────────
-            _sectionCard(
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      flex: 5,
-                      child: _buildField(
+      body: _isLoadingProduct
+          ? const Center(child: CircularProgressIndicator())
+          : Form(
+              key: _formKey,
+              child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                children: [
+                  _sectionCard(
+                    children: [
+                      // 1. Tên Sản Phẩm
+                      _buildField(
                         label: 'Tên sản phẩm *',
                         child: TextFormField(
                           controller: _nameCtrl,
@@ -494,46 +482,9 @@ class _ManageProductFormScreenState extends State<ManageProductFormScreen> {
                           validator: (v) => (v == null || v.trim().isEmpty) ? 'Bắt buộc' : null,
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      flex: 5,
-                      child: _buildField(
-                        label: 'Phân loại (Type) *',
-                        child: DropdownButtonFormField<ProductType>(
-                          initialValue: _productType,
-                          decoration: _inputDeco(),
-                          isExpanded: true,
-                          items: const [
-                            DropdownMenuItem(value: ProductType.component, child: Text('Thành phần')),
-                            DropdownMenuItem(value: ProductType.baseBox, child: Text('Hộp cơ bản')),
-                            DropdownMenuItem(value: ProductType.giftSet, child: Text('Bộ quà tặng')),
-                          ],
-                          onChanged: (val) async {
-                            if (val == null) return;
-                            setState(() {
-                              _productType = val;
-                              _selectedBaseBoxId = null;
-                              _selectedBaseBoxPrice = null;
-                              _giftSetItems = [];
-                            });
-                            if (val == ProductType.giftSet && _availableBaseBoxes.isEmpty) {
-                              await _fetchGiftSetData();
-                            }
-                            _updateGiftSetPrice();
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      flex: 5,
-                      child: _buildField(
+                      const SizedBox(height: 12),
+                      // 2. Mã SKU
+                      _buildField(
                         label: 'Mã SKU *',
                         child: TextFormField(
                           controller: _skuCtrl,
@@ -541,40 +492,75 @@ class _ManageProductFormScreenState extends State<ManageProductFormScreen> {
                           validator: (v) => (v == null || v.trim().isEmpty) ? 'Bắt buộc' : null,
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      flex: 5,
-                      child: _buildField(
-                        label: 'Danh mục con',
-                        child: _loadingCategories
-                            ? const LinearProgressIndicator()
-                            : DropdownButtonFormField<String?>(
-                                value: _selectedCategoryId,
-                                decoration: _inputDeco(hint: 'Chọn danh mục'),
+                      const SizedBox(height: 12),
+                      // 3. Phân loại, Danh mục con
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: _buildField(
+                              label: 'Phân loại (Type) *',
+                              child: DropdownButtonFormField<ProductType>(
+                                initialValue: _productType,
+                                decoration: _inputDeco(),
                                 isExpanded: true,
-                                items: [
-                                  const DropdownMenuItem<String?>(value: null, child: Text('-- Không chọn --')),
-                                  ..._categories
-                                      .where((c) => c.supportedType == null || c.supportedType == _productType)
-                                      .map((c) => DropdownMenuItem<String?>(value: c.id, child: Text(c.name, overflow: TextOverflow.ellipsis))),
+                                items: const [
+                                  DropdownMenuItem(value: ProductType.component, child: Text('Thành phần')),
+                                  DropdownMenuItem(value: ProductType.baseBox, child: Text('Hộp cơ bản')),
+                                  DropdownMenuItem(value: ProductType.giftSet, child: Text('Bộ quà tặng')),
                                 ],
-                                onChanged: (val) => setState(() => _selectedCategoryId = val),
+                                onChanged: (val) async {
+                                  if (val == null) return;
+                                  setState(() {
+                                    _productType = val;
+                                    _selectedBaseBoxId = null;
+                                    _selectedBaseBoxPrice = null;
+                                    _giftSetItems = [];
+                                  });
+                                  if (val == ProductType.giftSet && _availableBaseBoxes.isEmpty) {
+                                    await _fetchGiftSetData();
+                                  }
+                                  _updateGiftSetPrice();
+                                },
                               ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _buildField(
+                              label: 'Danh mục con',
+                              child: _loadingCategories
+                                  ? const LinearProgressIndicator()
+                                  : DropdownButtonFormField<String?>(
+                                      value: _selectedCategoryId,
+                                      decoration: _inputDeco(hint: 'Chọn danh mục'),
+                                      isExpanded: true,
+                                      items: [
+                                        const DropdownMenuItem<String?>(value: null, child: Text('-- Không chọn --')),
+                                        ..._categories
+                                            .where((c) => c.supportedType == null || c.supportedType == _productType)
+                                            .map(
+                                              (c) => DropdownMenuItem<String?>(
+                                                value: c.id,
+                                                child: Text(c.name, overflow: TextOverflow.ellipsis),
+                                              ),
+                                            ),
+                                      ],
+                                      onChanged: (val) => setState(() => _selectedCategoryId = val),
+                                    ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      flex: 4,
-                      child: _buildField(
+                      const SizedBox(height: 12),
+                      // 4. Giá bán
+                      _buildField(
                         label: 'Giá bán (VNĐ) *',
                         labelSuffix: _productType == ProductType.giftSet
-                            ? Text(' — tự tính tổng', style: TextStyle(fontSize: 11, color: AppColors.primary, fontStyle: FontStyle.italic))
+                            ? Text(
+                                ' — tự tính tổng',
+                                style: TextStyle(fontSize: 11, color: AppColors.primary, fontStyle: FontStyle.italic),
+                              )
                             : null,
                         child: TextFormField(
                           controller: _priceCtrl,
@@ -589,227 +575,239 @@ class _ManageProductFormScreenState extends State<ManageProductFormScreen> {
                           },
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      flex: 3,
-                      child: _buildField(
-                        label: 'Tồn kho *',
-                        child: TextFormField(
-                          controller: _stockCtrl,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                          decoration: _inputDeco(hint: '0'),
-                          validator: (v) => (v == null || v.trim().isEmpty) ? 'Bắt buộc' : null,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      flex: 3,
-                      child: _buildField(
-                        label: 'Cảnh báo thấp',
-                        child: TextFormField(
-                          controller: _lowStockCtrl,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                          decoration: _inputDeco(hint: '5'),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                _buildField(
-                  label: 'Mô tả chi tiết',
-                  child: TextFormField(
-                    controller: _descCtrl,
-                    maxLines: 4,
-                    decoration: _inputDeco(hint: 'Nhập mô tả...'),
-                  ),
-                ),
-              ],
-            ),
-
-            // ── GiftSet Config Card ──────────────────────────────────────
-            if (_productType == ProductType.giftSet) ...[
-              const SizedBox(height: 16),
-              _loadingGiftSetData
-                  ? const Center(child: CircularProgressIndicator())
-                  : _sectionCard(
-                      headerIcon: Icons.card_giftcard_rounded,
-                      headerTitle: 'Cấu hình Bộ Quà Tặng',
-                      children: [
-                        _buildField(
-                          label: 'Chọn Hộp (BaseBox) *',
-                          child: DropdownButtonFormField<String?>(
-                            initialValue: _selectedBaseBoxId,
-                            decoration: _inputDeco(hint: 'Chọn hộp cho bộ quà tặng'),
-                            isExpanded: true,
-                            items: [
-                              const DropdownMenuItem<String?>(value: null, child: Text('-- Chọn hộp --')),
-                              ..._availableBaseBoxes.map((b) =>
-                                  DropdownMenuItem<String?>(value: b.id, child: Text(b.name, overflow: TextOverflow.ellipsis))),
-                            ],
-                            onChanged: (val) {
-                              setState(() {
-                                _selectedBaseBoxId = val;
-                                _selectedBaseBoxPrice = _availableBaseBoxes.where((b) => b.id == val).firstOrNull?.price;
-                              });
-                              _updateGiftSetPrice();
-                            },
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Text('Thành phần trong bộ', style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
-                            const Spacer(),
-                            OutlinedButton.icon(
-                              onPressed: _openAddComponentSheet,
-                              icon: const Icon(Icons.add, size: 16),
-                              label: const Text('Thêm thành phần'),
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: AppColors.primary,
-                                side: BorderSide(color: AppColors.primary),
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      const SizedBox(height: 12),
+                      // 5. Tồn kho, Cảnh báo thấp
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: _buildField(
+                              label: 'Tồn kho *',
+                              child: TextFormField(
+                                controller: _stockCtrl,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                decoration: _inputDeco(hint: '0'),
+                                validator: (v) => (v == null || v.trim().isEmpty) ? 'Bắt buộc' : null,
                               ),
                             ),
-                          ],
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _buildField(
+                              label: 'Cảnh báo thấp',
+                              child: TextFormField(
+                                controller: _lowStockCtrl,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                decoration: _inputDeco(hint: '5'),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      // 6. Mô tả chi tiết
+                      _buildField(
+                        label: 'Mô tả chi tiết',
+                        child: TextFormField(
+                          controller: _descCtrl,
+                          maxLines: 4,
+                          decoration: _inputDeco(hint: 'Nhập mô tả...'),
                         ),
-                        const SizedBox(height: 8),
-                        if (_giftSetItems.isEmpty)
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(24),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[50],
-                              border: Border.all(color: Colors.grey[200]!),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Column(
-                              children: [
-                                Icon(Icons.inventory_2_outlined, color: Colors.grey, size: 36),
-                                SizedBox(height: 8),
-                                Text('Chưa có thành phần nào.\nBấm "Thêm thành phần" để bắt đầu.',
-                                    textAlign: TextAlign.center, style: TextStyle(color: Colors.grey)),
-                              ],
-                            ),
-                          )
-                        else
-                          Column(
+                      ),
+                    ],
+                  ),
+
+                  // ── GiftSet Config Card ──────────────────────────────────────
+                  if (_productType == ProductType.giftSet) ...[
+                    const SizedBox(height: 16),
+                    _loadingGiftSetData
+                        ? const Center(child: CircularProgressIndicator())
+                        : _sectionCard(
+                            headerIcon: Icons.card_giftcard_rounded,
+                            headerTitle: 'Cấu hình Bộ Quà Tặng',
                             children: [
-                              for (final item in _giftSetItems)
-                                Card(
-                                  elevation: 0,
-                                  color: Colors.grey[50],
-                                  margin: const EdgeInsets.only(bottom: 6),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    side: BorderSide(color: Colors.grey[200]!),
+                              _buildField(
+                                label: 'Chọn Hộp (BaseBox) *',
+                                child: DropdownButtonFormField<String?>(
+                                  initialValue: _selectedBaseBoxId,
+                                  decoration: _inputDeco(hint: 'Chọn hộp cho bộ quà tặng'),
+                                  isExpanded: true,
+                                  items: [
+                                    const DropdownMenuItem<String?>(value: null, child: Text('-- Chọn hộp --')),
+                                    ..._availableBaseBoxes.map(
+                                      (b) => DropdownMenuItem<String?>(
+                                        value: b.id,
+                                        child: Text(b.name, overflow: TextOverflow.ellipsis),
+                                      ),
+                                    ),
+                                  ],
+                                  onChanged: (val) {
+                                    setState(() {
+                                      _selectedBaseBoxId = val;
+                                      _selectedBaseBoxPrice = _availableBaseBoxes.where((b) => b.id == val).firstOrNull?.price;
+                                    });
+                                    _updateGiftSetPrice();
+                                  },
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              Row(
+                                children: [
+                                  Text('Thành phần trong bộ', style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+                                  const Spacer(),
+                                  OutlinedButton.icon(
+                                    onPressed: _openAddComponentSheet,
+                                    icon: const Icon(Icons.add, size: 16),
+                                    label: const Text('Thêm thành phần'),
+                                    style: OutlinedButton.styleFrom(
+                                      foregroundColor: AppColors.primary,
+                                      side: BorderSide(color: AppColors.primary),
+                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                    ),
                                   ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                    child: Row(
-                                      children: [
-                                        const Icon(Icons.widgets_outlined, size: 18, color: Colors.grey),
-                                        const SizedBox(width: 8),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              if (_giftSetItems.isEmpty)
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(24),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[50],
+                                    border: Border.all(color: Colors.grey[200]!),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Column(
+                                    children: [
+                                      Icon(Icons.inventory_2_outlined, color: Colors.grey, size: 36),
+                                      SizedBox(height: 8),
+                                      Text(
+                                        'Chưa có thành phần nào.\nBấm "Thêm thành phần" để bắt đầu.',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(color: Colors.grey),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              else
+                                Column(
+                                  children: [
+                                    for (final item in _giftSetItems)
+                                      Card(
+                                        elevation: 0,
+                                        color: Colors.grey[50],
+                                        margin: const EdgeInsets.only(bottom: 6),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(8),
+                                          side: BorderSide(color: Colors.grey[200]!),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                          child: Row(
                                             children: [
-                                              Text(item.component.name, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-                                              if (item.component.price != null)
-                                                Text(_currencyFormat.format(item.component.price), style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                                              const Icon(Icons.widgets_outlined, size: 18, color: Colors.grey),
+                                              const SizedBox(width: 8),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(item.component.name, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                                                    if (item.component.price != null)
+                                                      Text(
+                                                        _currencyFormat.format(item.component.price),
+                                                        style: const TextStyle(fontSize: 12, color: Colors.grey),
+                                                      ),
+                                                  ],
+                                                ),
+                                              ),
+                                              // Quantity stepper
+                                              Row(
+                                                children: [
+                                                  _quantityBtn(
+                                                    icon: Icons.remove,
+                                                    onTap: () {
+                                                      if (item.quantity > 1) {
+                                                        setState(() => item.quantity--);
+                                                        _updateGiftSetPrice();
+                                                      }
+                                                    },
+                                                  ),
+                                                  Padding(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                                                    child: Text('${item.quantity}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                                                  ),
+                                                  _quantityBtn(
+                                                    icon: Icons.add,
+                                                    onTap: () {
+                                                      setState(() => item.quantity++);
+                                                      _updateGiftSetPrice();
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(width: 4),
+                                              IconButton(
+                                                icon: const Icon(Icons.close, size: 18),
+                                                color: Colors.red[400],
+                                                onPressed: () {
+                                                  setState(() => _giftSetItems.remove(item));
+                                                  _updateGiftSetPrice();
+                                                },
+                                              ),
                                             ],
                                           ),
                                         ),
-                                        // Quantity stepper
-                                        Row(
-                                          children: [
-                                            _quantityBtn(
-                                              icon: Icons.remove,
-                                              onTap: () {
-                                                if (item.quantity > 1) {
-                                                  setState(() => item.quantity--);
-                                                  _updateGiftSetPrice();
-                                                }
-                                              },
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.symmetric(horizontal: 8),
-                                              child: Text('${item.quantity}', style: const TextStyle(fontWeight: FontWeight.bold)),
-                                            ),
-                                            _quantityBtn(
-                                              icon: Icons.add,
-                                              onTap: () {
-                                                setState(() => item.quantity++);
-                                                _updateGiftSetPrice();
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(width: 4),
-                                        IconButton(
-                                          icon: const Icon(Icons.close, size: 18),
-                                          color: Colors.red[400],
-                                          onPressed: () {
-                                            setState(() => _giftSetItems.remove(item));
-                                            _updateGiftSetPrice();
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              // Price total row
-                              Padding(
-                                padding: const EdgeInsets.only(top: 4),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    const Text('Tổng giá: ', style: TextStyle(fontWeight: FontWeight.w500)),
-                                    Text(
-                                      _currencyFormat.format(_calculatedGiftSetPrice),
-                                      style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary, fontSize: 15),
+                                      ),
+                                    // Price total row
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 4),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          const Text('Tổng giá: ', style: TextStyle(fontWeight: FontWeight.w500)),
+                                          Text(
+                                            _currencyFormat.format(_calculatedGiftSetPrice),
+                                            style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary, fontSize: 15),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 ),
-                              ),
                             ],
                           ),
-                      ],
-                    ),
-            ],
+                  ],
 
-            // ── Image Placeholder Card ───────────────────────────────────
-            const SizedBox(height: 16),
-            _sectionCard(
-              headerTitle: 'Hình ảnh sản phẩm',
-              children: [
-                Container(
-                  width: double.infinity,
-                  height: 140,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[50],
-                    border: Border.all(color: Colors.grey[200]!, style: BorderStyle.solid),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  // ── Image Placeholder Card ───────────────────────────────────
+                  const SizedBox(height: 16),
+                  _sectionCard(
+                    headerTitle: 'Hình ảnh sản phẩm',
                     children: [
-                      Icon(Icons.add_photo_alternate_outlined, size: 40, color: Colors.grey[400]),
-                      const SizedBox(height: 8),
-                      Text('Chức năng tải ảnh sẽ sớm được bổ sung', style: TextStyle(color: Colors.grey[500], fontSize: 13)),
+                      Container(
+                        width: double.infinity,
+                        height: 140,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[50],
+                          border: Border.all(color: Colors.grey[200]!, style: BorderStyle.solid),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.add_photo_alternate_outlined, size: 40, color: Colors.grey[400]),
+                            const SizedBox(height: 8),
+                            Text('Chức năng tải ảnh sẽ sớm được bổ sung', style: TextStyle(color: Colors.grey[500], fontSize: 13)),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 32),
+                ],
+              ),
             ),
-            const SizedBox(height: 32),
-          ],
-        ),
-      ),
     );
   }
 
@@ -818,11 +816,11 @@ class _ManageProductFormScreenState extends State<ManageProductFormScreen> {
   // ─────────────────────────────────────────────────────────────────────────
 
   InputDecoration _inputDeco({String? hint}) => InputDecoration(
-        hintText: hint,
-        isDense: true,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      );
+    hintText: hint,
+    isDense: true,
+    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+  );
 
   Widget _buildField({required String label, required Widget child, Widget? labelSuffix}) {
     return Column(
@@ -830,7 +828,10 @@ class _ManageProductFormScreenState extends State<ManageProductFormScreen> {
       children: [
         Row(
           children: [
-            Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.black87)),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.black87),
+            ),
             ?labelSuffix,
           ],
         ),
@@ -840,11 +841,7 @@ class _ManageProductFormScreenState extends State<ManageProductFormScreen> {
     );
   }
 
-  Widget _sectionCard({
-    IconData? headerIcon,
-    String? headerTitle,
-    required List<Widget> children,
-  }) {
+  Widget _sectionCard({IconData? headerIcon, String? headerTitle, required List<Widget> children}) {
     return Card(
       elevation: 1,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -856,10 +853,7 @@ class _ManageProductFormScreenState extends State<ManageProductFormScreen> {
             if (headerTitle != null) ...[
               Row(
                 children: [
-                  if (headerIcon != null) ...[
-                    Icon(headerIcon, color: AppColors.primary, size: 20),
-                    const SizedBox(width: 8),
-                  ],
+                  if (headerIcon != null) ...[Icon(headerIcon, color: AppColors.primary, size: 20), const SizedBox(width: 8)],
                   Text(headerTitle, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                 ],
               ),
@@ -878,7 +872,10 @@ class _ManageProductFormScreenState extends State<ManageProductFormScreen> {
       borderRadius: BorderRadius.circular(4),
       child: Container(
         padding: const EdgeInsets.all(4),
-        decoration: BoxDecoration(border: Border.all(color: Colors.grey[300]!), borderRadius: BorderRadius.circular(4)),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey[300]!),
+          borderRadius: BorderRadius.circular(4),
+        ),
         child: Icon(icon, size: 16),
       ),
     );

@@ -33,18 +33,12 @@ class _ManageProductDetailScreenState extends State<ManageProductDetailScreen> {
     setState(() => _isLoading = true);
     try {
       final res = await ApiClient.managementApi.getProductApi().apiProductsGetProductDetailIdGet(id: widget.productId);
-      debugPrint('Fetch Detail Response: ${res.statusCode} - ${res.data}');
       if (res.data?.success == true && res.data?.data != null) {
         _product = res.data!.data!;
       } else {
-        debugPrint('Fetch Detail Failed: success=${res.data?.success}, data=${res.data?.data}');
         if (mounted) _showError(res.data?.message ?? 'Không thể tải thông tin sản phẩm');
       }
     } catch (e) {
-      debugPrint('Error fetching product details: $e');
-      if (e is DioException) {
-        debugPrint('Dio error data: ${e.response?.data}');
-      }
       if (mounted) _showError('Lỗi tải dữ liệu: $e');
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -75,9 +69,7 @@ class _ManageProductDetailScreenState extends State<ManageProductDetailScreen> {
       final res = await ApiClient.managementApi.getProductApi().apiProductsDeleteProductIdDelete(id: widget.productId);
       if (res.data?.success == true) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Xoá sản phẩm thành công!'), backgroundColor: Colors.green),
-          );
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Xoá sản phẩm thành công!'), backgroundColor: Colors.green));
           Navigator.pop(context, true); // return true to refresh list
         }
       } else {
@@ -91,9 +83,7 @@ class _ManageProductDetailScreenState extends State<ManageProductDetailScreen> {
   }
 
   void _showError(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg), backgroundColor: Colors.red[700]),
-    );
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), backgroundColor: Colors.red[700]));
   }
 
   Widget _buildSectionHeader(String title, IconData icon) {
@@ -117,15 +107,15 @@ class _ManageProductDetailScreenState extends State<ManageProductDetailScreen> {
         children: [
           SizedBox(
             width: 120,
-            child: Text(label, style: const TextStyle(color: Colors.black54, fontWeight: FontWeight.w500)),
+            child: Text(
+              label,
+              style: const TextStyle(color: Colors.black54, fontWeight: FontWeight.w500),
+            ),
           ),
           Expanded(
             child: Text(
               value,
-              style: TextStyle(
-                color: valueColor ?? Colors.black87,
-                fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-              ),
+              style: TextStyle(color: valueColor ?? Colors.black87, fontWeight: isBold ? FontWeight.bold : FontWeight.normal),
             ),
           ),
         ],
@@ -152,7 +142,7 @@ class _ManageProductDetailScreenState extends State<ManageProductDetailScreen> {
               const Icon(Icons.error_outline, size: 48, color: Colors.grey),
               const SizedBox(height: 16),
               const Text('Không tìm thấy thông tin sản phẩm'),
-              TextButton(onPressed: () => Navigator.pop(context), child: const Text('Quay lại'))
+              TextButton(onPressed: () => Navigator.pop(context), child: const Text('Quay lại')),
             ],
           ),
         ),
@@ -172,17 +162,17 @@ class _ManageProductDetailScreenState extends State<ManageProductDetailScreen> {
             icon: const Icon(Icons.edit_outlined),
             tooltip: 'Sửa',
             onPressed: () async {
-              final updated = await Navigator.push<bool>(
-                context,
-                MaterialPageRoute(builder: (_) => ManageProductFormScreen(productId: p.id)),
-              );
+              final updated = await Navigator.push<bool>(context, MaterialPageRoute(builder: (_) => ManageProductFormScreen(productId: p.id)));
               if (updated == true) {
                 _fetchDetails(); // Reload details if edited
               }
             },
           ),
           _isDeleting
-              ? const Padding(padding: EdgeInsets.all(12), child: SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2)))
+              ? const Padding(
+                  padding: EdgeInsets.all(12),
+                  child: SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2)),
+                )
               : IconButton(
                   icon: const Icon(Icons.delete_outline, color: Colors.red),
                   tooltip: 'Xoá',
@@ -223,7 +213,10 @@ class _ManageProductDetailScreenState extends State<ManageProductDetailScreen> {
                   Card(
                     elevation: 0,
                     margin: const EdgeInsets.only(bottom: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: Colors.grey.shade200)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: BorderSide(color: Colors.grey.shade200),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Column(
@@ -234,12 +227,7 @@ class _ManageProductDetailScreenState extends State<ManageProductDetailScreen> {
                           _buildInfoRow('SKU', p.sku ?? 'N/A'),
                           _buildInfoRow('Loại', p.typeName ?? 'N/A'),
                           _buildInfoRow('Danh mục', p.categoryName ?? 'N/A'),
-                          _buildInfoRow(
-                            'Giá bán',
-                            p.price != null ? _currencyFormat.format(p.price) : '0đ',
-                            isBold: true,
-                            valueColor: Colors.red[700],
-                          ),
+                          _buildInfoRow('Giá bán', p.price != null ? _currencyFormat.format(p.price) : '0đ', isBold: true, valueColor: Colors.red[700]),
                         ],
                       ),
                     ),
@@ -249,7 +237,10 @@ class _ManageProductDetailScreenState extends State<ManageProductDetailScreen> {
                   Card(
                     elevation: 0,
                     margin: const EdgeInsets.only(bottom: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: Colors.grey.shade200)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: BorderSide(color: Colors.grey.shade200),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Column(
@@ -257,12 +248,7 @@ class _ManageProductDetailScreenState extends State<ManageProductDetailScreen> {
                         children: [
                           _buildSectionHeader('Kho hàng & Trạng thái', Icons.inventory_outlined),
                           _buildInfoRow('Trạng thái', p.status ?? 'N/A', valueColor: p.status == 'Active' ? Colors.green : Colors.grey),
-                          _buildInfoRow(
-                            'Tồn kho',
-                            '${p.stockQuantity ?? 0}',
-                            valueColor: isLowStock ? Colors.orange[800] : Colors.green[700],
-                            isBold: true,
-                          ),
+                          _buildInfoRow('Tồn kho', '${p.stockQuantity ?? 0}', valueColor: isLowStock ? Colors.orange[800] : Colors.green[700], isBold: true),
                           _buildInfoRow('Mức cảnh báo', '${p.lowStockThreshold ?? 0}'),
                         ],
                       ),
@@ -274,7 +260,10 @@ class _ManageProductDetailScreenState extends State<ManageProductDetailScreen> {
                     Card(
                       elevation: 0,
                       margin: const EdgeInsets.only(bottom: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: Colors.grey.shade200)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(color: Colors.grey.shade200),
+                      ),
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: Column(
@@ -284,24 +273,29 @@ class _ManageProductDetailScreenState extends State<ManageProductDetailScreen> {
                             _buildInfoRow('Hộp cơ bản (BaseBox)', p.includedItems!.boxName ?? 'N/A', isBold: true),
                             if (p.includedItems!.items != null && p.includedItems!.items!.isNotEmpty) ...[
                               const Divider(height: 24),
-                              const Text('Danh sách thành phần (Component):', style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black54)),
+                              const Text(
+                                'Danh sách thành phần (Component):',
+                                style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black54),
+                              ),
                               const SizedBox(height: 12),
-                              ...p.includedItems!.items!.map((comp) => Padding(
-                                    padding: const EdgeInsets.only(bottom: 8),
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                          width: 32,
-                                          height: 32,
-                                          decoration: BoxDecoration(color: Colors.blue[50], borderRadius: BorderRadius.circular(8)),
-                                          child: const Icon(Icons.widgets_outlined, size: 16, color: Colors.blue),
-                                        ),
-                                        const SizedBox(width: 12),
-                                        Expanded(child: Text(comp.componentName ?? 'N/A')),
-                                        Text('x${comp.quantity}', style: const TextStyle(fontWeight: FontWeight.bold)),
-                                      ],
-                                    ),
-                                  )),
+                              ...p.includedItems!.items!.map(
+                                (comp) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 32,
+                                        height: 32,
+                                        decoration: BoxDecoration(color: Colors.blue[50], borderRadius: BorderRadius.circular(8)),
+                                        child: const Icon(Icons.widgets_outlined, size: 16, color: Colors.blue),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(child: Text(comp.componentName ?? 'N/A')),
+                                      Text('x${comp.quantity}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             ],
                           ],
                         ),
@@ -313,7 +307,10 @@ class _ManageProductDetailScreenState extends State<ManageProductDetailScreen> {
                     Card(
                       elevation: 0,
                       margin: const EdgeInsets.only(bottom: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: Colors.grey.shade200)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(color: Colors.grey.shade200),
+                      ),
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: Column(
