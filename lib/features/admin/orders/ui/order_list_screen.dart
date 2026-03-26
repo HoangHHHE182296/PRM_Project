@@ -25,6 +25,28 @@ class _OrderListScreenState extends State<OrderListScreen> {
   String? _errorMessage;
   OrderStatus? _statusFilter;
 
+  static const List<OrderStatus> _uiStatuses = <OrderStatus>[
+    OrderStatus.pendingPayment,
+    OrderStatus.failed,
+    OrderStatus.shipped,
+    OrderStatus.cancelled,
+    OrderStatus.delivered,
+  ];
+
+  List<OrderStatus> _allowedNextStatuses(OrderStatus current) {
+    switch (current) {
+      case OrderStatus.shipped:
+        return const <OrderStatus>[
+          OrderStatus.delivered,
+          OrderStatus.cancelled,
+        ];
+      case OrderStatus.pendingPayment:
+        return const <OrderStatus>[OrderStatus.failed, OrderStatus.delivered];
+      default:
+        return _uiStatuses;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -132,7 +154,11 @@ class _OrderListScreenState extends State<OrderListScreen> {
       return;
     }
 
-    OrderStatus selectedStatus = order.status ?? OrderStatus.pendingPayment;
+    final currentStatus = order.status ?? OrderStatus.pendingPayment;
+    final allowedStatuses = _allowedNextStatuses(currentStatus);
+    OrderStatus selectedStatus = allowedStatuses.contains(currentStatus)
+        ? currentStatus
+        : allowedStatuses.first;
 
     final updated = await showModalBottomSheet<bool>(
       context: context,
@@ -177,7 +203,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
                       labelText: 'Trạng thái',
                       border: OutlineInputBorder(),
                     ),
-                    items: OrderStatus.values
+                    items: allowedStatuses
                         .map(
                           (status) => DropdownMenuItem<OrderStatus>(
                             value: status,
@@ -268,20 +294,14 @@ class _OrderListScreenState extends State<OrderListScreen> {
     switch (status) {
       case OrderStatus.pendingPayment:
         return 'Chờ thanh toán';
-      case OrderStatus.paid:
-        return 'Đã thanh toán';
-      case OrderStatus.processing:
-        return 'Đang xử lý';
       case OrderStatus.shipped:
         return 'Đang giao';
       case OrderStatus.delivered:
         return 'Đã giao';
       case OrderStatus.cancelled:
         return 'Đã hủy';
-      case OrderStatus.refunded:
-        return 'Đã hoàn tiền';
       case OrderStatus.failed:
-        return 'Thất bại';
+        return 'Thanh toán thất bại';
       default:
         return status.name;
     }
@@ -391,7 +411,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
                       value: null,
                       child: Text('Tất cả trạng thái'),
                     ),
-                    ...OrderStatus.values.map(
+                    ..._uiStatuses.map(
                       (status) => PopupMenuItem<OrderStatus?>(
                         value: status,
                         child: Text(_statusLabel(status)),
@@ -468,11 +488,14 @@ class _OrderListScreenState extends State<OrderListScreen> {
 
                         final order = visibleOrders[index];
                         final status = order.status;
+                        final bool isLocked =
+                            status == OrderStatus.cancelled ||
+                            status == OrderStatus.delivered;
 
                         return Card(
                           margin: const EdgeInsets.only(bottom: 12),
                           child: InkWell(
-                            onTap: () => _changeStatus(order),
+                            onTap: isLocked ? null : () => _changeStatus(order),
                             child: Padding(
                               padding: const EdgeInsets.all(16),
                               child: Column(
@@ -676,9 +699,42 @@ class _OrderListScreenState extends State<OrderListScreen> {
                                   Align(
                                     alignment: Alignment.centerRight,
                                     child: TextButton.icon(
-                                      onPressed: () => _changeStatus(order),
-                                      icon: const Icon(Icons.edit),
-                                      label: const Text('Đổi trạng thái'),
+                                      onPressed: isLocked
+                                          ? null
+                                          : () async {
+                                              final id = order.id;
+                                              if (id == null || id.isEmpty) {
+                                                _showSnackBar(
+                                                  'Đơn hàng không hợp lệ (thiếu id).',
+                                                );
+                                                return;
+                                              }
+
+                                              try {
+                                                await _orderService
+                                                    .updateOrderStatus(
+                                                      id: id,
+                                                      status:
+                                                          OrderStatus.cancelled,
+                                                    );
+                                                if (!mounted) return;
+                                                await _refresh();
+                                                if (!mounted) return;
+                                                _showSnackBar(
+                                                  'Đã hủy đơn hàng',
+                                                );
+                                              } catch (e) {
+                                                if (!mounted) return;
+                                                _showSnackBar(
+                                                  e.toString().replaceFirst(
+                                                    'Exception: ',
+                                                    '',
+                                                  ),
+                                                );
+                                              }
+                                            },
+                                      icon: const Icon(Icons.cancel_outlined),
+                                      label: const Text('Hủy'),
                                     ),
                                   ),
                                 ],
