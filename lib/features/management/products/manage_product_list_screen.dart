@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:prm_project/core/api/api_client.dart';
+import 'package:prm_project/features/management/products/manage_product_form_screen.dart';
 import 'package:prm_project/shared/theme/app_colors.dart';
 import 'package:public_openapi/public_openapi.dart';
 
@@ -18,7 +19,7 @@ class _ManageProductListScreenState extends State<ManageProductListScreen> {
   bool _isLoading = false;
   bool _hasMore = true;
   int _totalCount = 0;
-  List<ProductListResponse> _products = [];
+  final List<ProductListResponse> _products = [];
   final ScrollController _scrollController = ScrollController();
 
   // Search
@@ -171,11 +172,14 @@ class _ManageProductListScreenState extends State<ManageProductListScreen> {
         actions: [
           // Nút thêm sản phẩm mới
           FilledButton.icon(
-            onPressed: () {
-              // TODO: navigate to create screen
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Chức năng thêm sản phẩm chưa được triển khai')),
+            onPressed: () async {
+              final created = await Navigator.push<bool>(
+                context,
+                MaterialPageRoute(builder: (_) => const ManageProductFormScreen()),
               );
+              if (created == true) {
+                _fetchProducts();
+              }
             },
             icon: const Icon(Icons.add, size: 18),
             label: const Text('Thêm mới'),
@@ -250,7 +254,7 @@ class _ManageProductListScreenState extends State<ManageProductListScreen> {
                           controller: _scrollController,
                           padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                           itemCount: _products.length + (_hasMore ? 1 : 0),
-                          separatorBuilder: (_, __) => const SizedBox(height: 8),
+                          separatorBuilder: (_, _) => const SizedBox(height: 8),
                           itemBuilder: (context, index) {
                             // Loading indicator cuối danh sách
                             if (index == _products.length) {
@@ -278,7 +282,7 @@ class _ManageProductListScreenState extends State<ManageProductListScreen> {
                                             ? Image.network(
                                                 p.imageUrl!,
                                                 fit: BoxFit.cover,
-                                                errorBuilder: (_, __, ___) => _buildImagePlaceholder(),
+                                                errorBuilder: (_, _, _) => _buildImagePlaceholder(),
                                               )
                                             : _buildImagePlaceholder(),
                                       ),
@@ -372,7 +376,7 @@ class _StockBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: inStock ? Colors.green.withOpacity(0.12) : Colors.red.withOpacity(0.12),
+        color: inStock ? Colors.green.withValues(alpha: 0.12) : Colors.red.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(

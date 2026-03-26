@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:management_openapi/management_openapi.dart';
 import 'package:prm_project/core/configs/environment.dart';
 import 'package:prm_project/core/interceptor/auth_interceptor.dart';
 import 'package:prm_project/core/interceptor/error_interceptor.dart';
@@ -21,6 +22,11 @@ class ApiClient {
   }
 
   static final PublicOpenapi openApi = PublicOpenapi(
+    dio: _dio,
+    basePathOverride: Environment.apiUrl,
+  );
+
+  static final ManagementOpenapi managementApi = ManagementOpenapi(
     dio: _dio,
     basePathOverride: Environment.apiUrl,
   );
