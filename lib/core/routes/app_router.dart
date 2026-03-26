@@ -6,6 +6,7 @@ import 'package:prm_project/features/auth/ui/login/login_screen.dart';
 import 'package:prm_project/features/auth/ui/register/register_screen.dart';
 import 'package:prm_project/features/home/home_feature.dart';
 import 'package:prm_project/features/products/product_list_screen.dart';
+import 'package:prm_project/features/management/products/manage_product_list_screen.dart';
 import 'package:prm_project/features/profile/ui/profile_screen.dart';
 import 'package:prm_project/features/admin/categories/ui/category_form_screen.dart';
 import 'package:prm_project/features/admin/categories/ui/category_list_screen.dart';
@@ -105,6 +106,13 @@ class AppRouter {
       GoRoute(
         path: RouterConst.register.router,
         builder: (context, state) => const RegisterScreen(),
+      ),
+
+      // 3. MANAGEMENT ROUTES (full screen, no shell layout)
+      GoRoute(
+        path: RouterConst.manageProducts.router,
+        redirect: (context, state) => RouteGuard.check(RouterConst.manageProducts),
+        pageBuilder: (context, state) => _buildPageWithTransition(context: context, state: state, child: const ManageProductListScreen()),
       ),
 
       GoRoute(
