@@ -8,6 +8,8 @@ import 'package:public_openapi/public_openapi.dart';
 class ApiClient {
   static final Dio _dio = _createDio();
 
+  static Dio get dio => _dio;
+
   static Dio _createDio() {
     final dio = Dio(
       BaseOptions(
@@ -25,7 +27,6 @@ class ApiClient {
     dio: _dio,
     basePathOverride: Environment.apiUrl,
   );
-
   static final ManagementOpenapi managementApi = ManagementOpenapi(
     dio: _dio,
     basePathOverride: Environment.apiUrl,

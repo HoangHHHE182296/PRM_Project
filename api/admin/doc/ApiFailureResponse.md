@@ -1,0 +1,18 @@
+# internal_openapi.model.ApiFailureResponse
+
+## Load the model package
+```dart
+import 'package:internal_openapi/api.dart';
+```
+
+## Properties
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**success** | **bool** |  | [optional] 
+**message** | **String** |  | [optional] 
+**statusCode** | **int** |  | [optional] 
+**error** | [**ApiErrorDetail**](ApiErrorDetail.md) |  | [optional] 
+
+[[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

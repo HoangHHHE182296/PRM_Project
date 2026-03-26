@@ -15,11 +15,15 @@ class CustomerLayout extends StatelessWidget {
     return Scaffold(
       // 1. Header (AppBar)
       appBar: AppBar(
-        title: const Text('SesameBox', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'SesameBox',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.shopping_cart_outlined),
-            onPressed: () => context.push('/cart'), // Route này bạn sẽ định nghĩa sau
+            onPressed: () =>
+                context.push('/cart'), // Route này bạn sẽ định nghĩa sau
           ),
         ],
       ),
@@ -37,9 +41,21 @@ class CustomerLayout extends StatelessWidget {
         selectedItemColor: AppColors.primary,
         unselectedItemColor: AppColors.textLight,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_outlined), activeIcon: Icon(Icons.home), label: 'Trang chủ'),
-          BottomNavigationBarItem(icon: Icon(Icons.card_giftcard_outlined), activeIcon: Icon(Icons.card_giftcard), label: 'Quà tặng'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), activeIcon: Icon(Icons.person), label: 'Tôi'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
+            label: 'Trang chủ',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.card_giftcard_outlined),
+            activeIcon: Icon(Icons.card_giftcard),
+            label: 'Quà tặng',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            activeIcon: Icon(Icons.person),
+            label: 'Tôi',
+          ),
         ],
       ),
     );
@@ -47,7 +63,10 @@ class CustomerLayout extends StatelessWidget {
 
   void _onTap(BuildContext context, int index) {
     // Điều hướng giữa các nhánh (Branches) của StatefulShellRoute
-    navigationShell.goBranch(index, initialLocation: index == navigationShell.currentIndex);
+    navigationShell.goBranch(
+      index,
+      initialLocation: index == navigationShell.currentIndex,
+    );
   }
 }
 
@@ -59,7 +78,9 @@ class _CustomerDrawer extends StatelessWidget {
     final cred = sl<CredentialService>();
     final user = cred.userLoggedInfo;
 
-    final bool isAdmin = (user?.roles ?? []).any((r) => r.toLowerCase().contains('admin'));
+    final bool isAdmin = (user?.roles ?? []).any(
+      (r) => r.toLowerCase().contains('admin'),
+    );
 
     return Drawer(
       child: Column(
@@ -69,10 +90,17 @@ class _CustomerDrawer extends StatelessWidget {
             decoration: const BoxDecoration(color: AppColors.primary),
             currentAccountPicture: CircleAvatar(
               backgroundColor: Colors.white,
-              backgroundImage: (user?.imgUrl != null && user!.imgUrl.isNotEmpty) ? NetworkImage(user.imgUrl) : null,
-              child: (user?.imgUrl == null || user!.imgUrl.isEmpty) ? const Icon(Icons.person, size: 40, color: AppColors.primary) : null,
+              backgroundImage: (user?.imgUrl != null && user!.imgUrl.isNotEmpty)
+                  ? NetworkImage(user.imgUrl)
+                  : null,
+              child: (user?.imgUrl == null || user!.imgUrl.isEmpty)
+                  ? const Icon(Icons.person, size: 40, color: AppColors.primary)
+                  : null,
             ),
-            accountName: Text(user?.name ?? 'Khách hàng', style: const TextStyle(fontWeight: FontWeight.bold)),
+            accountName: Text(
+              user?.name ?? 'Khách hàng',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
             accountEmail: Text(user?.email ?? 'Chưa đăng nhập'),
           ),
 
@@ -93,16 +121,26 @@ class _CustomerDrawer extends StatelessWidget {
                     title: const Text('Quản lý danh mục'),
                     onTap: () => context.push('/manage/categories'),
                   ),
-                  ListTile(leading: const Icon(Icons.receipt_long_outlined), title: const Text('Quản lý đơn đặt'), onTap: () => context.push('/manage/orders')),
+                  ListTile(
+                    leading: const Icon(Icons.receipt_long_outlined),
+                    title: const Text('Quản lý đơn đặt'),
+                    onTap: () => context.push('/manage/orders'),
+                  ),
                 ] else ...[
                   // ================= MENU DÀNH CHO CUSTOMER =================
 
                   // 🌟 Tính năng mới: Tư vấn AI (Được highlight để thu hút chú ý)
                   ListTile(
-                    leading: const Icon(Icons.auto_awesome, color: Colors.orange), // Icon ngôi sao lấp lánh
+                    leading: const Icon(
+                      Icons.auto_awesome,
+                      color: Colors.orange,
+                    ), // Icon ngôi sao lấp lánh
                     title: const Text(
                       'Tư vấn quà tặng AI',
-                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.orange),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.orange,
+                      ),
                     ),
                     onTap: () {
                       // Đóng Drawer trước khi chuyển trang (Optional nhưng nên làm)
@@ -112,14 +150,20 @@ class _CustomerDrawer extends StatelessWidget {
                   ),
                   const Divider(), // Tách biệt phần AI và phần lịch sử cá nhân
 
-                  ListTile(leading: const Icon(Icons.history), title: const Text('Lịch sử đơn hàng'), onTap: () => context.push('/orders')),
-                  ListTile(leading: const Icon(Icons.favorite_border), title: const Text('Quà tặng đã lưu'), onTap: () {}),
+                  ListTile(
+                    leading: const Icon(Icons.history),
+                    title: const Text('Lịch sử đơn hàng'),
+                    onTap: () => context.push('/orders'),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.favorite_border),
+                    title: const Text('Quà tặng đã lưu'),
+                    onTap: () {},
+                  ),
                 ],
               ],
             ),
           ),
-
-          // Nút đăng xuất ghim dưới cùng
           const Divider(height: 1),
           ListTile(
             leading: const Icon(Icons.logout, color: Colors.red),
